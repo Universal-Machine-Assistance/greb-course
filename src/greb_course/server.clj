@@ -71,4 +71,6 @@
 (def handler (wrap-file app "public" {:index-files? true}))
 
 (defn -main [& _]
-  (jetty/run-jetty #'handler {:port 8020 :join? true}))
+  (let [port (Integer/parseInt (or (System/getenv "PORT") "8020"))]
+    (println (str "Starting server on port " port))
+    (jetty/run-jetty #'handler {:port port :join? true})))

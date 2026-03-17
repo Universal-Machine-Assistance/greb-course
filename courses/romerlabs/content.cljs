@@ -361,21 +361,15 @@
 
 (def elisa-historia-timeline
   [{:year "1959" :title "Radioinmunoensayo (RIA)"
-    :text "Rosalyn Yalow y Solomon Berson desarrollan el RIA usando isótopos radiactivos. Revoluciona la detección de hormonas, pero requiere material radiactivo costoso y peligroso."}
-   {:year "1966" :title "Primeros anticuerpos marcados"
-    :text "Wide y Porath exploran la unión de antígenos a superficies sólidas, sentando las bases para los inmunoensayos en fase sólida sin radiactividad."}
+    :text "Yalow y Berson desarrollan el RIA con isótopos radiactivos. Revoluciona la detección, pero costoso y peligroso."}
    {:year "1971" :title "Invención del ELISA"
-    :text "Eva Engvall y Peter Perlmann publican el primer ELISA en Immunochemistry. La innovación clave: reemplazar el marcador radiactivo por una enzima (fosfatasa alcalina) que produce color medible."}
-   {:year "1975" :title "Voller adapta ELISA a microplacas"
-    :text "Alister Voller adapta el ELISA al formato de microplaca de 96 pozos, permitiendo el análisis masivo de muestras. Se aplica por primera vez al diagnóstico de malaria y parasitosis."}
+    :text "Engvall y Perlmann reemplazan el marcador radiactivo por una enzima que produce color medible. Publicado en Immunochemistry."}
    {:year "1985" :title "ELISA para VIH"
-    :text "La FDA aprueba el primer test ELISA para detección de anticuerpos anti-VIH en bancos de sangre. ELISA se convierte en herramienta crítica de salud pública mundial."}
-   {:year "1990" :title "Automatización y microplate readers"
-    :text "Aparecen los primeros lectores ELISA automáticos. Laboratorios analizan cientos de muestras diarias. Se expande a seguridad alimentaria: micotoxinas, alérgenos, residuos veterinarios."}
-   {:year "2000" :title "ELISA en seguridad alimentaria"
-    :text "Romer Labs y otros fabricantes desarrollan kits ELISA específicos para la industria alimentaria. Detección de aflatoxinas, DON, fumonisinas, gluten y alérgenos se estandariza."}
+    :text "FDA aprueba el primer test ELISA para VIH en bancos de sangre. Se convierte en herramienta crítica de salud pública."}
+   {:year "2000" :title "Seguridad alimentaria"
+    :text "Romer Labs desarrolla kits ELISA para la industria alimentaria. Detección de micotoxinas, gluten y alérgenos se estandariza."}
    {:year "HOY" :title "Estándar global"
-    :text "ELISA es el método de referencia en más de 150 países. Base de tecnologías derivadas: CLIA (quimioluminiscencia), tests de flujo lateral (AgraStrip, COVID), y arrays multiplex."}])
+    :text "Método de referencia en 150+ países. Base de CLIA, tests de flujo lateral (AgraStrip, COVID) y arrays multiplex."}])
 
 (def elisa-tecnologias-derivadas
   [{:icon "test-tubes" :label "CLIA" :value "Quimioluminiscencia"}
