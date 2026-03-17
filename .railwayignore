@@ -1,0 +1,9 @@
+node_modules
+.shadow-cljs
+.git
+dev
+dev.sh
+public/images
+public/romerlabs
+public/valentino
+images
