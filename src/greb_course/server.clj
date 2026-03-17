@@ -1,0 +1,74 @@
+(ns greb-course.server
+  "Ring server for serving courses with path-based routing."
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.util.response :as response]
+            [ring.middleware.file :refer [wrap-file]]
+            [compojure.core :refer [GET POST defroutes]]
+            [compojure.route :as route]
+            [clojure.java.io :as io])
+  (:import [java.io File]))
+
+(defn- index-response []
+  (let [f (File. "public/index.html")]
+    (if (.exists f)
+      (-> (response/file-response (.getPath f))
+          (response/content-type "text/html; charset=utf-8"))
+      (response/not-found "index.html not found"))))
+
+(defn- serve-image [org slug path]
+  (let [;; Try course-specific images first, then root images fallback
+        course-f (File. (str "courses/" org "/images") path)
+        root-f   (File. "images" path)
+        f        (cond (.exists course-f) course-f
+                       (.exists root-f)   root-f
+                       :else              nil)]
+    (if f
+      (response/file-response (.getPath f))
+      (response/not-found (str "image " path)))))
+
+(defn- open-in-editor!
+  "Open a file in the default editor. Supports optional line number."
+  [file-path & [line]]
+  (let [f (File. file-path)]
+    (when (.exists f)
+      (let [abs (.getAbsolutePath f)]
+        ;; Try VS Code first, fall back to macOS open
+        (try
+          (let [arg (if line (str abs ":" line) abs)]
+            (.exec (Runtime/getRuntime) (into-array ["code" "--goto" arg])))
+          (catch Exception _
+            (.exec (Runtime/getRuntime) (into-array ["open" "-t" abs]))))
+        abs))))
+
+(defroutes app
+  ;; Catalog (landing)
+  (GET "/" [] (index-response))
+
+  ;; Dev: open file in editor
+  (GET "/dev/open" [file line]
+       (if-let [abs (open-in-editor! file (when line (Integer/parseInt line)))]
+         (-> (response/response (str "opened " abs))
+             (response/content-type "text/plain"))
+         (response/not-found (str "file not found: " file))))
+
+  ;; Course viewer — serve same index.html, JS handles routing
+  (GET "/:org/:slug/" [org slug] (index-response))
+  (GET "/:org/:slug" [org slug]
+       (response/redirect (str "/" org "/" slug "/")))
+
+  ;; Course images
+  (GET "/:org/:slug/images/*" [org slug :as req]
+       (let [uri  (:uri req)
+             pfx  (str "/" org "/" slug "/images/")
+             path (when (.startsWith uri pfx) (subs uri (count pfx)))]
+         (if (and path (not= path ""))
+           (serve-image org slug path)
+           (response/not-found "Not found"))))
+
+  ;; Static assets (css, js)
+  (route/not-found "Not found"))
+
+(def handler (wrap-file app "public" {:index-files? true}))
+
+(defn -main [& _]
+  (jetty/run-jetty #'handler {:port 8020 :join? true}))

@@ -1,0 +1,11 @@
+node_modules/
+.shadow-cljs/
+.cpcache/
+.clj-kondo/.cache/
+.lsp/
+.calva/
+.nrepl-port
+public/js/cljs-runtime/
+public/js/main.js
+public/js/manifest.edn
+*.DS_Store
