@@ -88,9 +88,8 @@
                   (d/el :section {:class (or (:class header) "limpieza-header animate")}
                         (d/el :div {:class "limpieza-title-row"}
                               (when icon (d/ic icon "limpieza-hdr-icon"))
-                              (d/el :div {}
-                                    (when kicker (d/el :p {:class "hero-kicker"} kicker))
-                                    (d/el :h1 {:class "hygiene-main-title"} title)))
+                              (when kicker (d/el :span {:class "hero-kicker"} kicker))
+                              (d/el :h1 {:class "hygiene-main-title"} title))
                         (when-let [pills (:pills header)]
                           (apply d/el :div {:class "def-pills"}
                                  (mapv (fn [{:keys [icon label text css-class]}]
