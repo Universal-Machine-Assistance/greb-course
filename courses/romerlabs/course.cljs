@@ -113,8 +113,6 @@
                                  {:icon "award" :label "AOAC"}]}
                      {:type :info-grid :icon "zap" :title "Características y catálogo"
                       :items (vec (concat c/agrastrip-features c/agrastrip-catalogo))}
-                     {:type :timeline :icon "clock" :title "Línea temporal"
-                      :items c/agrastrip-historia-timeline}
                      {:type :chip-row :icon "map-pin" :title "Aplicaciones"
                       :items c/agrastrip-applications}]}}
 
@@ -237,8 +235,7 @@
                       :timeline-items c/elisa-historia-timeline
                       :disclaimer "BioTek 800 TS: producto de Agilent Technologies, no de Romer Labs. Distribuido por ABT Internacional — www.agrobiotek.com"}
                      {:type :info-grid :icon "search" :title "Analitos y aplicaciones"
-                      :items (vec (concat c/elisa-aplicaciones [{:title "Micotoxinas" :icon "wheat" :text "Aflatoxinas, DON, fumonisinas, zearalenona, ocratoxina, T-2/HT-2"}
-                                                                 {:title "Alérgenos" :icon "alert-triangle" :text "Gluten, maní, soya, leche, huevo, almendra, avellana, sésamo"}]))}
+                      :items c/elisa-aplicaciones}
                      {:type :stat-grid :icon "rocket" :title "Tecnologías derivadas"
                       :items c/elisa-tecnologias-derivadas}]}}
 

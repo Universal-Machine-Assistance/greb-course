@@ -1040,11 +1040,13 @@
 .hygiene-page .product-showcase-feat-icon { width: .65rem; height: .65rem; }
 .hygiene-page .product-showcase-feat-label { font-size: .55rem; }
 
-/* Compact limpieza-header */
-.hygiene-page .limpieza-header { padding: .3rem .4rem; gap: .2rem; }
-.hygiene-page .limpieza-hdr-icon { width: 1.2rem; height: 1.2rem; }
-.hygiene-page .limpieza-title-row .hygiene-main-title { font-size: 1.05rem; }
-.hygiene-page .hero-kicker { font-size: .58rem; }
+/* Compact limpieza-header — icon + kicker + title all on one line */
+.hygiene-page .limpieza-header { padding: .25rem .4rem; gap: .1rem; }
+.hygiene-page .limpieza-title-row { gap: .3rem; }
+.hygiene-page .limpieza-hdr-icon { width: 1.1rem; height: 1.1rem; }
+.hygiene-page .limpieza-title-row > div { display: flex; align-items: baseline; gap: .4rem; }
+.hygiene-page .limpieza-title-row .hero-kicker { font-size: .52rem; margin: 0; white-space: nowrap; }
+.hygiene-page .limpieza-title-row .hygiene-main-title { font-size: .95rem; margin: 0; }
 
 /* Compact highlight-bar */
 .hygiene-page .highlight-bar { padding: .3rem .4rem; gap: .3rem; }
@@ -1056,8 +1058,10 @@
 .hygiene-page .mission-chip { padding: .2rem .38rem; font-size: .55rem; }
 .hygiene-page .chip-row { gap: .2rem; margin-top: .15rem; }
 
-/* AgraStrip page 6 — 10 info cards, needs 3-col grid */
-#agrastrip .mini-info-grid { grid-template-columns: repeat(3, 1fr); }
+/* Dense pages use 3-col info-grid to reduce rows */
+#agrastrip .mini-info-grid,
+#elisa .mini-info-grid,
+#abt-servicios .mini-info-grid { grid-template-columns: repeat(3, 1fr); }
 
 /* Featured image grid — first card spans full width */
 .image-grid--featured { grid-template-columns: repeat(2, 1fr); }

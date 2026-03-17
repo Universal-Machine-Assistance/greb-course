@@ -73,19 +73,13 @@
 
 (def romerlabs-historia-timeline
   [{:year "1982" :title "Fundación"
-    :text "Tom y Marie Romer fundan Romer Labs Inc. en Washington, MO. Inicialmente un servicio de análisis de micotoxinas."}
-   {:year "1995" :title "Primer kit de prueba"
-    :text "Lanzamiento de FluoroQuant®, el primer kit de detección de micotoxinas de Romer Labs."}
-   {:year "1999" :title "Adquisición por ERBER AG"
-    :text "ERBER AG (holding austriaco) adquiere Romer Labs. Comienza la internacionalización."}
-   {:year "2002" :title "Sede en Austria"
-    :text "Apertura de oficina en Tulln, Austria, que se convierte en la sede global de Romer Labs."}
-   {:year "2007" :title "Expansión a Brasil"
-    :text "Oficina en Campinas, Brasil. Presencia en Asia-Pacífico desde 2004 (Singapur) y China desde 2009."}
-   {:year "2012" :title "Adquisición SDIX"
-    :text "Adquisición de SDIX Food Safety y GMO Business. Portafolio completo en microbiología y detección de OGM."}
-   {:year "2018" :title "Nuevo centro I+D"
-    :text "Inauguración del nuevo centro de I+D y producción en Tulln con laboratorio ISO 17025. Apertura de Romer Labs México."}
+    :text "Tom y Marie Romer fundan Romer Labs Inc. en Washington, MO. Servicio de análisis de micotoxinas."}
+   {:year "1999" :title "ERBER AG"
+    :text "ERBER AG adquiere Romer Labs. Comienza la internacionalización. Sede en Tulln, Austria (2002)."}
+   {:year "2007" :title "Expansión global"
+    :text "Oficinas en Brasil, Singapur y China. Adquisición de SDIX (2012): microbiología y OGM."}
+   {:year "2018" :title "Centro I+D"
+    :text "Nuevo centro en Tulln con laboratorio ISO 17025. Apertura de Romer Labs México."}
    {:year "2020" :title "dsm-firmenich"
     :text "dsm-firmenich adquiere Romer Labs junto con Biomin. Misión: Making the World's Food Safer®."}])
 
@@ -164,16 +158,14 @@
     :text "Tira reactiva — formato de tira inmunocromatográfica donde la muestra fluye y genera líneas de color visibles."}])
 
 (def agrastrip-historia-timeline
-  [{:year "1980" :title "Primeros inmunoensayos rápidos"
-    :text "Aparecen los primeros tests rápidos basados en anticuerpos para uso fuera de laboratorio. Formato similar al test de embarazo — resultado visual de presencia/ausencia."}
-   {:year "1990" :title "Tiras de flujo lateral (LFD)"
-    :text "Se desarrollan las tiras de flujo lateral inmunocromatográficas. La muestra migra por capilaridad y reacciona con anticuerpos inmovilizados. Adopción en diagnóstico médico rápido."}
-   {:year "2000" :title "Romer Labs lanza AgraStrip"
-    :text "Romer Labs adapta la tecnología de flujo lateral al sector alimentario. Kits específicos para micotoxinas (aflatoxinas, DON, fumonisinas) con resultados en minutos."}
+  [{:year "1990" :title "Flujo lateral (LFD)"
+    :text "Tiras inmunocromatográficas — la muestra migra por capilaridad y genera líneas de color visibles."}
+   {:year "2000" :title "AgraStrip®"
+    :text "Romer Labs adapta la tecnología al sector alimentario. Kits para micotoxinas en minutos."}
    {:year "2008" :title "AgraStrip Pro"
-    :text "Versión mejorada con tiras cuantificables mediante lector AgraVision. Mayor rango de analitos: alérgenos (gluten, maní, soya, sésamo), GMO y más micotoxinas."}
+    :text "Tiras cuantificables con AgraVision. Alérgenos, GMO y más micotoxinas."}
    {:year "HOY" :title "Plataforma completa"
-    :text "AgraStrip cubre más de 20 analitos. Compatible con AgraVision Pro para lectura digital. Usado en más de 80 países en recepción de materias primas, plantas y laboratorios."}])
+    :text "20+ analitos, 80+ países. Compatible con AgraVision Pro para lectura digital."}])
 
 (def agrastrip-catalogo
   [{:title "Micotoxinas" :icon "wheat"
@@ -223,15 +215,13 @@
 
 (def agraquant-historia-timeline
   [{:year "1971" :title "Invención del ELISA"
-    :text "Eva Engvall y Peter Perlmann desarrollan la técnica ELISA. Base científica sobre la cual se construirán los kits AgraQuant décadas después."}
-   {:year "1990" :title "ELISA en alimentos"
-    :text "La técnica ELISA se adapta para análisis de micotoxinas y alérgenos en la industria alimentaria. Primeros kits comerciales aparecen en el mercado."}
-   {:year "2000" :title "Romer Labs lanza AgraQuant"
-    :text "Romer Labs desarrolla la línea AgraQuant: kits ELISA cuantitativos optimizados para matrices alimentarias. Validaciones AOAC y GIPSA desde el inicio."}
-   {:year "2010" :title "Expansión de catálogo"
-    :text "Se amplía la gama a más de 30 kits: micotoxinas (aflatoxinas, DON, ZEA, OTA, fumonisinas, T-2), alérgenos (gluten, maní, soya, leche, huevo, sésamo) y proteínas GM."}
-   {:year "HOY" :title "Estándar de la industria"
-    :text "AgraQuant es referencia para análisis cuantitativos en laboratorios de control de calidad. Compatible con lectores ELISA estándar. Usado por exportadores, plantas y laboratorios regulatorios."}])
+    :text "Engvall y Perlmann desarrollan la técnica ELISA. Base de los kits AgraQuant."}
+   {:year "2000" :title "AgraQuant®"
+    :text "Romer Labs lanza kits ELISA cuantitativos para matrices alimentarias. Validaciones AOAC y GIPSA."}
+   {:year "2010" :title "Expansión"
+    :text "30+ kits: micotoxinas, alérgenos (gluten, maní, soya, leche, huevo) y proteínas GM."}
+   {:year "HOY" :title "Estándar industrial"
+    :text "Referencia en laboratorios de control de calidad. Exportadores, plantas y organismos regulatorios."}])
 
 (def agraquant-specs
   [{:title "Formato" :text "Microplaca ELISA de 96 pozos recubierta con anticuerpos específicos"}
@@ -256,13 +246,11 @@
     :text "Kits disponibles para micotoxinas (aflatoxinas, DON, fumonisinas, ZEA, OTA), alérgenos (gluten, maní, soya, leche, huevo) y proteínas GM."}])
 
 (def agraquant-procedure
-  [{:step "01" :title "Extracción" :icon "flask-conical" :text "Pesar y moler la muestra representativa. Mezclar con solución de extracción proporcionada en el kit durante el tiempo indicado (5–20 min según analito)."}
-   {:step "02" :title "Dilución" :icon "droplets" :text "Filtrar o centrifugar el extracto y diluir según las instrucciones del kit. Preparar los estándares de calibración proporcionados."}
-   {:step "03" :title "Incubación" :icon "thermometer" :text "Pipetear estándares, controles y muestras en la microplaca ELISA recubierta con anticuerpos. Incubar durante el tiempo indicado (10–30 min)."}
-   {:step "04" :title "Lavado" :icon "droplet" :text "Aspirar el contenido de los pozos y lavar 3–5 veces con solución de lavado para eliminar las sustancias no unidas."}
-   {:step "05" :title "Conjugado enzimático" :icon "link" :text "Añadir el conjugado (anticuerpo marcado con enzima HRP o AP). Incubar para permitir la unión al complejo anticuerpo-antígeno."}
-   {:step "06" :title "Sustrato y lectura" :icon "scan-line" :text "Añadir sustrato cromogénico (TMB). Incubar hasta desarrollo de color. Detener la reacción y medir absorbancia a 450 nm en lector ELISA."}
-   {:step "07" :title "Cálculo" :icon "calculator" :text "Software calcula la concentración de cada muestra interpolando en la curva de calibración generada por los estándares. Resultado en ppm o ppb."}])
+  [{:step "01" :title "Extracción" :icon "flask-conical" :text "Pesar, moler y mezclar la muestra con solución de extracción (5–20 min según analito)."}
+   {:step "02" :title "Incubación" :icon "thermometer" :text "Pipetear estándares, controles y muestras en microplaca ELISA. Incubar 10–30 min."}
+   {:step "03" :title "Lavado" :icon "droplet" :text "Lavar 3–5 veces con solución de lavado para eliminar sustancias no unidas."}
+   {:step "04" :title "Conjugado + sustrato" :icon "scan-line" :text "Añadir conjugado enzimático, incubar. Luego sustrato TMB hasta desarrollo de color. Leer a 450 nm."}
+   {:step "05" :title "Cálculo" :icon "calculator" :text "Software interpola en curva de calibración. Resultado en ppm o ppb."}])
 
 (def agraquant-uses
   ["Laboratorios de control de calidad"
@@ -389,20 +377,16 @@
 
 ;; ── Analytes ────────────────────────────────────────────────────
 (def micotoxinas
-  [{:title "Aflatoxinas"    :text "Producidas por Aspergillus. Altamente tóxicas y carcinogénicas. Comunes en maní, maíz y frutos secos."}
-   {:title "DON"            :text "Deoxinivalenol — micotoxina de Fusarium. Frecuente en trigo, cebada y maíz."}
-   {:title "Fumonisinas"    :text "Producidas por Fusarium verticillioides. Asociadas al maíz y productos derivados."}
-   {:title "Zearalenona"    :text "Micotoxina estrogénica de Fusarium. Afecta granos almacenados en condiciones húmedas."}
-   {:title "Ocratoxina A"   :text "Producida por Aspergillus y Penicillium. Presente en café, vino, cereales y especias."}
-   {:title "T-2 / HT-2"    :text "Tricotecenos de Fusarium. Altamente tóxicos incluso en bajas concentraciones."}])
+  [{:title "Aflatoxinas"    :icon "wheat" :text "Producidas por Aspergillus. Carcinogénicas. Maní, maíz, frutos secos."}
+   {:title "DON"            :icon "wheat" :text "Deoxinivalenol (Fusarium). Frecuente en trigo, cebada y maíz."}
+   {:title "Fumonisinas"    :icon "wheat" :text "Fusarium verticillioides. Maíz y derivados."}
+   {:title "Zearalenona / OTA / T-2" :icon "wheat" :text "Zearalenona, Ocratoxina A y T-2/HT-2 — en granos, café, vino y cereales."}])
 
 (def alergenos
-  [{:title "Gluten"   :text "Proteína presente en trigo, cebada y centeno. Peligroso para celíacos."}
-   {:title "Maní"     :text "Uno de los alérgenos más potentes. Puede causar anafilaxia en trazas mínimas."}
-   {:title "Soya"     :text "Proteína de soya presente en gran variedad de alimentos procesados."}
-   {:title "Sésamo"   :text "Alérgeno emergente, cada vez más regulado a nivel mundial."}
-   {:title "Leche"    :text "Caseína y proteínas del suero. Presente en muchos productos inesperados."}
-   {:title "Huevo"    :text "Ovoalbúmina y otras proteínas. Común en productos de panadería y salsas."}])
+  [{:title "Gluten"     :icon "alert-triangle" :text "Trigo, cebada y centeno. Peligroso para celíacos."}
+   {:title "Maní"       :icon "alert-triangle" :text "Uno de los más potentes. Anafilaxia en trazas mínimas."}
+   {:title "Soya / Sésamo" :icon "alert-triangle" :text "Soya en alimentos procesados. Sésamo cada vez más regulado."}
+   {:title "Leche / Huevo" :icon "alert-triangle" :text "Caseína, suero, ovoalbúmina. Presentes en muchos productos."}])
 
 ;; ── AgraVision ──────────────────────────────────────────────────
 (def agravision-nombre-desglose
@@ -426,25 +410,19 @@
     :text "Evolución con pantalla táctil, incubador integrado, 4 puertos simultáneos y conectividad USB para trazabilidad digital con Romer Labs Data Manager."}])
 
 (def agravision-historia-timeline
-  [{:year "1990" :title "Nacen los tests rápidos"
-    :text "Se desarrollan los Lateral Flow Immunoassays (LFIA). Funcionan como tests de embarazo: aparecen líneas de color. Aplicación inicial en diagnóstico médico, luego en análisis de granos y micotoxinas. Problema: lectura visual subjetiva."}
-   {:year "2000" :title "Industrialización agrícola"
-    :text "Empresas como Romer Labs, Neogen y Charm Sciences producen tiras rápidas para aflatoxinas, fumonisinas y DON. Resultados en 5–10 min, portátiles y baratas. Aún dependían del ojo humano."}
-   {:year "2005" :title "Nacen los lectores digitales"
-    :text "Para eliminar la subjetividad aparecen los strip readers: escanean la tira, miden intensidad de línea y calculan concentración. Surgen AgraVision, Reveal AccuScan y Charm EZ-M Reader."}
-   {:year "2010" :title "Desarrollo del AgraVision"
-    :text "Romer Labs desarrolla AgraVision: lectura óptica automática de tiras AgraStrip con curvas de calibración y almacenamiento digital. Detecta aflatoxina, fumonisina, DON, zearalenona y ocratoxina."}
+  [{:year "1990" :title "Tests rápidos visuales"
+    :text "Lateral Flow Immunoassays (LFIA) — líneas de color como tests de embarazo. Lectura subjetiva."}
+   {:year "2005" :title "Lectores digitales"
+    :text "Aparecen strip readers que miden intensidad de línea y calculan concentración. Fin de la subjetividad."}
    {:year "2015" :title "AgraVision Pro"
-    :text "Se introduce AgraVision Pro con mayor precisión, pantalla táctil, incubador integrado e integración con AgraStrip Pro. Uso en plantas, puertos, silos y laboratorios de control de calidad."}
+    :text "Pantalla táctil, incubador integrado, 4 puertos y AgraStrip Pro. Uso en plantas, silos y laboratorios."}
    {:year "HOY" :title "Diagnóstico en campo"
-    :text "Los lectores como AgraVision forman parte del diagnóstico descentralizado: análisis directamente donde está el grano. Resultados en 5–10 minutos, menos logística y decisiones rápidas en compra."}])
+    :text "Análisis donde está el grano. Resultados en 5–10 min, menos logística, decisiones rápidas."}])
 
 (def agravision-como-funciona
-  [{:step "01" :title "Preparar muestra" :text "Extraer y diluir la muestra según el protocolo del analito específico."}
-   {:step "02" :title "Colocar en tira" :text "Aplicar la muestra en la tira AgraStrip — el reactivo fluye y genera líneas coloreadas."}
-   {:step "03" :title "Insertar en lector" :text "Colocar el cartucho con la tira en uno de los 4 puertos del AgraVision Pro."}
-   {:step "04" :title "Lectura óptica" :text "El sensor óptico mide la intensidad de la línea del test usando análisis de imagen y curva de calibración."}
-   {:step "05" :title "Resultado" :text "Concentración del analito en ppm o ppb — resultado cuantitativo, trazable y exportable."}])
+  [{:step "01" :title "Preparar e insertar" :icon "flask-conical" :text "Extraer muestra, aplicar en tira AgraStrip, insertar cartucho en lector."}
+   {:step "02" :title "Lectura óptica" :icon "scan-line" :text "Sensor mide intensidad de línea del test con curva de calibración."}
+   {:step "03" :title "Resultado" :icon "check-circle" :text "Concentración en ppm/ppb — cuantitativo, trazable y exportable vía USB."}])
 
 (def agravision-micotoxinas-detectadas
   [{:icon "wheat" :label "Aflatoxinas" :value "maní, maíz"}
@@ -464,12 +442,10 @@
     :text "Conexión USB tipo A y B. Compatible con Romer Labs Data Manager para trazabilidad y reportes LIMS."}])
 
 (def agravision-specs
-  [{:title "Tipo de equipo"     :text "Lector de tiras de flujo lateral (LFD reader)"}
-   {:title "Modelo"             :text "AgraVision Pro Reader — Código: RLAB-0024"}
-   {:title "Compatibilidad"     :text "Tiras AgraStrip Pro para micotoxinas, GMO y alérgenos"}
-   {:title "Alimentación"       :text "100–240 V AC, 50/60 Hz"}
-   {:title "Temperatura"        :text "Almacenamiento: 15°C – 25°C"}
-   {:title "Certificaciones"    :text "CE — Gestión de datos compatible con Romer Labs Data Manager"}])
+  [{:title "Modelo"             :icon "monitor"    :text "AgraVision Pro Reader (RLAB-0024) — Lector de tiras de flujo lateral"}
+   {:title "Compatibilidad"     :icon "layers"     :text "Tiras AgraStrip Pro para micotoxinas, GMO y alérgenos"}
+   {:title "Alimentación"       :icon "zap"        :text "100–240 V AC, 50/60 Hz · Almacenamiento 15°C–25°C"}
+   {:title "Certificaciones"    :icon "shield-check" :text "CE · Compatible con Romer Labs Data Manager"}])
 
 (def agravision-applications
   ["Detección de micotoxinas en granos y alimentos"
@@ -544,14 +520,14 @@
 
 (def abt-contacto-regional
   [{:title "Honduras — Tegucigalpa" :icon "building-2"
-    :text "Edif. Santa Bárbara 726, 3 Ave, 7-8 Calles · PBX: +(504) 2238-0872 · honduras@agrobiotek.com"}
+    :text "PBX: +(504) 2238-0872 · honduras@agrobiotek.com"}
    {:title "Honduras — San Pedro Sula" :icon "building-2"
-    :text "Edif. San Remo, 9 Ave S.O. 4-5 Calle, Barrio El Benque · PBX: +(504) 2552-7116 · sanpedrosula@agrobiotek.com"}
+    :text "PBX: +(504) 2552-7116 · sanpedrosula@agrobiotek.com"}
    {:title "República Dominicana" :icon "phone"
-    :text "Calle Santiago No. 608 Altos, Gazcue, Santo Domingo · Tel: +809-221-5751 · WhatsApp: +1 (809) 972-4364 · dominicana@agrobiotek.com"}
+    :text "Tel: +809-221-5751 · WA: +1 (809) 972-4364 · dominicana@agrobiotek.com"}
    {:title "El Salvador" :icon "mail"
-    :text "Col. Miramonte Poniente, Av. A No. 245, San Salvador · Tel: +(503) 2260-7669 / 7670 · elsalvador@agrobiotek.com"}
+    :text "Tel: +(503) 2260-7669 · elsalvador@agrobiotek.com"}
    {:title "Guatemala" :icon "map-pin"
-    :text "1 Calle 2-29, Zona 10, Ciudad de Guatemala · Tel: +(502) 2334-6946 · guatemala@agrobiotek.com"}
+    :text "Tel: +(502) 2334-6946 · guatemala@agrobiotek.com"}
    {:title "Nicaragua" :icon "map-pin"
-    :text "Reparto El Carmen, Managua · Tel: +(505) 266-6186 / 268-7747 · nicaragua@agrobiotek.com"}])
+    :text "Tel: +(505) 266-6186 · nicaragua@agrobiotek.com"}])
