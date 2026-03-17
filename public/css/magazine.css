@@ -1069,8 +1069,12 @@
 .image-grid--featured { grid-template-columns: repeat(2, 1fr); }
 .image-grid--featured .image-card:first-child {
   grid-column: 1 / -1;
-  aspect-ratio: 16/6;
+  aspect-ratio: 16/5;
 }
+/* Extra compact for ABT servicios page */
+#abt-servicios .image-card { aspect-ratio: 3/2; }
+#abt-servicios .image-grid { gap: .2rem; }
+#abt-servicios .stat-grid { grid-template-columns: repeat(4, 1fr); }
 .chip-row {
   display: flex;
   flex-wrap: wrap;

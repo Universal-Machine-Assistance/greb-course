@@ -493,18 +493,14 @@
 
 ;; ── ¿Por qué ABT Internacional? ──────────────────────────────
 (def abt-porque-trabajar
-  [{:title "Representante oficial" :icon "shield-check"
-    :text "Distribuidor autorizado de Romer Labs en Centroamérica y el Caribe. Productos originales con garantía de fábrica."}
+  [{:title "Representante oficial Romer Labs" :icon "shield-check"
+    :text "Distribuidor autorizado en Centroamérica y el Caribe. Productos originales con garantía."}
    {:title "Soporte técnico local" :icon "headphones"
-    :text "Equipo de especialistas en diagnóstico alimentario. Asistencia en español, en tu zona horaria, con tiempos de respuesta rápidos."}
-   {:title "Inventario regional" :icon "package"
-    :text "Inventario de kits, reactivos y equipos en la región. Entrega rápida sin depender de importaciones individuales."}
-   {:title "Capacitación práctica" :icon "graduation-cap"
-    :text "Programas de formación presencial y virtual en técnicas ELISA, uso de AgraStrip® y operación de AgraVision™ Pro."}
-   {:title "Servicio post-venta" :icon "wrench"
-    :text "Calibración, mantenimiento preventivo y soporte continuo para tus equipos de laboratorio."}
-   {:title "Experiencia comprobada" :icon "award"
-    :text "Más de 30 años de experiencia en la industria alimentaria. 500+ marcas confían en nosotros."}])
+    :text "Especialistas en diagnóstico alimentario. Asistencia en español, tiempos de respuesta rápidos."}
+   {:title "Inventario y entrega regional" :icon "package"
+    :text "Kits, reactivos y equipos en la región. Entrega rápida sin importaciones individuales."}
+   {:title "Capacitación y servicio" :icon "graduation-cap"
+    :text "Formación en ELISA, AgraStrip® y AgraVision™. Calibración y mantenimiento de equipos."}])
 
 (def abt-stats
   [{:icon "globe" :label "Países" :value "5 oficinas"}
