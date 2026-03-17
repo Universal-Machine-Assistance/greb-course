@@ -196,7 +196,7 @@
 
 /* ── Portada (magazine cover) ────────────────────────────────── */
 .portada-page { background: var(--page, #fffffe); }
-.portada-hero { position: relative; flex: 0 0 50%; overflow: hidden; }
+.portada-hero { position: relative; flex: 0 0 55%; overflow: hidden; }
 .portada-hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portada-overlay {
   position: absolute; inset: 0;
@@ -1063,7 +1063,7 @@
 .image-grid--featured { grid-template-columns: repeat(2, 1fr); }
 .image-grid--featured .image-card:first-child {
   grid-column: 1 / -1;
-  aspect-ratio: 16/7;
+  aspect-ratio: 16/6;
 }
 .chip-row {
   display: flex;
@@ -2321,5 +2321,28 @@
   .visitor-grid,
   .wash-grid { grid-template-columns: 1fr; }
 }
+/* ── Preflight overflow indicator ─────────────────────────────── */
+.preflight-overflow {
+  outline: 3px solid #e53935 !important;
+  outline-offset: -3px;
+  position: relative;
+}
+.preflight-overflow::after {
+  content: "⚠ OVERFLOW";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 999;
+  padding: 2px 8px;
+  background: #e53935;
+  color: #fff;
+  font-family: var(--font-head);
+  font-size: .6rem;
+  font-weight: 700;
+  border-radius: 4px;
+  letter-spacing: .05em;
+  pointer-events: none;
+}
+
 @page { size: letter; margin: 0; }
 @page { size: 8.5in 11in; margin: 0; }

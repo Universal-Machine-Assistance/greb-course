@@ -5,6 +5,7 @@
             [greb-course.templates.registry   :as reg]))
 
 (declare reload!)
+(declare preflight!)
 
 (defonce ^:private scale-resize-bound? (atom false))
 (defonce ^:private built-mobile? (atom nil))
@@ -287,7 +288,9 @@
         (.addEventListener js/window "resize" fit-reader-scale!)
         (reset! scale-resize-bound? true))
       (when (and js/lucide (.-createIcons js/lucide))
-        (.createIcons js/lucide)))))
+        (.createIcons js/lucide))
+      ;; Auto-run preflight overflow check after images load
+      (js/setTimeout preflight! 1500))))
 
 (defn- boot-catalog [courses]
   (set! (.-title js/document) "greb-course")
@@ -329,3 +332,33 @@
   "Return the id of the currently visible page (from URL hash)."
   []
   (current-hash))
+
+;; ── Preflight overflow check ──────────────────────────────────
+(defn preflight!
+  "Scan all pages for content overflow. Highlights overflowing pages with a red
+   border and logs details to the console. Call from REPL or browser console:
+   greb_course.core.preflight_BANG_()"
+  []
+  (let [pages   (array-seq (.querySelectorAll js/document ".page"))
+        results (atom [])]
+    (doseq [page pages]
+      (let [id       (or (.-id page) "?")
+            body     (.querySelector page ".page-body")
+            overflow? (when body
+                        (> (.-scrollHeight body) (+ (.-clientHeight body) 2)))]
+        (when overflow?
+          (let [delta (- (.-scrollHeight body) (.-clientHeight body))]
+            (.add (.-classList page) "preflight-overflow")
+            (swap! results conj {:id id :overflow-px delta
+                                 :scroll-h (.-scrollHeight body)
+                                 :client-h (.-clientHeight body)})
+            (js/console.warn
+              (str "⚠ OVERFLOW page #" id
+                   " — content exceeds by " delta "px"
+                   " (scrollH=" (.-scrollHeight body)
+                   " clientH=" (.-clientHeight body) ")"))))))
+    (if (seq @results)
+      (do (js/console.warn (str "⚠ PREFLIGHT: " (count @results) " page(s) overflowing"))
+          (js/console.table (clj->js @results)))
+      (js/console.log "✓ PREFLIGHT: All pages fit — no overflow detected"))
+    @results))
