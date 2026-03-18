@@ -57,8 +57,17 @@
     (if entry
       ;; Manifest hit: serve optimized, fallback to original
       (if-let [f (or (find-optimized-file entry) (find-original-file entry))]
-        (-> (response/file-response (.getPath f))
-            (response/header "Cache-Control" "public, max-age=31536000, immutable"))
+        (let [fname (.getName f)
+              ctype (cond
+                      (.endsWith fname ".webp") "image/webp"
+                      (.endsWith fname ".png")  "image/png"
+                      (.endsWith fname ".jpg")  "image/jpeg"
+                      (.endsWith fname ".jpeg") "image/jpeg"
+                      (.endsWith fname ".gif")  "image/gif"
+                      :else                     "application/octet-stream")]
+          (-> (response/file-response (.getPath f))
+              (response/content-type ctype)
+              (response/header "Cache-Control" "public, max-age=31536000, immutable")))
         (response/not-found (str "image " path)))
       ;; Legacy fallback: direct file lookup
       (let [course-f (File. (str "courses/" org "/images") path)
