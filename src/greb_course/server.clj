@@ -282,13 +282,15 @@
 
 (defn wrap-file-safe
   "Serve static files from dir, but only for paths that don't match course routes.
-   Static paths like /js/*, /css/* are always served from the file system."
+   Static paths like /js/*, /css/* are always served from the file system.
+   Excludes / so the route handler serves index.html with proper content-type."
   [handler dir]
   (let [file-handler (wrap-file handler dir)]
     (fn [req]
       (let [uri (:uri req)]
-        (if (and (re-matches #"/[^/]+/[^/]+/?" uri)
-                 (not (re-matches #"^/(js|css|fonts|favicon)(/.*)?$" uri)))
+        (if (or (= uri "/")
+                (and (re-matches #"/[^/]+/[^/]+/?" uri)
+                     (not (re-matches #"^/(js|css|fonts|favicon)(/.*)?$" uri))))
           (handler req)
           (file-handler req))))))
 

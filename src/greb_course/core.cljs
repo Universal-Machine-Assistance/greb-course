@@ -12,6 +12,7 @@
 (defonce ^:private current-courses (atom nil))
 (defonce ^:private current-nav (atom nil))
 (defonce ^:private pres-state (atom nil))
+(defonce ^:private doc-view (atom {:zoom 1.0 :text-scale 1.0}))
 
 ;; ── Routing helpers ─────────────────────────────────────────────
 (defn- base-path []
@@ -55,6 +56,14 @@
               rh         (.-clientHeight reader)
               scale      (min 1 (/ rw spread-w) (/ rh spread-h))]
           (.setProperty (.-style reader) "--reader-scale" (str (max (if mobile? 0.35 0.5) scale))))))))
+
+(defn- doc-apply-view! []
+  (when-let [reader (.querySelector js/document ".reader")]
+    (let [{:keys [zoom text-scale pan-x pan-y]} @doc-view]
+      (.setProperty (.-style reader) "--doc-zoom" (str (or zoom 1.0)))
+      (.setProperty (.-style reader) "--doc-text-scale" (str (or text-scale 1.0)))
+      (.setProperty (.-style reader) "--doc-pan-x" (str (or pan-x 0) "px"))
+      (.setProperty (.-style reader) "--doc-pan-y" (str (or pan-y 0) "px")))))
 
 ;; ── Spread entrance animation ────────────────────────────────────
 (defn- animate-spread! [spread-el]
@@ -109,7 +118,7 @@
     (doseq [[i dot] (map-indexed vector dots)]
       (.addEventListener dot "click"
         #(go! i (if (< i @state) "going-back" nil))))
-    go!))
+    {:go! go! :nav-state state}))
 
 ;; ── Floating TOC panel ───────────────────────────────────────────
 (defn- build-toc-panel [go! id->spread toc-groups]
@@ -192,25 +201,29 @@
               (when (and js/lucide (.-createIcons js/lucide))
                 (.createIcons js/lucide #js {:root max-btn}))))))))
 
-(defn- fit-pres-scale! []
+(defn- pres-apply-view! []
   (when-let [overlay (:overlay @pres-state)]
-    (let [vw      (.-innerWidth js/window)
-          vh      (.-innerHeight js/window)
-          mobile? (< vw 840)
-          pad     (if mobile? 20 80)
-          zoom    (or (:zoom @pres-state) 1.0)
-          scale   (* zoom (min 1 (/ (- vw pad) 1280) (/ (- vh pad) 720)))]
-      (.setProperty (.-style overlay) "--pres-scale" (str scale)))))
+    (let [zoom (or (:zoom @pres-state) 1.0)
+          tscale (or (:text-scale @pres-state) 1.0)
+          pan-x (or (:pan-x @pres-state) 0)
+          pan-y (or (:pan-y @pres-state) 0)]
+      (.setProperty (.-style overlay) "--pres-zoom" (str zoom))
+      (.setProperty (.-style overlay) "--pres-text-scale" (str tscale))
+      (.setProperty (.-style overlay) "--pres-pan-x" (str pan-x "px"))
+      (.setProperty (.-style overlay) "--pres-pan-y" (str pan-y "px")))))
 
 (defn- pres-save-session! [idx]
   "Persist presentation slide index and zoom to sessionStorage."
   (.setItem js/sessionStorage "greb-pres-idx" (str idx))
   (when-let [z (:zoom @pres-state)]
-    (.setItem js/sessionStorage "greb-pres-zoom" (str z))))
+    (.setItem js/sessionStorage "greb-pres-zoom" (str z)))
+  (when-let [ts (:text-scale @pres-state)]
+    (.setItem js/sessionStorage "greb-pres-tscale" (str ts))))
 
 (defn- pres-clear-session! []
   (.removeItem js/sessionStorage "greb-pres-idx")
-  (.removeItem js/sessionStorage "greb-pres-zoom"))
+  (.removeItem js/sessionStorage "greb-pres-zoom")
+  (.removeItem js/sessionStorage "greb-pres-tscale"))
 
 (defn- pres-restore-session []
   "Returns saved slide index or nil."
@@ -220,6 +233,10 @@
 (defn- pres-restore-zoom []
   "Returns saved zoom level or nil."
   (when-let [v (.getItem js/sessionStorage "greb-pres-zoom")]
+    (js/parseFloat v)))
+
+(defn- pres-restore-text-scale []
+  (when-let [v (.getItem js/sessionStorage "greb-pres-tscale")]
     (js/parseFloat v)))
 
 (defn- pres-update-section! [idx]
@@ -269,6 +286,14 @@
               (doseq [node (array-seq (.querySelectorAll new-slide ".animate"))]
                 (.add (.-classList node) "visible")))
             80))
+        ;; Reset pan + velocity on slide change
+        (swap! pres-state assoc :pan-x 0 :pan-y 0)
+        (when-let [^js p (:phy @pres-state)]
+          (set! (.-vx p) 0) (set! (.-vy p) 0)
+          (set! (.-zv p) 0) (set! (.-wx p) 0) (set! (.-wy p) 0)
+          (set! (.-spx p) 0) (set! (.-spy p) 0)
+          (set! (.-svx p) 0) (set! (.-svy p) 0))
+        (pres-apply-view!)
         ;; Update indicator & section highlight
         (set! (.-textContent indicator) (str (inc idx) " / " n))
         (swap! pres-state assoc :current idx)
@@ -602,6 +627,62 @@
   (and (exists? js/document.startViewTransition)
        (fn? (.-startViewTransition js/document))))
 
+;; ── Shortcuts help overlay ──────────────────────────────────
+(def ^:private pres-shortcuts
+  [["n / Space / →" "Next slide"]
+   ["p / ←"         "Previous slide"]
+   ["h / j / k / l" "Pan left / down / up / right"]
+   ["a / s"         "Slower / faster pan"]
+   ["u / + / ="     "Zoom in"]
+   ["m / -"         "Zoom out"]
+   ["]"             "Text bigger"]
+   ["["             "Text smaller"]
+   ["r"             "Recenter view"]
+   ["0"             "Reset all"]
+   ["z"             "Toggle spotlight"]
+   ["i"             "Toggle index"]
+   ["f"             "Toggle fullscreen"]
+   ["q / Esc"       "Exit presentation"]
+   ["?"             "Show / hide shortcuts"]])
+
+(def ^:private doc-shortcuts
+  [["n / → / Space"  "Next page"]
+   ["p / ←"          "Previous page"]
+   ["h / j / k / l"  "Pan left / down / up / right"]
+   ["a / s"          "Slower / faster pan"]
+   ["u / + / ="      "Zoom in"]
+   ["m / -"          "Zoom out"]
+   ["]"              "Text bigger"]
+   ["["              "Text smaller"]
+   ["r"              "Recenter view"]
+   ["0"              "Reset all"]
+   ["i"              "Toggle index"]
+   ["o"              "Enter presentation"]
+   ["?"              "Show / hide shortcuts"]])
+
+(defn- build-shortcuts-panel [shortcuts]
+  (let [rows (map (fn [[key desc]]
+                    (d/el :div {:class "shortcuts-row"}
+                          (d/el :kbd {:class "shortcuts-key"} key)
+                          (d/el :span {:class "shortcuts-desc"} desc)))
+                  shortcuts)]
+    (apply d/el :div {:class "shortcuts-panel"}
+           (d/el :div {:class "shortcuts-title"} "Keyboard Shortcuts")
+           rows)))
+
+(defonce ^:private shortcuts-overlay (atom nil))
+
+(defn- toggle-shortcuts! [shortcuts]
+  (if-let [el @shortcuts-overlay]
+    (do (when (.-parentNode el) (.remove el))
+        (reset! shortcuts-overlay nil))
+    (let [scrim (d/el :div {:class "shortcuts-scrim"})
+          panel (build-shortcuts-panel shortcuts)]
+      (.addEventListener scrim "click" #(toggle-shortcuts! shortcuts))
+      (.appendChild scrim panel)
+      (.appendChild (.-body js/document) scrim)
+      (reset! shortcuts-overlay scrim))))
+
 ;; ── Enter / Exit ────────────────────────────────────────────
 (defn- setup-presentation!
   "Core setup: build overlay, register listeners, show starting slide.
@@ -661,19 +742,19 @@
           ;; ── Zoom controls ──
           zoom-label  (d/el :span {:class "pres-zoom-label"} "100%")
           zoom-slider (doto (d/el :input {:type "range" :class "pres-zoom-slider"
-                                          :min "25" :max "200" :step "5" :value "100"})
+                                          :min "25" :max "500" :step "5" :value "100"})
                         (.addEventListener "input"
                           (fn [e]
                             (let [v (/ (js/parseFloat (.. e -target -value)) 100)]
                               (swap! pres-state assoc :zoom v)
                               (set! (.-textContent zoom-label) (str (js/Math.round (* v 100)) "%"))
-                              (fit-pres-scale!)))))
+                              (pres-apply-view!)))))
           set-zoom!   (fn [z]
-                        (let [z (max 0.25 (min 2.0 z))]
+                        (let [z (max 0.25 (min 5.0 z))]
                           (swap! pres-state assoc :zoom z)
                           (set! (.-value zoom-slider) (str (js/Math.round (* z 100))))
                           (set! (.-textContent zoom-label) (str (js/Math.round (* z 100)) "%"))
-                          (fit-pres-scale!)))
+                          (pres-apply-view!)))
           zoom-out-btn (doto (d/el :button {:class "pres-toolbar-btn pres-zoom-btn"
                                             :title (i18n/t :zoom-out)}
                                    (d/ic "minus" ""))
@@ -686,58 +767,281 @@
                            (fn [] (set-zoom! (+ (or (:zoom @pres-state) 1.0) 0.1)))))
           zoom-controls (d/el :div {:class "pres-zoom-controls"}
                               zoom-out-btn zoom-slider zoom-label zoom-in-btn)
-          toolbar-el  (d/el :div {:class "pres-toolbar"} idx-btn zoom-controls fs-btn max-btn sec-btn exit-btn)
+          ;; ── Text scale controls ──
+          ts-label    (d/el :span {:class "pres-zoom-label"} "A 100%")
+          ts-slider   (doto (d/el :input {:type "range" :class "pres-zoom-slider"
+                                          :min "50" :max "500" :step "5" :value "100"})
+                        (.addEventListener "input"
+                          (fn [e]
+                            (let [v (/ (js/parseFloat (.. e -target -value)) 100)]
+                              (swap! pres-state assoc :text-scale v)
+                              (set! (.-textContent ts-label) (str "A " (js/Math.round (* v 100)) "%"))
+                              (pres-apply-view!)))))
+          set-text-scale! (fn [s]
+                            (let [s (max 0.5 (min 5.0 s))]
+                              (swap! pres-state assoc :text-scale s)
+                              (set! (.-value ts-slider) (str (js/Math.round (* s 100))))
+                              (set! (.-textContent ts-label) (str "A " (js/Math.round (* s 100)) "%"))
+                              (pres-apply-view!)))
+          ts-down-btn (doto (d/el :button {:class "pres-toolbar-btn pres-zoom-btn"
+                                           :title "Smaller text"}
+                                  (d/el :span {:class "pres-ts-icon pres-ts-icon--sm"} "A"))
+                        (.addEventListener "click"
+                          (fn [] (set-text-scale! (- (or (:text-scale @pres-state) 1.0) 0.1)))))
+          ts-up-btn   (doto (d/el :button {:class "pres-toolbar-btn pres-zoom-btn"
+                                           :title "Bigger text"}
+                                  (d/el :span {:class "pres-ts-icon pres-ts-icon--lg"} "A"))
+                        (.addEventListener "click"
+                          (fn [] (set-text-scale! (+ (or (:text-scale @pres-state) 1.0) 0.1)))))
+          ts-controls (d/el :div {:class "pres-zoom-controls"} ts-down-btn ts-slider ts-label ts-up-btn)
+          toolbar-el  (d/el :div {:class "pres-toolbar"} idx-btn zoom-controls ts-controls fs-btn max-btn sec-btn exit-btn)
+          ;; ── Highlight cursor ──
+          hl-cursor   (d/el :div {:class "pres-highlight-cursor"})
+          on-mouse    (fn [e]
+                        (.setProperty (.-style hl-cursor) "--hl-x" (str (.-clientX e) "px"))
+                        (.setProperty (.-style hl-cursor) "--hl-y" (str (.-clientY e) "px")))
+          ;; ── Game-engine style smooth pan + zoom (delta-time based) ──
+          held-keys      (atom #{})
+          ;; Mutable physics state in a single JS object for zero GC pressure
+          ^js phy        #js {:vx 0 :vy 0 :zv 0 :wx 0 :wy 0 :last 0
+                              :kx 0 :ky 0         ;; key-active flags (1/0) for release detection
+                              :spx 0 :spy 0       ;; spring offset position
+                              :svx 0 :svy 0}      ;; spring offset velocity
+          pan-speed      (atom 700)    ;; px/sec
+          zoom-speed     2.0           ;; zoom units/sec
+          ;; Release half-life (glide feel when you let go)
+          release        0.16          ;; 160ms — smooth glide
+          zoom-release   0.18
+          ;; Spring overshoot params (underdamped)
+          sp-stiff       400           ;; spring stiffness — higher = faster settle
+          sp-damp        18            ;; damping — lower = more bouncy
+          sp-impulse     0.045         ;; impulse factor on release (subtle)
+          wheel-half     0.30          ;; 300ms wheel momentum
+          snap-v         0.5
+          snap-z         0.001
+          snap-w         0.5
+          pan-raf        (atom nil)
+          pres-wheel-vel (atom nil)    ;; only for teardown reset
+          pan-tick       (fn pan-tick [now]
+                           (let [prev  (.-last phy)
+                                 raw   (if (pos? prev) (- now prev) 16.67)
+                                 dt    (/ (min raw 50) 1000.0)  ;; seconds, capped at 50ms
+                                 _     (set! (.-last phy) now)
+                                 spd   @pan-speed
+                                 keys  @held-keys
+                                 ;; Target velocity from held keys (px/sec)
+                                 tx    (* (+ (if (contains? keys "h") 1 0)
+                                             (if (contains? keys "l") -1 0)) spd)
+                                 ty    (* (+ (if (contains? keys "k") 1 0)
+                                             (if (contains? keys "j") -1 0)) spd)
+                                 tz    (* (+ (if (contains? keys "u") 1 0)
+                                             (if (contains? keys "m") -1 0)) zoom-speed)
+                                 ;; Instant attack, smooth release: key held = full speed NOW
+                                 decay  (js/Math.exp (/ (- dt) release))
+                                 zdecay (js/Math.exp (/ (- dt) zoom-release))
+                                 old-vx (.-vx phy)
+                                 old-vy (.-vy phy)
+                                 vx     (if (not= tx 0) tx (* old-vx decay))
+                                 vy     (if (not= ty 0) ty (* old-vy decay))
+                                 zv     (if (not= tz 0) tz (* (.-zv phy) zdecay))
+                                 ;; Snap to zero
+                                 vx     (if (< (js/Math.abs vx) snap-v) 0 vx)
+                                 vy     (if (< (js/Math.abs vy) snap-v) 0 vy)
+                                 zv     (if (< (js/Math.abs zv) snap-z) 0 zv)
+                                 ;; Detect key release transition → fire spring impulse
+                                 _      (when (and (== tx 0) (== 1 (.-kx phy)))
+                                          (set! (.-svx phy) (+ (.-svx phy) (* old-vx sp-impulse))))
+                                 _      (when (and (== ty 0) (== 1 (.-ky phy)))
+                                          (set! (.-svy phy) (+ (.-svy phy) (* old-vy sp-impulse))))
+                                 _      (set! (.-kx phy) (if (not= tx 0) 1 0))
+                                 _      (set! (.-ky phy) (if (not= ty 0) 1 0))
+                                 ;; Spring overshoot physics (underdamped harmonic oscillator)
+                                 sp-ax  (- (- (* sp-stiff (.-spx phy))) (* sp-damp (.-svx phy)))
+                                 sp-ay  (- (- (* sp-stiff (.-spy phy))) (* sp-damp (.-svy phy)))
+                                 n-svx  (+ (.-svx phy) (* sp-ax dt))
+                                 n-svy  (+ (.-svy phy) (* sp-ay dt))
+                                 n-spx  (+ (.-spx phy) (* n-svx dt))
+                                 n-spy  (+ (.-spy phy) (* n-svy dt))
+                                 ;; Snap spring to zero when settled
+                                 n-spx  (if (and (< (js/Math.abs n-spx) 0.1) (< (js/Math.abs n-svx) 0.5)) 0 n-spx)
+                                 n-spy  (if (and (< (js/Math.abs n-spy) 0.1) (< (js/Math.abs n-svy) 0.5)) 0 n-spy)
+                                 n-svx  (if (== n-spx 0) 0 n-svx)
+                                 n-svy  (if (== n-spy 0) 0 n-svy)
+                                 ;; Reset spring when actively moving
+                                 n-spx  (if (not= tx 0) 0 n-spx)
+                                 n-spy  (if (not= ty 0) 0 n-spy)
+                                 n-svx  (if (not= tx 0) 0 n-svx)
+                                 n-svy  (if (not= ty 0) 0 n-svy)
+                                 ;; Wheel momentum — exponential decay
+                                 wfac   (js/Math.exp (/ (- dt) wheel-half))
+                                 wx     (* (.-wx phy) wfac)
+                                 wy     (* (.-wy phy) wfac)
+                                 wx     (if (< (js/Math.abs wx) snap-w) 0 wx)
+                                 wy     (if (< (js/Math.abs wy) snap-w) 0 wy)
+                                 ;; Displacement = base velocity + spring offset + wheel
+                                 dx     (+ (* vx dt) (- n-spx (.-spx phy)) (* wx dt))
+                                 dy     (+ (* vy dt) (- n-spy (.-spy phy)) (* wy dt))
+                                 dz     (* zv dt)
+                                 ;; Anything alive?
+                                 alive  (or (not= vx 0) (not= vy 0) (not= zv 0)
+                                            (not= wx 0) (not= wy 0)
+                                            (not= n-spx 0) (not= n-spy 0))]
+                             ;; Write back to mutable state
+                             (set! (.-vx phy) vx)
+                             (set! (.-vy phy) vy)
+                             (set! (.-zv phy) zv)
+                             (set! (.-wx phy) wx)
+                             (set! (.-wy phy) wy)
+                             (set! (.-spx phy) n-spx)
+                             (set! (.-spy phy) n-spy)
+                             (set! (.-svx phy) n-svx)
+                             (set! (.-svy phy) n-svy)
+                             ;; Apply position + zoom in one batch swap
+                             (let [moved (or (not= dx 0) (not= dy 0) (not= dz 0))]
+                               (when moved
+                                 (swap! pres-state
+                                   (fn [s]
+                                     (let [px (+ (or (:pan-x s) 0) dx)
+                                           py (+ (or (:pan-y s) 0) dy)
+                                           z  (max 0.25 (min 5.0 (+ (or (:zoom s) 1.0) dz)))]
+                                       (assoc s :pan-x px :pan-y py :zoom z))))
+                                 (when (not= dz 0)
+                                   (let [z (or (:zoom @pres-state) 1.0)]
+                                     (set! (.-value zoom-slider) (str (js/Math.round (* z 100))))
+                                     (set! (.-textContent zoom-label) (str (js/Math.round (* z 100)) "%"))))
+                                 (pres-apply-view!))
+                               ;; Keep looping while anything is moving
+                               (if (or (seq keys) alive)
+                                 (reset! pan-raf (js/requestAnimationFrame pan-tick))
+                                 (do (set! (.-last phy) 0)
+                                     (reset! pan-raf nil))))))
+          ensure-raf!    (fn [] (when-not @pan-raf
+                                  (set! (.-last phy) 0)
+                                  (reset! pan-raf (js/requestAnimationFrame pan-tick))))
           on-key      (fn [e]
-                        (case (.-key e)
-                          ("ArrowRight" "ArrowDown" " ")
-                          (do (.preventDefault e) (.stopPropagation e)
-                              (pres-show-page! (inc (:current @pres-state)) nil))
-                          ("ArrowLeft" "ArrowUp")
-                          (do (.preventDefault e) (.stopPropagation e)
-                              (pres-show-page! (dec (:current @pres-state)) :back))
-                          "Escape"
-                          (do (.preventDefault e) (.stopPropagation e)
-                              (exit-presentation!))
-                          ("+" "=")
-                          (do (.preventDefault e) (.stopPropagation e)
-                              (set-zoom! (+ (or (:zoom @pres-state) 1.0) 0.1)))
-                          "-"
-                          (do (.preventDefault e) (.stopPropagation e)
-                              (set-zoom! (- (or (:zoom @pres-state) 1.0) 0.1)))
-                          "0"
-                          (do (.preventDefault e) (.stopPropagation e)
-                              (set-zoom! 1.0))
-                          nil))
+                        (let [k (.-key e)]
+                          (if (#{"h" "j" "k" "l" "u" "m"} k)
+                            ;; Continuous keys — track held state for RAF loop
+                            (do (.preventDefault e) (.stopPropagation e)
+                                (when-not (contains? @held-keys k)
+                                  (swap! held-keys conj k)
+                                  (ensure-raf!)))
+                            (case k
+                              ("ArrowRight" "ArrowDown" " " "n")
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (pres-show-page! (inc (:current @pres-state)) nil))
+                              ("ArrowLeft" "ArrowUp" "p")
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (pres-show-page! (dec (:current @pres-state)) :back))
+                              ("Escape" "q")
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (exit-presentation!))
+                              ("+" "=")
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (set-zoom! (+ (or (:zoom @pres-state) 1.0) 0.1)))
+                              "-"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (set-zoom! (- (or (:zoom @pres-state) 1.0) 0.1)))
+                              "a"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (swap! pan-speed #(max 150 (- % 150))))
+                              "s"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (swap! pan-speed #(min 2000 (+ % 150))))
+                              "0"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (set-zoom! 1.0)
+                                  (set-text-scale! 1.0)
+                                  (reset! pan-speed 700)
+                                  (swap! pres-state assoc :pan-x 0 :pan-y 0)
+                                  (set! (.-vx phy) 0) (set! (.-vy phy) 0)
+                                  (set! (.-zv phy) 0) (set! (.-wx phy) 0) (set! (.-wy phy) 0)
+                                  (set! (.-spx phy) 0) (set! (.-spy phy) 0)
+                                  (set! (.-svx phy) 0) (set! (.-svy phy) 0)
+                                  (pres-apply-view!))
+                              "]"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (set-text-scale! (+ (or (:text-scale @pres-state) 1.0) 0.1)))
+                              "["
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (set-text-scale! (- (or (:text-scale @pres-state) 1.0) 0.1)))
+                              "r"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (set-zoom! 1.0)
+                                  (set-text-scale! 1.0)
+                                  (swap! pres-state assoc :pan-x 0 :pan-y 0)
+                                  (set! (.-vx phy) 0) (set! (.-vy phy) 0)
+                                  (set! (.-zv phy) 0) (set! (.-wx phy) 0) (set! (.-wy phy) 0)
+                                  (set! (.-spx phy) 0) (set! (.-spy phy) 0)
+                                  (set! (.-svx phy) 0) (set! (.-svy phy) 0)
+                                  (pres-apply-view!))
+                              "z"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (.toggle (.-classList hl-cursor) "pres-highlight-cursor--active"))
+                              "?"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (toggle-shortcuts! pres-shortcuts))
+                              "i"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (toggle!))
+                              "f"
+                              (do (.preventDefault e) (.stopPropagation e)
+                                  (pres-toggle-fullscreen! overlay))
+                              nil))))
+          on-keyup    (fn [e]
+                        (let [k (.-key e)]
+                          (when (#{"h" "j" "k" "l" "u" "m"} k)
+                            (swap! held-keys disj k))))
+          on-wheel    (fn [e]
+                        (.preventDefault e)
+                        (let [dx (.-deltaX e)
+                              dy (.-deltaY e)
+                              ;; Convert wheel deltas to px/sec impulse
+                              ;; Trackpad gives small frequent deltas; mouse gives large infrequent ones
+                              impulse 12]
+                          (set! (.-wx phy) (- (.-wx phy) (* dx impulse)))
+                          (set! (.-wy phy) (- (.-wy phy) (* dy impulse)))
+                          (ensure-raf!)))
           on-fschange (fn []
                         (when (and (nil? (.-fullscreenElement js/document))
                                    (nil? (.-webkitFullscreenElement js/document)))
-                          (fit-pres-scale!)))
-          on-resize   (fn [] (fit-pres-scale!))]
+                          (pres-apply-view!)))
+          on-resize   (fn [] (pres-apply-view!))]
       (.appendChild overlay panel)
       (.appendChild overlay scrim)
       (.appendChild overlay toolbar-el)
       (.appendChild overlay section-bar)
+      (.appendChild overlay hl-cursor)
       ;; Store state
       (reset! pres-state {:overlay overlay :viewport viewport :indicator indicator
                           :slides slide-els :page-ids page-ids :n n :current -1
                           :slide->section slide->section :entry-els entry-els
                           :section-dots section-dots :current-section nil
                           :zoom (or (pres-restore-zoom) 1.0)
-                          :fs-btn fs-btn :max-btn max-btn :on-key on-key :on-fschange on-fschange
-                          :on-resize on-resize})
-      ;; Sync zoom UI with restored value
-      (let [z (or (:zoom @pres-state) 1.0)]
+                          :text-scale (or (pres-restore-text-scale) 1.0)
+                          :fs-btn fs-btn :max-btn max-btn
+                          :on-key on-key :on-keyup on-keyup :on-mouse on-mouse :on-wheel on-wheel
+                          :held-keys held-keys :phy phy :pan-raf pan-raf
+                          :on-fschange on-fschange :on-resize on-resize})
+      ;; Sync zoom & text-scale UI with restored values
+      (let [z (or (:zoom @pres-state) 1.0)
+            ts (or (:text-scale @pres-state) 1.0)]
         (set! (.-value zoom-slider) (str (js/Math.round (* z 100))))
-        (set! (.-textContent zoom-label) (str (js/Math.round (* z 100)) "%")))
+        (set! (.-textContent zoom-label) (str (js/Math.round (* z 100)) "%"))
+        (set! (.-value ts-slider) (str (js/Math.round (* ts 100))))
+        (set! (.-textContent ts-label) (str "A " (js/Math.round (* ts 100)) "%")))
       ;; Compute scale
-      (fit-pres-scale!)
+      (pres-apply-view!)
       ;; Add presenting class (hides document)
       (.add (.-classList (.-documentElement js/document)) "presenting")
       ;; Register listeners
       (.addEventListener js/document "keydown" on-key true)
+      (.addEventListener js/document "keyup" on-keyup true)
       (.addEventListener js/document "fullscreenchange" on-fschange)
       (.addEventListener js/document "webkitfullscreenchange" on-fschange)
       (.addEventListener js/window "resize" on-resize)
+      (.addEventListener js/window "mousemove" on-mouse)
+      (.addEventListener js/document "wheel" on-wheel #js {:passive false})
       ;; Show starting slide — use same path as navigation so it looks like the rest
       (pres-show-page! start nil)
       ;; Tag slide landmarks for View Transition matching
@@ -751,14 +1055,24 @@
 (defn- teardown-presentation!
   "Core teardown: remove listeners, clear state. Returns [overlay target-page-id]."
   []
-  (when-let [{:keys [overlay on-key on-fschange on-resize page-ids current slides]} @pres-state]
+  (when-let [{:keys [overlay on-key on-keyup on-mouse on-wheel on-fschange on-resize
+                     held-keys ^js phy pan-raf page-ids current slides]} @pres-state]
     (let [target-page-id (nth page-ids (or current 0) nil)
           active-slide   (nth slides (or current 0) nil)]
+      ;; Cancel pan animation
+      (when-let [raf @pan-raf] (js/cancelAnimationFrame raf))
+      (when held-keys (reset! held-keys #{}))
       ;; Remove listeners
       (.removeEventListener js/document "keydown" on-key true)
+      (.removeEventListener js/document "keyup" on-keyup true)
       (.removeEventListener js/document "fullscreenchange" on-fschange)
       (.removeEventListener js/document "webkitfullscreenchange" on-fschange)
       (.removeEventListener js/window "resize" on-resize)
+      (.removeEventListener js/window "mousemove" on-mouse)
+      (when on-wheel (.removeEventListener js/document "wheel" on-wheel))
+      (when phy
+        (set! (.-vx phy) 0) (set! (.-vy phy) 0)
+        (set! (.-zv phy) 0) (set! (.-wx phy) 0) (set! (.-wy phy) 0))
       ;; Exit fullscreen if active
       (when (or (.-fullscreenElement js/document) (.-webkitFullscreenElement js/document))
         (if (.-exitFullscreen js/document)
@@ -930,13 +1244,14 @@
         prev-btn   (d/el :button {:class "nav-btn nav-prev"} (d/ic "chevron-left" ""))
         next-btn   (d/el :button {:class "nav-btn nav-next"} (d/ic "chevron-right" ""))
         init-idx   (or (get id->spread (current-hash)) 0)
-        go!        (build-navigator spreads spread-ids dots indicator prev-btn next-btn init-idx)
-        _          (reset! current-nav {:go! go! :id->spread id->spread :spread-ids spread-ids
+        {:keys [go! nav-state]} (build-navigator spreads spread-ids dots indicator prev-btn next-btn init-idx)
+        {:keys [overlay panel toggle!]} (build-toc-panel go! id->spread toc-groups)
+        _          (reset! current-nav {:go! go! :nav-state nav-state :id->spread id->spread :spread-ids spread-ids
+                                        :toggle-toc! toggle!
                                         :spread->pages (into {} (map-indexed
                                                         (fn [si group]
                                                           [si (mapv #(.-id %) (filter some? group))])
-                                                        groups))})
-        {:keys [overlay panel toggle!]} (build-toc-panel go! id->spread toc-groups)]
+                                                        groups))})]
     (doseq [s spreads] (.remove (.-classList s) "active"))
     (doseq [d dots] (.remove (.-classList d) "active"))
     (.add (.-classList (nth spreads init-idx)) "active")
@@ -1130,6 +1445,188 @@
           (js/requestAnimationFrame
             (fn []
               (hide-boot-loader!)))))
+      ;; Document-mode: game-engine delta-time physics (matches pres mode)
+      (let [doc-held      (atom #{})
+            ^js doc-phy   #js {:vx 0 :vy 0 :zv 0 :wx 0 :wy 0 :last 0
+                               :kx 0 :ky 0 :spx 0 :spy 0 :svx 0 :svy 0}
+            doc-pan-raf   (atom nil)
+            doc-pan-speed (atom 700)
+            doc-zoom-spd  2.0
+            doc-release   0.16
+            doc-zr        0.18
+            doc-wh        0.30
+            doc-snap-v    0.5
+            doc-snap-z    0.001
+            doc-snap-w    0.5
+            dsp-stiff     400
+            dsp-damp      18
+            dsp-impulse   0.045
+            doc-tick     (fn doc-tick [now]
+                           (let [prev   (.-last doc-phy)
+                                 raw    (if (pos? prev) (- now prev) 16.67)
+                                 dt     (/ (min raw 50) 1000.0)
+                                 _      (set! (.-last doc-phy) now)
+                                 spd    @doc-pan-speed
+                                 keys   @doc-held
+                                 tx     (* (+ (if (contains? keys "h") 1 0)
+                                              (if (contains? keys "l") -1 0)) spd)
+                                 ty     (* (+ (if (contains? keys "k") 1 0)
+                                              (if (contains? keys "j") -1 0)) spd)
+                                 tz     (* (+ (if (contains? keys "u") 1 0)
+                                              (if (contains? keys "m") -1 0)) doc-zoom-spd)
+                                 decay  (js/Math.exp (/ (- dt) doc-release))
+                                 zdecay (js/Math.exp (/ (- dt) doc-zr))
+                                 old-vx (.-vx doc-phy)
+                                 old-vy (.-vy doc-phy)
+                                 vx     (if (not= tx 0) tx (* old-vx decay))
+                                 vy     (if (not= ty 0) ty (* old-vy decay))
+                                 zv     (if (not= tz 0) tz (* (.-zv doc-phy) zdecay))
+                                 vx     (if (< (js/Math.abs vx) doc-snap-v) 0 vx)
+                                 vy     (if (< (js/Math.abs vy) doc-snap-v) 0 vy)
+                                 zv     (if (< (js/Math.abs zv) doc-snap-z) 0 zv)
+                                 ;; Release detection → spring impulse
+                                 _      (when (and (== tx 0) (== 1 (.-kx doc-phy)))
+                                          (set! (.-svx doc-phy) (+ (.-svx doc-phy) (* old-vx dsp-impulse))))
+                                 _      (when (and (== ty 0) (== 1 (.-ky doc-phy)))
+                                          (set! (.-svy doc-phy) (+ (.-svy doc-phy) (* old-vy dsp-impulse))))
+                                 _      (set! (.-kx doc-phy) (if (not= tx 0) 1 0))
+                                 _      (set! (.-ky doc-phy) (if (not= ty 0) 1 0))
+                                 ;; Spring overshoot
+                                 sp-ax  (- (- (* dsp-stiff (.-spx doc-phy))) (* dsp-damp (.-svx doc-phy)))
+                                 sp-ay  (- (- (* dsp-stiff (.-spy doc-phy))) (* dsp-damp (.-svy doc-phy)))
+                                 n-svx  (+ (.-svx doc-phy) (* sp-ax dt))
+                                 n-svy  (+ (.-svy doc-phy) (* sp-ay dt))
+                                 n-spx  (+ (.-spx doc-phy) (* n-svx dt))
+                                 n-spy  (+ (.-spy doc-phy) (* n-svy dt))
+                                 n-spx  (if (and (< (js/Math.abs n-spx) 0.1) (< (js/Math.abs n-svx) 0.5)) 0 n-spx)
+                                 n-spy  (if (and (< (js/Math.abs n-spy) 0.1) (< (js/Math.abs n-svy) 0.5)) 0 n-spy)
+                                 n-svx  (if (== n-spx 0) 0 n-svx)
+                                 n-svy  (if (== n-spy 0) 0 n-svy)
+                                 n-spx  (if (not= tx 0) 0 n-spx)
+                                 n-spy  (if (not= ty 0) 0 n-spy)
+                                 n-svx  (if (not= tx 0) 0 n-svx)
+                                 n-svy  (if (not= ty 0) 0 n-svy)
+                                 ;; Wheel
+                                 wfac   (js/Math.exp (/ (- dt) doc-wh))
+                                 wx     (* (.-wx doc-phy) wfac)
+                                 wy     (* (.-wy doc-phy) wfac)
+                                 wx     (if (< (js/Math.abs wx) doc-snap-w) 0 wx)
+                                 wy     (if (< (js/Math.abs wy) doc-snap-w) 0 wy)
+                                 ;; Displacement
+                                 dx     (+ (* vx dt) (- n-spx (.-spx doc-phy)) (* wx dt))
+                                 dy     (+ (* vy dt) (- n-spy (.-spy doc-phy)) (* wy dt))
+                                 dz     (* zv dt)
+                                 alive  (or (not= vx 0) (not= vy 0) (not= zv 0)
+                                            (not= wx 0) (not= wy 0)
+                                            (not= n-spx 0) (not= n-spy 0))]
+                             (set! (.-vx doc-phy) vx) (set! (.-vy doc-phy) vy)
+                             (set! (.-zv doc-phy) zv) (set! (.-wx doc-phy) wx) (set! (.-wy doc-phy) wy)
+                             (set! (.-spx doc-phy) n-spx) (set! (.-spy doc-phy) n-spy)
+                             (set! (.-svx doc-phy) n-svx) (set! (.-svy doc-phy) n-svy)
+                             (let [moved (or (not= dx 0) (not= dy 0) (not= dz 0))]
+                               (when moved
+                                 (swap! doc-view
+                                   (fn [dv]
+                                     (let [px (+ (or (:pan-x dv) 0) dx)
+                                           py (+ (or (:pan-y dv) 0) dy)
+                                           z  (max 0.25 (min 5.0 (+ (or (:zoom dv) 1.0) dz)))]
+                                       (assoc dv :pan-x px :pan-y py :zoom z))))
+                                 (doc-apply-view!))
+                               (if (or (seq keys) alive)
+                                 (reset! doc-pan-raf (js/requestAnimationFrame doc-tick))
+                                 (do (set! (.-last doc-phy) 0)
+                                     (reset! doc-pan-raf nil))))))
+            ensure-doc-raf! (fn [] (when-not @doc-pan-raf
+                                     (set! (.-last doc-phy) 0)
+                                     (reset! doc-pan-raf (js/requestAnimationFrame doc-tick))))]
+        (.addEventListener js/document "keydown"
+          (fn [e]
+            (when-not @pres-state
+              (when (not (.closest (.-target e) "input, textarea, select"))
+                (let [k (.-key e)]
+                  (if (#{"h" "j" "k" "l" "u" "m"} k)
+                    (do (.preventDefault e)
+                        (when-not (contains? @doc-held k)
+                          (swap! doc-held conj k)
+                          (ensure-doc-raf!)))
+                    (let [dv @doc-view
+                          z  (or (:zoom dv) 1.0)
+                          ts (or (:text-scale dv) 1.0)]
+                      (case k
+                        ("+" "=")
+                        (do (.preventDefault e)
+                            (swap! doc-view assoc :zoom (min 5.0 (+ z 0.1)))
+                            (doc-apply-view!))
+                        "-"
+                        (do (.preventDefault e)
+                            (swap! doc-view assoc :zoom (max 0.25 (- z 0.1)))
+                            (doc-apply-view!))
+                        "]"
+                        (do (.preventDefault e)
+                            (swap! doc-view assoc :text-scale (min 5.0 (+ ts 0.1)))
+                            (doc-apply-view!))
+                        "["
+                        (do (.preventDefault e)
+                            (swap! doc-view assoc :text-scale (max 0.5 (- ts 0.1)))
+                            (doc-apply-view!))
+                        "a"
+                        (do (.preventDefault e)
+                            (swap! doc-pan-speed #(max 150 (- % 150))))
+                        "s"
+                        (do (.preventDefault e)
+                            (swap! doc-pan-speed #(min 2000 (+ % 150))))
+                        "0"
+                        (do (.preventDefault e)
+                            (reset! doc-view {:zoom 1.0 :text-scale 1.0 :pan-x 0 :pan-y 0})
+                            (reset! doc-pan-speed 700)
+                            (set! (.-vx doc-phy) 0) (set! (.-vy doc-phy) 0)
+                            (set! (.-zv doc-phy) 0) (set! (.-wx doc-phy) 0) (set! (.-wy doc-phy) 0)
+                            (set! (.-spx doc-phy) 0) (set! (.-spy doc-phy) 0)
+                            (set! (.-svx doc-phy) 0) (set! (.-svy doc-phy) 0)
+                            (doc-apply-view!))
+                        "n"
+                        (do (.preventDefault e)
+                            (when-let [{:keys [go! nav-state]} @current-nav]
+                              (go! (inc @nav-state) nil)))
+                        "p"
+                        (do (.preventDefault e)
+                            (when-let [{:keys [go! nav-state]} @current-nav]
+                              (go! (dec @nav-state) "going-back")))
+                        "r"
+                        (do (.preventDefault e)
+                            (reset! doc-view {:zoom 1.0 :text-scale 1.0 :pan-x 0 :pan-y 0})
+                            (set! (.-vx doc-phy) 0) (set! (.-vy doc-phy) 0)
+                            (set! (.-zv doc-phy) 0) (set! (.-wx doc-phy) 0) (set! (.-wy doc-phy) 0)
+                            (set! (.-spx doc-phy) 0) (set! (.-spy doc-phy) 0)
+                            (set! (.-svx doc-phy) 0) (set! (.-svy doc-phy) 0)
+                            (reset! doc-pan-speed 700)
+                            (doc-apply-view!))
+                        "i"
+                        (do (.preventDefault e)
+                            (when-let [tog (:toggle-toc! @current-nav)] (tog)))
+                        "o"
+                        (do (.preventDefault e) (enter-presentation!))
+                        "?"
+                        (do (.preventDefault e) (toggle-shortcuts! doc-shortcuts))
+                        nil))))))))
+        (.addEventListener js/document "keyup"
+          (fn [e]
+            (when-not @pres-state
+              (let [k (.-key e)]
+                (when (#{"h" "j" "k" "l" "u" "m"} k)
+                  (swap! doc-held disj k))))))
+        ;; Mouse wheel with momentum (iPhone-like scroll feel)
+        (.addEventListener js/document "wheel"
+          (fn [e]
+            (when-not @pres-state
+              (.preventDefault e)
+              (let [dx (.-deltaX e)
+                    dy (.-deltaY e)
+                    impulse 12]
+                (set! (.-wx doc-phy) (- (.-wx doc-phy) (* dx impulse)))
+                (set! (.-wy doc-phy) (- (.-wy doc-phy) (* dy impulse)))
+                (ensure-doc-raf!))))
+          #js {:passive false}))
       (js/setTimeout preflight! 1500)
       ;; Restore presentation mode if it was active before refresh
       (when-let [saved-idx (pres-restore-session)]
