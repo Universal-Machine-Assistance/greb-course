@@ -4,6 +4,7 @@
             [ring.util.response :as response]
             [ring.middleware.file :refer [wrap-file]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [compojure.core :refer [GET POST DELETE defroutes]]
             [compojure.route :as route]
@@ -285,7 +286,8 @@
 (def handler (-> app
                  wrap-params
                  wrap-multipart-params
-                 (wrap-file-safe "public")))
+                 (wrap-file-safe "public")
+                 wrap-content-type))
 
 (defn -main [& _]
   (let [port (Integer/parseInt (or (System/getenv "PORT") "8020"))]
