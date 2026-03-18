@@ -468,9 +468,9 @@
 #introduccion, #problema, #tecnologias, #indice {
   --section-color: #00529b; --section-color-alt: #4a90d9;
 }
-/* Layout: #introduccion (page 4) */
-#introduccion .page-body { padding: .42in .5in .22in; gap: .75rem; }
-#introduccion .hygiene-hero { padding: .8rem .95rem; }
+/* Layout: #introduccion (page 4) — compact */
+#introduccion .page-body { padding: .38in .48in .18in; gap: .6rem; }
+#introduccion .hygiene-hero { padding: .7rem .85rem; }
 #introduccion .hero-product-photo { max-height: 200px; }
 #introduccion .mini-info-grid { gap: .45rem; }
 #introduccion .info-card {
@@ -502,13 +502,29 @@
   --section-color: #f39c12; --section-color-alt: #f7c948;
 }
 #agraquant .hygiene-hero, #agraquant .handwash-head { background: #d4850a; }
+/* Layout: #agraquant — compact hero page */
+#agraquant .page-body { padding: .35in .45in .18in; gap: .45rem; }
+#agraquant .hygiene-hero { padding: .6rem .8rem; }
+#agraquant .hygiene-main-title { font-size: 1.65rem; }
+#agraquant .hero-sub { font-size: .82rem; line-height: 1.4; }
+#agraquant .hero-product-photo { max-height: 150px; }
+#agraquant .chip-row { gap: .3rem; margin-top: .2rem; }
+#agraquant .mission-chip { padding: .28rem .48rem; font-size: .72rem; }
+#agraquant .hygiene-block { padding: .4rem .5rem; }
+#agraquant .hygiene-block + .hygiene-block { margin-top: .25rem; }
+#agraquant .mission-bar { margin: 0 0 .2rem; }
+#agraquant .mission-bar h2 { font-size: 1.05rem; }
+#agraquant .info-card { padding: .38rem .45rem; }
+#agraquant .info-card-title { font-size: .82rem; }
+#agraquant .info-card-text { font-size: .72rem; line-height: 1.38; }
+#agraquant .info-card-icon-wrap { width: 1.5rem; height: 1.5rem; }
 /* AgraVision — teal/cyan */
 #agravision, #agravision-historia, #agravision-specs, #agravision-producto {
   --section-color: #0097a7; --section-color-alt: #4dd0e1;
 }
 #agravision .hygiene-hero, #agravision .handwash-head { background: #00838f; }
-/* Layout: #agravision-producto */
-#agravision-producto .page-body { padding: .42in .52in .22in; gap: .7rem; }
+/* Layout: #agravision-producto — compact */
+#agravision-producto .page-body { padding: .38in .48in .18in; gap: .55rem; }
 #agravision-producto .hygiene-block { padding: .5rem .6rem; }
 #agravision-producto .hygiene-block + .hygiene-block { margin-top: .45rem; }
 #agravision-producto .info-card { padding: .45rem .55rem; }
@@ -521,16 +537,23 @@
   --section-color: #6a1b9a; --section-color-alt: #ab47bc;
 }
 #elisa .hygiene-hero, #elisa .handwash-head { background: #5c1590; }
-/* Layout: #elisa (ELISA fundamentals page) */
-#elisa .page-body { padding: .38in .5in .2in; gap: .6rem; }
-#elisa .hygiene-block { padding: .42rem .52rem; }
-#elisa .info-card { padding: .38rem .48rem; }
-#elisa .info-card-title { font-size: .8rem; }
-#elisa .info-card-text { font-size: .7rem; line-height: 1.35; }
-#elisa .mini-info-grid { gap: .4rem; }
-#elisa .highlight-bar { padding: .5rem .6rem; gap: .45rem; }
-#elisa .highlight-bar-title { font-size: .92rem; }
-#elisa .highlight-bar-list { font-size: .82rem; }
+/* Layout: #elisa (ELISA fundamentals page) — compact */
+#elisa .page-body { padding: .35in .45in .18in; gap: .45rem; }
+#elisa .hygiene-hero { padding: .6rem .8rem; }
+#elisa .hygiene-main-title { font-size: 1.65rem; }
+#elisa .hero-sub { font-size: .82rem; line-height: 1.4; }
+#elisa .hygiene-block { padding: .38rem .48rem; }
+#elisa .hygiene-block + .hygiene-block { margin-top: .25rem; }
+#elisa .mission-bar { margin: 0 0 .2rem; }
+#elisa .mission-bar h2 { font-size: 1.05rem; }
+#elisa .info-card { padding: .35rem .42rem; }
+#elisa .info-card-title { font-size: .78rem; }
+#elisa .info-card-text { font-size: .68rem; line-height: 1.35; }
+#elisa .info-card-icon-wrap { width: 1.45rem; height: 1.45rem; }
+#elisa .mini-info-grid { gap: .35rem; }
+#elisa .highlight-bar { padding: .42rem .5rem; gap: .38rem; }
+#elisa .highlight-bar-title { font-size: .88rem; }
+#elisa .highlight-bar-list { font-size: .78rem; }
 /* ABT Internacional — dark blue/navy */
 #por-que-abt, #abt-servicios, #contacto, #cierre, #flujo-analisis {
   --section-color: #1a3a5c; --section-color-alt: #2e6da4;
@@ -1173,31 +1196,31 @@
 .hygiene-page .mission-chip { padding: .32rem .55rem; font-size: .78rem; }
 .hygiene-page .chip-row { gap: .35rem; margin-top: .28rem; }
 
-/* ── Page 5 (tecnologias) — roomier layout ───────────────────── */
-#tecnologias .page-body { padding: .5in .55in .25in; gap: 1.1rem; }
-#tecnologias .hygiene-block { padding: .55rem .6rem; }
+/* ── Page 5 (tecnologias) — compact to prevent cross-env overflow ── */
+#tecnologias .page-body { padding: .42in .5in .2in; gap: .85rem; }
+#tecnologias .hygiene-block { padding: .45rem .55rem; }
 #tecnologias .info-card {
   border: 1px solid rgba(0, 82, 155, .12);
   background: linear-gradient(135deg, rgba(0, 82, 155, .04), #fff);
 }
-#tecnologias .hygiene-block + .hygiene-block { margin-top: .5rem; }
-#tecnologias .limpieza-header { padding: .45rem .6rem; }
-#tecnologias .limpieza-title-row .hygiene-main-title { font-size: 1.5rem; }
-#tecnologias .limpieza-hdr-icon { width: 1.7rem; height: 1.7rem; }
-#tecnologias .limpieza-title-row .hero-kicker { font-size: .78rem; }
-#tecnologias .mission-bar { margin: 0 0 .35rem; }
-#tecnologias .mission-bar h2 { font-size: 1.3rem; }
-#tecnologias .mission-bar > .icon { width: 1.5rem; height: 1.5rem; }
-#tecnologias .info-card { padding: .55rem .65rem; }
-#tecnologias .info-card-title { font-size: 1rem; }
-#tecnologias .info-card-text { font-size: .88rem; line-height: 1.45; }
-#tecnologias .info-card-icon-wrap { width: 2rem; height: 2rem; }
-#tecnologias .info-card-icon { width: 1.1rem; height: 1.1rem; }
-#tecnologias .mini-info-grid { gap: .5rem; }
-#tecnologias .timeline-year { font-size: .82rem; min-width: 3rem; height: 1.7rem; padding: 0 .42rem; }
-#tecnologias .timeline-title { font-size: .95rem; }
-#tecnologias .timeline-text { font-size: .82rem; line-height: 1.45; }
-#tecnologias .timeline-entry { padding-bottom: .55rem; }
+#tecnologias .hygiene-block + .hygiene-block { margin-top: .35rem; }
+#tecnologias .limpieza-header { padding: .38rem .55rem; }
+#tecnologias .limpieza-title-row .hygiene-main-title { font-size: 1.4rem; }
+#tecnologias .limpieza-hdr-icon { width: 1.6rem; height: 1.6rem; }
+#tecnologias .limpieza-title-row .hero-kicker { font-size: .72rem; }
+#tecnologias .mission-bar { margin: 0 0 .25rem; }
+#tecnologias .mission-bar h2 { font-size: 1.2rem; }
+#tecnologias .mission-bar > .icon { width: 1.4rem; height: 1.4rem; }
+#tecnologias .info-card { padding: .45rem .55rem; }
+#tecnologias .info-card-title { font-size: .95rem; }
+#tecnologias .info-card-text { font-size: .82rem; line-height: 1.4; }
+#tecnologias .info-card-icon-wrap { width: 1.85rem; height: 1.85rem; }
+#tecnologias .info-card-icon { width: 1rem; height: 1rem; }
+#tecnologias .mini-info-grid { gap: .4rem; }
+#tecnologias .timeline-year { font-size: .78rem; min-width: 2.8rem; height: 1.55rem; padding: 0 .38rem; }
+#tecnologias .timeline-title { font-size: .9rem; }
+#tecnologias .timeline-text { font-size: .78rem; line-height: 1.4; }
+#tecnologias .timeline-entry { padding-bottom: .42rem; }
 
 /* ── Page 12 (limpieza-operativa) — compact to prevent overflow ─ */
 #limpieza-operativa .page-body {
@@ -1629,6 +1652,23 @@
 #agrastrip .mini-info-grid,
 #elisa .mini-info-grid,
 #abt-servicios .mini-info-grid { grid-template-columns: repeat(3, 1fr); }
+
+/* ── Layout: #agrastrip — compact hero page to prevent overflow ── */
+#agrastrip .page-body { padding: .35in .45in .18in; gap: .45rem; }
+#agrastrip .hygiene-hero { padding: .6rem .8rem; }
+#agrastrip .hygiene-main-title { font-size: 1.65rem; }
+#agrastrip .hero-sub { font-size: .82rem; line-height: 1.4; }
+#agrastrip .hero-product-photo { max-height: 150px; }
+#agrastrip .chip-row { gap: .3rem; margin-top: .2rem; }
+#agrastrip .mission-chip { padding: .28rem .48rem; font-size: .72rem; }
+#agrastrip .hygiene-block { padding: .4rem .5rem; }
+#agrastrip .hygiene-block + .hygiene-block { margin-top: .25rem; }
+#agrastrip .mission-bar { margin: 0 0 .2rem; }
+#agrastrip .mission-bar h2 { font-size: 1.05rem; }
+#agrastrip .info-card { padding: .38rem .45rem; }
+#agrastrip .info-card-title { font-size: .82rem; }
+#agrastrip .info-card-text { font-size: .72rem; line-height: 1.38; }
+#agrastrip .info-card-icon-wrap { width: 1.5rem; height: 1.5rem; }
 
 /* ── Layout: #agrastrip-historia ───────────────────────────── */
 #agrastrip-historia .page-body { padding: .35in .5in .2in; gap: .55rem; }
