@@ -68,7 +68,7 @@ h3, h4 { font-family: var(--font-head); font-weight: 600; }
   box-shadow: 0 1px 0 rgba(0,0,0,.35), 0 4px 20px rgba(0,0,0,.18);
 }
 
-.toolbar-logo { display: flex; align-items: center; text-decoration: none; margin-right: auto; }
+.toolbar-logo { display: flex; align-items: center; text-decoration: none; margin-right: auto; gap: .5rem; }
 .toolbar-logo img { height: 34px; width: auto; object-fit: contain; }
 
 /* Ghost nav button (Índice etc.) */
@@ -271,6 +271,59 @@ h3, h4 { font-family: var(--font-head); font-weight: 600; }
   font-family: var(--font-head); font-size: .6rem; font-weight: 600;
   color: var(--brand-primary); letter-spacing: .04em;
 }
+
+/* ── Catalog card wrap & edit ──────────────────────────────── */
+.catalog-card-wrap { position: relative; }
+
+.catalog-card {
+  border-top: 3px solid var(--card-primary, var(--brand-primary));
+}
+
+.catalog-edit-btn {
+  position: absolute; top: .5rem; right: .5rem;
+  display: flex; align-items: center; justify-content: center;
+  width: 1.8rem; height: 1.8rem;
+  background: rgba(0,0,0,.06); border: 1px solid rgba(0,0,0,.08);
+  border-radius: 50%; cursor: pointer; color: var(--ink-3);
+  transition: background .15s, color .15s;
+  z-index: 2;
+}
+.catalog-edit-btn:hover { background: rgba(0,0,0,.12); color: var(--ink); }
+.catalog-edit-btn .icon { width: .85rem; height: .85rem; }
+
+.edit-host { overflow: hidden; }
+
+.edit-panel {
+  background: var(--page); border: 1px solid rgba(0,0,0,.1);
+  border-radius: 0 0 var(--r) var(--r);
+  padding: .75rem 1rem; display: flex; flex-direction: column; gap: .5rem;
+  box-shadow: var(--shadow-sm);
+}
+.edit-row {
+  display: flex; align-items: center; gap: .5rem;
+}
+.edit-label {
+  font-family: var(--font-head); font-size: .7rem; font-weight: 600;
+  color: var(--ink-2); min-width: 5.5rem;
+}
+.edit-input {
+  flex: 1; padding: .3rem .5rem; font-size: .75rem;
+  border: 1px solid rgba(0,0,0,.15); border-radius: var(--r-sm);
+  font-family: var(--font-body);
+}
+.edit-color {
+  width: 2.2rem; height: 1.6rem; padding: 0; border: 1px solid rgba(0,0,0,.15);
+  border-radius: var(--r-sm); cursor: pointer; background: none;
+}
+.edit-save-btn {
+  align-self: flex-end; display: inline-flex; align-items: center; gap: .3rem;
+  padding: .35rem .8rem; font-family: var(--font-head); font-size: .75rem;
+  font-weight: 600; cursor: pointer; color: #fff;
+  background: var(--brand-primary); border: none; border-radius: var(--r-sm);
+  transition: background .15s;
+}
+.edit-save-btn:hover { background: #cc4a1e; }
+.edit-save-btn .icon { width: .8rem; height: .8rem; }
 
 @media print {
   /* Prevent backdrop-filter from breaking print rendering */
