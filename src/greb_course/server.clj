@@ -65,10 +65,22 @@
            (serve-image org slug path)
            (response/not-found "Not found"))))
 
-  ;; Static assets (css, js)
+  ;; Static assets (css, js) — served by wrap-file below
   (route/not-found "Not found"))
 
-(def handler (wrap-file app "public" {:index-files? true}))
+(defn wrap-file-safe
+  "Serve static files from dir, but only for paths that don't match course routes."
+  [handler dir]
+  (let [file-handler (wrap-file handler dir)]
+    (fn [req]
+      (let [uri (:uri req)]
+        ;; Skip static file lookup for course paths (two segments) to avoid
+        ;; empty public subdirectories shadowing the index-response route.
+        (if (re-matches #"/[^/]+/[^/]+/?" uri)
+          (handler req)
+          (file-handler req))))))
+
+(def handler (wrap-file-safe app "public"))
 
 (defn -main [& _]
   (let [port (Integer/parseInt (or (System/getenv "PORT") "8020"))]
