@@ -157,12 +157,31 @@
     :color "orange"
     :title "Riesgo microbiológico"
     :sub   "Puede provocar enfermedades o intoxicación alimentaria por bacterias o toxinas de bacterias como resultado de:"
+    :enhanced? true
     :items [{:label "Malas condiciones de almacenamiento o transporte"          :icon "package-x"}
             {:label "Exceder la fecha de caducidad"                             :icon "calendar-x"}
             {:label "Romper la cadena de frío"                                  :icon "snowflake"}
             {:label "Falta de higiene en el servicio"                           :icon "hand"}
             {:label "Falta de limpieza (instalaciones, equipos y utensilios)"   :icon "sparkles"}
-            {:label "Malas prácticas de higiene del personal"                   :icon "user-x"}]}
+            {:label "Malas prácticas de higiene del personal"                   :icon "user-x"}]
+    :danger-zone {:title "Zona de peligro"
+                  :ranges [{:label "Ebullición" :temp "100°C" :zone "safe" :icon "flame"}
+                           {:label "Zona segura caliente" :temp "> 60°C" :zone "safe" :icon "check-circle"}
+                           {:label "ZONA DE PELIGRO" :temp "5°C – 60°C" :zone "danger" :icon "alert-triangle"}
+                           {:label "Refrigeración" :temp "0°C – 5°C" :zone "safe" :icon "thermometer-snowflake"}
+                           {:label "Congelación" :temp "< -18°C" :zone "safe" :icon "snowflake"}]
+                  :note "Las bacterias se multiplican cada 20 minutos entre 5°C y 60°C"}
+    :bacteria [{:name "Salmonella" :icon "bug" :source "Huevos, carnes, lácteos" :effect "Gastroenteritis severa"}
+               {:name "Listeria" :icon "bug" :source "Lácteos no pasteurizados" :effect "Meningitis, abortos"}
+               {:name "E. coli" :icon "bug" :source "Agua contaminada, carnes" :effect "Diarrea hemorrágica"}
+               {:name "S. aureus" :icon "bug" :source "Piel, nariz, heridas" :effect "Vómitos, diarrea"}]
+    :stats [{:value "600M" :label "personas enferman/año (OMS)"}
+            {:value "420K" :label "muertes/año por ETA"}
+            {:value "x2" :label "bacterias cada 20 min en zona de peligro"}]
+    :prevention [{:icon "snowflake" :title "Cadena de frío" :text "Mantener helados ≤ -18°C"}
+                 {:icon "hand" :title "Lavado de manos" :text "Cada 30 min y entre tareas"}
+                 {:icon "spray-can" :title "Desinfección" :text "Superficies y utensilios"}
+                 {:icon "calendar-check" :title "Rotación PEPS" :text "Primero en entrar, primero en salir"}]}
    {:id "riesgo-fisico"
     :icon  "shield-off"
     :color "green"

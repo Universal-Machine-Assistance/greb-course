@@ -258,7 +258,13 @@
 
 /* ── Index page — safe margins ───────────────────────────────── */
 #indice .page-body { padding: .55in .6in .3in; }
-#indice h1 { font-size: 1.1rem; margin-bottom: .15rem; }
+#indice h1 {
+  width: 724px;
+  font-size: 40px;
+  font-weight: 900;
+  margin-top: 23px;
+  margin-bottom: 23px;
+}
 
 /* ── Index / Hierarchical TOC ────────────────────────────────── */
 .index-toc { list-style: none; display: flex; flex-direction: column; gap: 0; margin-top: .15rem; }
@@ -1362,6 +1368,99 @@
 .cause-icon { width: 1rem; height: 1rem; flex-shrink: 0; margin-top: .12rem; color: var(--risk-color); }
 .cause-icon svg { width: 100%; height: 100%; }
 .cause-label { flex: 1; }
+
+/* ── Enhanced microbiological risk page ─────────────────────── */
+.risk-enhanced .risk-micro-hero {
+  flex: 0 0 auto; padding: .3in .5in .25in;
+  display: flex; align-items: center; gap: .5rem;
+}
+.risk-enhanced .risk-hero-icon { width: 40px; height: 40px; }
+.risk-enhanced .risk-hero-title { font-size: 1.2rem; flex: 1; }
+.risk-enhanced .risk-micro-body { padding: .18in .4in .15in; gap: .25rem; }
+.risk-enhanced .risk-description { font-size: .62rem; padding-left: .45rem; border-left-width: 2px; margin-bottom: .1rem; }
+
+/* Stats row in hero */
+.risk-stats { display: flex; gap: .35rem; }
+.risk-stat {
+  display: flex; flex-direction: column; align-items: center;
+  background: rgba(255,255,255,.15); border-radius: var(--r-sm);
+  padding: .2rem .4rem; min-width: 3.5rem;
+}
+.risk-stat-val { font-family: var(--font-display); font-size: .85rem; font-weight: 900; color: #fff; line-height: 1; }
+.risk-stat-lbl { font-size: .38rem; color: rgba(255,255,255,.8); text-align: center; line-height: 1.2; margin-top: .1rem; }
+
+/* Two-column layout */
+.risk-micro-cols { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; flex: 1; min-height: 0; }
+.risk-micro-left, .risk-micro-right { display: flex; flex-direction: column; gap: .15rem; }
+
+/* Section headers */
+.risk-section-h {
+  display: flex; align-items: center; gap: .25rem;
+  font-family: var(--font-head); font-size: .52rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--risk-color);
+  margin: .08rem 0; padding-bottom: .08rem;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.rsh-icon { width: .6rem; height: .6rem; flex-shrink: 0; }
+.rsh-icon svg { width: 100%; height: 100%; }
+
+/* Danger zone thermometer */
+.dz-wrap { margin-bottom: .1rem; }
+.dz-bars { display: flex; flex-direction: column; gap: 1px; border-radius: var(--r-sm); overflow: hidden; }
+.dz-row {
+  display: flex; align-items: center; gap: .3rem;
+  padding: .18rem .35rem; font-size: .5rem; font-weight: 600;
+}
+.dz-safe { background: rgba(76,175,80,.12); color: #2e7d32; }
+.dz-danger {
+  background: linear-gradient(90deg, rgba(244,67,54,.18), rgba(255,152,0,.18));
+  color: #c62828; font-weight: 800;
+}
+.dz-icon { width: .55rem; height: .55rem; flex-shrink: 0; }
+.dz-icon svg { width: 100%; height: 100%; }
+.dz-temp { font-family: var(--font-head); font-weight: 800; min-width: 3.2rem; }
+.dz-label { flex: 1; }
+.dz-note { font-size: .42rem; color: var(--ink-3); font-style: italic; margin-top: .12rem; padding-left: .1rem; }
+
+/* Bacteria table */
+.bact-grid { font-size: .46rem; line-height: 1.4; }
+.bact-hdr {
+  display: grid; grid-template-columns: 1.8fr 2fr 2fr; gap: .2rem;
+  font-family: var(--font-head); font-weight: 700; font-size: .42rem;
+  text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3);
+  padding: .12rem .2rem; border-bottom: 1px solid rgba(0,0,0,.1);
+}
+.bact-row {
+  display: grid; grid-template-columns: 1.8fr 2fr 2fr; gap: .2rem;
+  padding: .14rem .2rem; border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.bact-name { font-weight: 700; color: var(--risk-color); font-style: italic; }
+.bact-src { color: var(--ink-2); }
+.bact-eff { color: var(--ink); }
+
+/* Compact causes list */
+.risk-causes-compact { display: flex; flex-direction: column; gap: 1px; }
+.cause-compact {
+  display: flex; align-items: center; gap: .25rem;
+  padding: .14rem .3rem; font-size: .5rem;
+  border-radius: var(--r-sm);
+  background: rgba(0,0,0,.025);
+}
+.cause-compact .cause-icon { width: .6rem; height: .6rem; }
+.cause-compact .cause-label { font-size: .5rem; }
+
+/* Prevention grid */
+.prev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .2rem; }
+.prev-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: .22rem .2rem; border-radius: var(--r-sm);
+  background: rgba(76,175,80,.06); border: 1px solid rgba(76,175,80,.15);
+  gap: .06rem;
+}
+.prev-icon { width: .7rem; height: .7rem; color: #2e7d32; }
+.prev-icon svg { width: 100%; height: 100%; }
+.prev-title { font-family: var(--font-head); font-size: .46rem; font-weight: 700; color: #2e7d32; }
+.prev-text { font-size: .4rem; color: var(--ink-2); line-height: 1.3; }
 
 /* ── Risk químico (composed with element assets) ──────────────── */
 .rq-page {

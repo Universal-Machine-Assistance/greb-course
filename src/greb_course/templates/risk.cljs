@@ -49,11 +49,90 @@
                       (quimico-example "Usar el mismo recipiente para limpieza" arrow-bowl)))
           (d/page-footer page-n))))
 
-(defn render [{:keys [id icon title sub items color images-for-sections]} page-num _theme]
+;; ── Enhanced microbiological risk page ─────────────────────────
+(defn- danger-zone-bar [{:keys [ranges note]}]
+  (d/el :div {:class "dz-wrap"}
+        (apply d/el :div {:class "dz-bars"}
+               (mapv (fn [{:keys [label temp zone icon]}]
+                       (d/el :div {:class (str "dz-row dz-" (name zone))}
+                             (d/ic icon "dz-icon")
+                             (d/el :span {:class "dz-temp"} temp)
+                             (d/el :span {:class "dz-label"} label)))
+                     ranges))
+        (d/el :p {:class "dz-note"} note)))
+
+(defn- bacteria-table [bacteria]
+  (d/el :div {:class "bact-grid"}
+        (d/el :div {:class "bact-hdr"}
+              (d/el :span {} "Bacteria")
+              (d/el :span {} "Fuente")
+              (d/el :span {} "Efecto"))
+        (apply d/el :div {}
+               (mapv (fn [{:keys [name source effect]}]
+                       (d/el :div {:class "bact-row"}
+                             (d/el :span {:class "bact-name"} name)
+                             (d/el :span {:class "bact-src"} source)
+                             (d/el :span {:class "bact-eff"} effect)))
+                     bacteria))))
+
+(defn- stat-badges [stats]
+  (apply d/el :div {:class "risk-stats"}
+         (mapv (fn [{:keys [value label]}]
+                 (d/el :div {:class "risk-stat"}
+                       (d/el :span {:class "risk-stat-val"} value)
+                       (d/el :span {:class "risk-stat-lbl"} label)))
+               stats)))
+
+(defn- prevention-row [items]
+  (apply d/el :div {:class "prev-grid"}
+         (mapv (fn [{:keys [icon title text]}]
+                 (d/el :div {:class "prev-card"}
+                       (d/ic icon "prev-icon")
+                       (d/el :strong {:class "prev-title"} title)
+                       (d/el :span {:class "prev-text"} text)))
+               items)))
+
+(defn- enhanced-micro-page [{:keys [id icon title sub color items
+                                     danger-zone bacteria stats prevention]} page-num]
+  (d/el :article {:class (str "page risk-page risk-enhanced risk-" color) :id id}
+        (d/el :div {:class "risk-page-hero risk-micro-hero"}
+              (d/ic icon "risk-hero-icon animate")
+              (d/el :h1 {:class "risk-hero-title animate d1"} title)
+              (stat-badges stats))
+        (d/el :div {:class "risk-page-body risk-micro-body"}
+              (d/el :p {:class "risk-description animate d1"} sub)
+              (d/el :div {:class "risk-micro-cols"}
+                    ;; Left column: danger zone + bacteria
+                    (d/el :div {:class "risk-micro-left"}
+                          (d/el :h3 {:class "risk-section-h"} (d/ic "thermometer" "rsh-icon") "Zona de peligro térmico")
+                          (danger-zone-bar danger-zone)
+                          (d/el :h3 {:class "risk-section-h"} (d/ic "microscope" "rsh-icon") "Bacterias comunes")
+                          (bacteria-table bacteria))
+                    ;; Right column: causes + prevention
+                    (d/el :div {:class "risk-micro-right"}
+                          (d/el :h3 {:class "risk-section-h"} (d/ic "alert-triangle" "rsh-icon") "Causas")
+                          (apply d/el :div {:class "risk-causes-compact"}
+                                 (mapv (fn [c]
+                                         (d/el :div {:class "cause-compact"}
+                                               (d/ic (:icon c) "cause-icon")
+                                               (d/el :span {:class "cause-label"} (:label c))))
+                                       items))
+                          (d/el :h3 {:class "risk-section-h"} (d/ic "shield-check" "rsh-icon") "Prevención")
+                          (prevention-row prevention))))
+        (d/page-footer page-num)))
+
+(defn render [{:keys [id icon title sub items color images-for-sections
+                       enhanced? danger-zone bacteria stats prevention] :as data} page-num _theme]
   (let [img-key (keyword (str/replace id "riesgo-" ""))
         imgs    (get images-for-sections img-key)]
-    (if (= id "riesgo-quimico")
+    (cond
+      enhanced?
+      (enhanced-micro-page data page-num)
+
+      (= id "riesgo-quimico")
       (quimico-page {:id id :icon icon :title title :sub sub :items items} imgs page-num)
+
+      :else
       (d/el :article {:class (str "page risk-page risk-" color) :id id}
             (d/el :div {:class "risk-page-hero"}
                   (d/ic icon "risk-hero-icon animate")
