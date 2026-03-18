@@ -5584,6 +5584,8 @@ html.ui-hidden .pres-section-bar {
   .reader--mobile .nav-prev { left: .3rem; }
   .reader--mobile .nav-next { right: .3rem; }
   .reader--mobile .nav-btn .icon { width: .8rem; height: .8rem; }
+  .spread-dots { bottom: .5rem; gap: 6px; }
+  .spread-dot { width: 10px; height: 10px; }
   .hygiene-hero,
   .handwash-head { flex-direction: column; }
   .hero-copy { max-width: none; }

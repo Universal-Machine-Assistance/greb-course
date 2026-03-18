@@ -118,6 +118,29 @@
     (doseq [[i dot] (map-indexed vector dots)]
       (.addEventListener dot "click"
         #(go! i (if (< i @state) "going-back" nil))))
+    ;; ── Swipe gestures (touch) ────────────────────────────────────
+    (let [touch-x (atom nil)
+          touch-y (atom nil)]
+      (.addEventListener js/document "touchstart"
+        (fn [e]
+          (let [t (aget (.-touches e) 0)]
+            (reset! touch-x (.-clientX t))
+            (reset! touch-y (.-clientY t))))
+        #js {:passive true})
+      (.addEventListener js/document "touchend"
+        (fn [e]
+          (when-let [x0 @touch-x]
+            (let [t  (aget (.-changedTouches e) 0)
+                  dx (- (.-clientX t) x0)
+                  dy (- (.-clientY t) @touch-y)]
+              (when (and (> (js/Math.abs dx) 48)
+                         (< (js/Math.abs dy) (js/Math.abs dx)))
+                (if (< dx 0)
+                  (go! (inc @state) nil)
+                  (go! (dec @state) "going-back")))
+              (reset! touch-x nil)
+              (reset! touch-y nil))))
+        #js {:passive true}))
     {:go! go! :nav-state state}))
 
 ;; ── Floating TOC panel ───────────────────────────────────────────
@@ -1178,13 +1201,14 @@
                           (fn [e]
                             (.preventDefault e)
                             (set! (.-location js/window) "/"))))
-        print-btn (doto (d/el :button {:class "toolbar-btn"}
+        mobile?   (mobile-layout?)
+        print-btn (doto (d/el :button {:class (str "toolbar-btn" (when mobile? " toolbar-desktop-only"))}
                               (d/ic "printer" "") (i18n/t :print))
                         (.addEventListener "click" #(.print js/window)))
         idx-btn   (doto (d/el :button {:class "toolbar-ghost-btn"}
                               (d/ic "list" "") (i18n/t :index))
                         (.addEventListener "click" toggle-toc!))
-        pres-btn  (doto (d/el :button {:class "toolbar-ghost-btn"}
+        pres-btn  (doto (d/el :button {:class (str "toolbar-ghost-btn" (when mobile? " toolbar-desktop-only"))}
                               (d/ic "play" "") (i18n/t :present))
                         (.addEventListener "click" #(enter-presentation!)))]
     (d/el :nav {:class "toolbar"}

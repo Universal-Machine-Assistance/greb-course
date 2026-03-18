@@ -384,4 +384,7 @@ html.presenting .toc-panel { z-index: 10006; }
   .catalog-grid { grid-template-columns: 1fr; }
   .toolbar-logo img { height: 22px; }
   .toolbar-logo span { display: none; }
+  .toolbar-desktop-only { display: none !important; }
+  .toolbar { padding: .4rem .75rem; gap: .4rem; }
+  .spread-indicator { font-size: .72rem; }
 }
