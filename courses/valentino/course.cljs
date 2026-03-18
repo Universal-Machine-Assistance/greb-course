@@ -33,13 +33,13 @@
          {:label "Limpieza y Desinfección"
           :entries (subvec c/index-entries 10 12)}
          {:label "Riesgos"
-          :entries (subvec c/index-entries 12 16)}
+          :entries (subvec c/index-entries 12 17)}
          {:label "Glosario"
-          :entries (into [(nth c/index-entries 16)]
-                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 18 i)})
+          :entries (into [(nth c/index-entries 17)]
+                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 19 i)})
                                       c/glosario-terms))}
          {:label "Créditos"
-          :entries [(nth c/index-entries 17)]}]
+          :entries [(nth c/index-entries 18)]}]
 
    :pages
    [;; 1. Cover
@@ -176,7 +176,16 @@
                      {:type :sched-grid :icon "calendar-check" :title "Frecuencia de limpieza"
                       :items c/limpieza-schedule}]}}
 
-    ;; 13-16. Risk pages
+    ;; 13. Section divider — Riesgos
+    {:template :full-image
+     :data {:id "riesgos-divider"
+            :img "ValenAgostoA40of49-scaled.jpg"
+            :alt "Helados Valentino"
+            :kicker "Seguridad Alimentaria"
+            :title "Cuatro Familias de Riesgo"
+            :subtitle "Microbiológico · Físico · Alérgenos · Químico — Los riesgos que todo operador debe conocer y prevenir."}}
+
+    ;; 14-17. Risk pages
     {:template :risk
      :data (assoc (nth c/risk-families 0) :images-for-sections c/images-for-sections)}
     {:template :risk
@@ -186,7 +195,7 @@
     {:template :risk
      :data (assoc (nth c/risk-families 3) :images-for-sections c/images-for-sections)}
 
-    ;; 17. Glossary index
+    ;; 18. Glossary index
     {:template :glossary-index
      :data {:title c/glosario-title
             :terms c/glosario-terms}}

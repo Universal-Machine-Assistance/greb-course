@@ -21,6 +21,7 @@ RUN clojure -P
 COPY src/ src/
 COPY courses/ courses/
 COPY public/ public/
+COPY images/ images/
 COPY --from=builder /app/public/js/ public/js/
 EXPOSE 8020
 CMD ["clojure", "-M:server"]

@@ -17,36 +17,38 @@
    {:id "recepcion-controles"      :label "Recepción — Bodega y Controles"  :page 10}
    {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 11}
    {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 12}
-   {:id "riesgo-microbiologico"    :label "Riesgo microbiológico"           :page 13}
-   {:id "riesgo-fisico"            :label "Riesgo físico"                   :page 14}
-   {:id "riesgo-alergenos"         :label "Riesgo de alérgenos"             :page 15}
-   {:id "riesgo-quimico"           :label "Riesgo químico"                  :page 16}
-   {:id "glosario"                 :label "Glosario de Términos"            :page 17}
-   {:id "creditos"                 :label "Créditos"                        :page 25}])
+   {:id "riesgos-divider"          :label "Familias de Riesgo"              :page 13}
+   {:id "riesgo-microbiologico"    :label "Riesgo microbiológico"           :page 14}
+   {:id "riesgo-fisico"            :label "Riesgo físico"                   :page 15}
+   {:id "riesgo-alergenos"         :label "Riesgo de alérgenos"             :page 16}
+   {:id "riesgo-quimico"           :label "Riesgo químico"                  :page 17}
+   {:id "glosario"                 :label "Glosario de Términos"            :page 18}
+   {:id "creditos"                 :label "Créditos"                        :page 26}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Guía de Higiene de los Alimentos para las Tiendas de Valentino")
 (def contenido-subtitle "Contenido")
 
 (def contenido-sections
-  [{:id "higiene-personal" :icon "users" :title "Higiene del Personal"
+  [{:id "higiene-personal" :img "Avatarconcajita-r8e3rxsx02z4c4hyb4rmlyenivr1o0bkifvg19u0ho.png" :title "Higiene del Personal"
     :items [{:label "Uniforme"           :ok true}
             {:label "Lavado de Manos"    :ok true}
             {:label "Guantes"            :ok true}
             {:label "Salud del personal" :ok true}]}
-   {:id "recepcion-almacenamiento" :icon "package-open" :title "Recepción y Almacenamiento"
+   {:id "recepcion-almacenamiento" :img "cadena_de_frio__0007_nevera_helados.png" :title "Recepción y Almacenamiento"
     :items [{:label "Recepción del producto"    :ok true}
             {:label "Mantenimiento"             :ok true}
             {:label "Vencimiento"               :ok true}
             {:label "Controles de Temperatura"  :ok true}]}
-   {:id "limpieza-desinfeccion" :icon "spray-can" :title "Limpieza y Desinfección"
+   {:id "limpieza-desinfeccion" :img "6Cajitaportada-r8e2ojegj31fojq9dlnllec34fy60qwm3ffquq93b0.png" :title "Limpieza y Desinfección"
     :items [{:label "Protocolo de superficies"  :ok true}
             {:label "Limpieza operativa"        :ok true}
             {:label "Utensilios de limpieza"    :ok true}]}
-   {:id "servicio-calidad" :icon "award" :title "Servicio y Calidad"
-    :items [{:label "Servicio al cliente"}
-            {:label "Mantenimiento"}
-            {:label "Quejas"}]}])
+   {:id "riesgo-microbiologico" :img "3-CajitaNuestrosSaboresMenu-r8e46cntsmpecvka5d1oubh3fkpnoxjehrzgy0gp30.png" :title "Riesgos Alimentarios"
+    :items [{:label "Microbiológico"  :ok true}
+            {:label "Físico"          :ok true}
+            {:label "Alérgenos"       :ok true}
+            {:label "Químico"         :ok true}]}])
 
 ;; ── Hygiene ─────────────────────────────────────────────────────
 (def higiene-personal-title "Higiene del Personal")

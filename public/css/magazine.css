@@ -195,35 +195,44 @@
 }
 
 /* ── Portada (magazine cover) ────────────────────────────────── */
-.portada-page { background: var(--page, #fffffe); }
-.portada-hero { position: relative; flex: 0 0 55%; overflow: hidden; }
+.portada-page { background: var(--page, #fffffe); position: relative; }
+.portada-hero { position: absolute; inset: 0; overflow: hidden; }
 .portada-hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .portada-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.7) 85%, var(--page, #fffffe) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,.92) 0%,
+    rgba(255,255,255,.7) 40%,
+    rgba(255,255,255,.15) 70%,
+    transparent 100%
+  );
 }
 .portada-body {
-  flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
-  padding: .35in .6in .2in;
-  background: linear-gradient(135deg, var(--page, #fffffe) 60%, rgba(0, 82, 155, .08));
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  padding: .6in .6in .4in;
+  height: 100%;
 }
 .portada-logos {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: .6rem;
+  margin-bottom: .8rem;
 }
 .portada-logo { height: 48px; width: auto; object-fit: contain; }
 .portada-logo-secondary { height: 36px; width: auto; object-fit: contain; }
 .portada-title {
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   color: var(--brand-primary, var(--ink));
   line-height: 1.1;
+  max-width: 65%;
 }
 .portada-sub {
-  font-family: var(--font-head); font-size: .8rem; font-weight: 400;
+  font-family: var(--font-head); font-size: .8rem; font-weight: 500;
   color: var(--ink-2);
-  margin-top: .35rem; letter-spacing: .03em;
+  margin-top: .5rem; letter-spacing: .03em;
+  max-width: 55%;
 }
 
 /* ── Contenido ───────────────────────────────────────────────── */
