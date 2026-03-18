@@ -94,21 +94,7 @@
              (response/content-type "text/plain"))
          (response/not-found (str "file not found: " file))))
 
-  ;; Course viewer — serve same index.html, JS handles routing
-  (GET "/:org/:slug/" [org slug] (index-response))
-  (GET "/:org/:slug" [org slug]
-       (response/redirect (str "/" org "/" slug "/")))
-
-  ;; Course images
-  (GET "/:org/:slug/images/*" [org slug :as req]
-       (let [uri  (:uri req)
-             pfx  (str "/" org "/" slug "/images/")
-             path (when (.startsWith uri pfx) (subs uri (count pfx)))]
-         (if (and path (not= path ""))
-           (serve-image org slug path)
-           (response/not-found "Not found"))))
-
-  ;; --- Image management API ---
+  ;; --- Image management API (before course routes to avoid /:org/:slug match) ---
 
   ;; List images: GET /api/images?subdir=courses/romerlabs
   (GET "/api/images" [subdir]
@@ -133,6 +119,20 @@
             (-> (response/response (str "{:ok true :deleted \"" name "\"}"))
                 (response/content-type "application/edn"))
             (response/not-found (str "{:ok false :error \"not found: " name "\"}"))))
+
+  ;; Course viewer — serve same index.html, JS handles routing
+  (GET "/:org/:slug/" [org slug] (index-response))
+  (GET "/:org/:slug" [org slug]
+       (response/redirect (str "/" org "/" slug "/")))
+
+  ;; Course images
+  (GET "/:org/:slug/images/*" [org slug :as req]
+       (let [uri  (:uri req)
+             pfx  (str "/" org "/" slug "/images/")
+             path (when (.startsWith uri pfx) (subs uri (count pfx)))]
+         (if (and path (not= path ""))
+           (serve-image org slug path)
+           (response/not-found "Not found"))))
 
   ;; Static assets (css, js) — served by wrap-file below
   (route/not-found "Not found"))
