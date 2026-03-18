@@ -3,6 +3,7 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
             [ring.middleware.file :refer [wrap-file]]
+            [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [compojure.core :refer [GET POST DELETE defroutes]]
             [compojure.route :as route]
@@ -150,6 +151,7 @@
           (file-handler req))))))
 
 (def handler (-> app
+                  wrap-params
                   wrap-multipart-params
                   (wrap-file-safe "public")))
 
