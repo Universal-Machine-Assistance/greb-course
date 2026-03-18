@@ -241,11 +241,24 @@ h3, h4 { font-family: var(--font-head); font-weight: 600; }
 }
 .catalog-card {
   display: flex; flex-direction: column; gap: .5rem;
-  padding: 1.2rem 1rem; border-radius: var(--r);
+  padding: 0; border-radius: var(--r);
   background: var(--page); border: 1px solid rgba(0,0,0,.08);
   box-shadow: var(--shadow-sm); text-decoration: none; color: var(--ink);
   transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+  overflow: hidden;
 }
+.catalog-card-img {
+  width: 100%; height: 160px; overflow: hidden;
+  background: linear-gradient(135deg, var(--card-primary, var(--brand-primary)), rgba(0,0,0,.15));
+}
+.catalog-card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.catalog-card-hdr, .catalog-card-title, .catalog-card-desc, .catalog-card-pages {
+  padding-left: 1rem; padding-right: 1rem;
+}
+.catalog-card-hdr { padding-top: .8rem; }
+.catalog-card-pages { padding-bottom: 1rem; }
 .catalog-card:hover {
   transform: translateY(-3px); box-shadow: var(--shadow-md);
 }

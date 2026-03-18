@@ -321,12 +321,21 @@
                                    primary    (get-override course-id :primary (:primary colors))
                                    icon-name  (get-override course-id :icon "book-open")
                                    path       (course-path course)
+                                   img-base   (or (:images-base theme)
+                                                  (str (course-path course) "images/"))
+                                   cover-img  (get-in (first (:pages course)) [:data :hero-img])
                                    card-wrap  (d/el :div {:class "catalog-card-wrap"})
                                    card-link  (d/el :a {:href path :class "catalog-card"})
                                    edit-host  (d/el :div {:class "edit-host"})
                                    edit-open? (atom false)]
                                ;; Color stripe at top of card
                                (.setProperty (.-style card-link) "--card-primary" primary)
+                               ;; Cover image
+                               (when cover-img
+                                 (.appendChild card-link
+                                   (d/el :div {:class "catalog-card-img"}
+                                         (d/el :img {:src (str img-base cover-img)
+                                                     :alt (or (:title meta-data) "")}))))
                                ;; Card content
                                (.appendChild card-link
                                  (d/el :div {:class "catalog-card-hdr"}
