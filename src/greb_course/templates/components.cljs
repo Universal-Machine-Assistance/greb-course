@@ -48,8 +48,9 @@
 
 (defn product-showcase [{:keys [img alt features]}]
   (d/el :div {:class "product-showcase"}
-        (d/el :div {:class "product-showcase-img-wrap"}
-              (d/src-img img (or alt "") "product-showcase-img"))
+        (when img
+          (d/el :div {:class "product-showcase-img-wrap"}
+                (d/src-img img (or alt "") "product-showcase-img")))
         (apply d/el :div {:class "product-showcase-features"}
                (mapv (fn [{:keys [icon label]}]
                        (d/el :div {:class "product-showcase-feat"}

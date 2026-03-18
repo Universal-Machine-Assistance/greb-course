@@ -153,19 +153,19 @@
 ;; ── AgraStrip ───────────────────────────────────────────────────
 (def agrastrip-nombre-desglose
   [{:title "Agra" :icon "wheat"
-    :text "Agricultura / agroindustria — diseñado para el sector agrícola, alimentario y de piensos."}
+    :text "Agricultura / agroindustria — diseñado para el sector agrícola, alimentario y de piensos. El prefijo refleja el enfoque de Romer Labs en la cadena alimentaria desde el campo hasta la mesa."}
    {:title "Strip" :icon "scan-line"
-    :text "Tira reactiva — formato de tira inmunocromatográfica donde la muestra fluye y genera líneas de color visibles."}])
+    :text "Tira reactiva — formato de tira inmunocromatográfica donde la muestra fluye por capilaridad y genera líneas de color visibles. El resultado se lee en minutos sin equipamiento complejo."}])
 
 (def agrastrip-historia-timeline
   [{:year "1990" :title "Flujo lateral (LFD)"
-    :text "Tiras inmunocromatográficas — la muestra migra por capilaridad y genera líneas de color visibles."}
+    :text "Tiras inmunocromatográficas — la muestra migra por capilaridad y genera líneas de color visibles. La tecnología LFD revoluciona el diagnóstico rápido en salud humana y veterinaria."}
    {:year "2000" :title "AgraStrip®"
-    :text "Romer Labs adapta la tecnología al sector alimentario. Kits para micotoxinas en minutos."}
+    :text "Romer Labs adapta la tecnología al sector alimentario. Kits para micotoxinas en minutos. Primera validación AOAC para tests de flujo lateral en alimentos."}
    {:year "2008" :title "AgraStrip Pro"
-    :text "Tiras cuantificables con AgraVision. Alérgenos, GMO y más micotoxinas."}
+    :text "Tiras cuantificables con AgraVision. Alérgenos, GMO y más micotoxinas. El sistema Pro permite resultados numéricos con trazabilidad digital."}
    {:year "HOY" :title "Plataforma completa"
-    :text "20+ analitos, 80+ países. Compatible con AgraVision Pro para lectura digital."}])
+    :text "20+ analitos, 80+ países. Compatible con AgraVision Pro para lectura digital. Estándar en recepción de materias primas y control de proceso en la industria alimentaria."}])
 
 (def agrastrip-catalogo
   [{:title "Micotoxinas" :icon "wheat"
@@ -509,10 +509,11 @@
    {:icon "users" :label "Clientes" :value "2K+"}])
 
 (def abt-servicios-grid
-  [{:img "abt-equipo-planta.png" :kicker "Equipo en planta" :title "Auditorías de sanidad e inocuidad"}
-   {:img "abt-capacitacion.png" :kicker "Capacitación in situ" :title "Formación técnica en planta"}
-   {:img "abt-calibracion.png" :kicker "Laboratorio" :title "Calibración y mantenimiento"}
-   {:img "abt-auditora.png" :kicker "Líneas de producción" :title "Control de calidad en planta"}])
+  [{:img "abt-auditor-planta.png" :kicker "Plantas de alimentos" :title "Auditorías de sanidad"}
+   {:img "abt-capacitacion.png" :kicker "Capacitación" :title "Formación en planta"}
+   {:img "abt-calibracion.png" :kicker "Laboratorio" :title "Calibración"}
+   {:img "abt-restaurante.jpeg" :kicker "Restaurantes" :title "Cocinas y foodservice"}
+   {:img "abt-centro-distribucion.png" :kicker "Distribución" :title "Centros de acopio"}])
 
 (def abt-contacto-regional
   [{:title "Honduras — Tegucigalpa" :icon "building-2"

@@ -53,7 +53,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .15;
+  opacity: .3;
 }
 .page--bg-img .page-body {
   position: relative;
@@ -239,7 +239,7 @@
 .toc-card:hover { filter: brightness(.95); }
 .toc-icon { color: var(--brand-primary, var(--val-orange)); width: 1.4rem; height: 1.4rem; }
 .toc-icon svg { width: 100%; height: 100%; }
-.toc-card-img-wrap { width: 100%; flex: 1; min-height: 6rem; overflow: hidden; border-radius: var(--r-sm); margin-bottom: .1rem; }
+.toc-card-img-wrap { width: 100%; height: 7rem; overflow: hidden; border-radius: var(--r-sm); margin-bottom: .1rem; }
 .toc-card-img { width: 100%; height: 100%; object-fit: cover; }
 .toc-card-title { font-family: var(--font-head); font-size: .775rem; font-weight: 700; line-height: 1.3; }
 .toc-items { list-style: none; display: flex; flex-direction: column; gap: .12rem; }
@@ -422,7 +422,7 @@
     linear-gradient(180deg, var(--paper, #fffdf8) 0%, var(--page, #fff) 100%);
 }
 /* hygiene-body inherits .page-body overflow-y:auto; just tune spacing */
-.hygiene-body { gap: .32rem; min-height: 0; }
+.hygiene-body { gap: .7rem; min-height: 0; overflow-wrap: break-word; }
 /* Gradient top stripe */
 .hygiene-body::before {
   content: "";
@@ -439,26 +439,69 @@
 #introduccion, #problema, #tecnologias, #indice {
   --section-color: #00529b; --section-color-alt: #4a90d9;
 }
+/* Layout: #introduccion (page 4) */
+#introduccion .page-body { padding: .42in .5in .22in; gap: .75rem; }
+#introduccion .hygiene-hero { padding: .8rem .95rem; }
+#introduccion .hero-product-photo { max-height: 200px; }
+#introduccion .mini-info-grid { gap: .45rem; }
+#introduccion .info-card {
+  background: linear-gradient(135deg, rgba(0, 82, 155, .06), #fff);
+  border: 1px solid rgba(0, 82, 155, .12);
+}
+#introduccion .stat-card {
+  background: linear-gradient(135deg, rgba(0, 82, 155, .05), #fff);
+  border: 1px solid rgba(0, 82, 155, .1);
+}
+#introduccion .stat-grid { gap: .4rem; }
+#introduccion .highlight-bar {
+  background: linear-gradient(135deg, rgba(0, 82, 155, .08), rgba(255,255,255,.95));
+  border: 1px solid rgba(0, 82, 155, .15);
+}
 /* AgraStrip — green */
 #agrastrip, #agrastrip-historia, #agrastrip-producto {
   --section-color: #7ab648; --section-color-alt: #a5d67a;
 }
 #agrastrip .hygiene-hero, #agrastrip .handwash-head { background: #5a9a30; }
+#agrastrip-historia.hygiene-page {
+  background:
+    radial-gradient(ellipse 120% 80% at 70% 20%, rgba(122, 182, 72, .25), transparent 50%),
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(165, 214, 122, .18), transparent 45%),
+    linear-gradient(180deg, var(--paper, #fffdf8) 0%, var(--page, #fff) 100%);
+}
 /* AgraQuant — orange/amber */
 #agraquant, #agraquant-historia, #agraquant-producto {
   --section-color: #f39c12; --section-color-alt: #f7c948;
 }
 #agraquant .hygiene-hero, #agraquant .handwash-head { background: #d4850a; }
 /* AgraVision — teal/cyan */
-#agravision, #agravision-historia, #agravision-specs {
+#agravision, #agravision-historia, #agravision-specs, #agravision-producto {
   --section-color: #0097a7; --section-color-alt: #4dd0e1;
 }
 #agravision .hygiene-hero, #agravision .handwash-head { background: #00838f; }
+/* Layout: #agravision-producto */
+#agravision-producto .page-body { padding: .42in .52in .22in; gap: .7rem; }
+#agravision-producto .hygiene-block { padding: .5rem .6rem; }
+#agravision-producto .hygiene-block + .hygiene-block { margin-top: .45rem; }
+#agravision-producto .info-card { padding: .45rem .55rem; }
+#agravision-producto .info-card-title { font-size: .88rem; }
+#agravision-producto .info-card-text { font-size: .78rem; line-height: 1.4; }
+#agravision-producto .mini-info-grid { gap: .45rem; }
+#agravision-producto .wash-step { padding: .4rem .5rem; gap: .35rem; }
 /* ELISA — deep purple */
 #elisa, #elisa-siglas, #elisa-historia, #elisa-producto, #elisa-aplicaciones, #analitos {
   --section-color: #6a1b9a; --section-color-alt: #ab47bc;
 }
 #elisa .hygiene-hero, #elisa .handwash-head { background: #5c1590; }
+/* Layout: #elisa (ELISA fundamentals page) */
+#elisa .page-body { padding: .38in .5in .2in; gap: .6rem; }
+#elisa .hygiene-block { padding: .42rem .52rem; }
+#elisa .info-card { padding: .38rem .48rem; }
+#elisa .info-card-title { font-size: .8rem; }
+#elisa .info-card-text { font-size: .7rem; line-height: 1.35; }
+#elisa .mini-info-grid { gap: .4rem; }
+#elisa .highlight-bar { padding: .5rem .6rem; gap: .45rem; }
+#elisa .highlight-bar-title { font-size: .92rem; }
+#elisa .highlight-bar-list { font-size: .82rem; }
 /* ABT Internacional — dark blue/navy */
 #por-que-abt, #abt-servicios, #contacto, #cierre, #flujo-analisis {
   --section-color: #1a3a5c; --section-color-alt: #2e6da4;
@@ -568,8 +611,11 @@
   letter-spacing: -.015em;
   line-height: 1.2;
   color: var(--section-color, var(--brand-primary, var(--val-orange)));
+  white-space: nowrap;
+  margin: 0;
 }
-.mission-bar { margin: 0 0 .22rem; }
+.mission-bar { margin: 0 0 .22rem; display: flex; align-items: center; gap: .3rem; flex-wrap: nowrap; }
+.mission-bar > .icon { width: 1.1rem; height: 1.1rem; flex-shrink: 0; color: var(--section-color, var(--brand-primary)); }
 .hygiene-block,
 .duo-panel {
   padding: .45rem .55rem;
@@ -994,76 +1040,189 @@
 /* Dense pages: compact everything to prevent overflow */
 #higiene-disciplina .mini-info-grid { grid-template-columns: repeat(3, 1fr); }
 
-/* ── Compact mode for ALL dense Romer Labs pages ────────────── */
-.hygiene-page .hygiene-block { padding: .35rem .45rem; }
-.hygiene-page .info-card { padding: .32rem .42rem; }
-.hygiene-page .info-card-title { font-size: .7rem; }
-.hygiene-page .info-card-text { font-size: .62rem; line-height: 1.35; margin-top: .04rem; }
-.hygiene-page .info-card-header { gap: .25rem; }
-.hygiene-page .info-card-icon-wrap { width: 1.4rem; height: 1.4rem; }
-.hygiene-page .info-card-icon { width: .75rem; height: .75rem; }
-.hygiene-page .mission-bar { margin: 0 0 .14rem; }
-.hygiene-page .mission-bar h2 { font-size: .95rem; }
-.hygiene-page .mini-info-grid { gap: .28rem; }
-.hygiene-page .wash-grid { gap: .28rem; }
-.hygiene-page .wash-step { padding: .32rem .42rem; gap: .35rem; }
-.hygiene-page .wash-step-num { width: 34px; height: 34px; font-size: .62rem; border-radius: 10px; }
-.hygiene-page .wash-step-title { font-size: .7rem; }
-.hygiene-page .wash-step-text { font-size: .6rem; line-height: 1.35; }
-.hygiene-page .wash-step-icon { width: .9rem; height: .9rem; }
-.hygiene-page .stat-card { padding: .28rem .22rem; }
-.hygiene-page .stat-card-icon-wrap { width: 1.8rem; height: 1.8rem; margin-bottom: .1rem; }
-.hygiene-page .stat-card-icon { width: .9rem; height: .9rem; }
-.hygiene-page .stat-card-label { font-size: .6rem; }
-.hygiene-page .stat-card-value { font-size: .72rem; }
-.hygiene-page .timeline-entry { padding-bottom: .28rem; }
-.hygiene-page .timeline-year { font-size: .56rem; min-width: 2.2rem; height: 1.25rem; padding: 0 .28rem; }
-.hygiene-page .timeline-title { font-size: .66rem; }
-.hygiene-page .timeline-text { font-size: .58rem; line-height: 1.35; }
-.hygiene-page .page-body { padding: .32in .45in .14in; gap: .28rem; }
+/* ── Sizing for ALL Romer Labs pages ─────────────────────────── */
+.hygiene-page .hygiene-block { padding: .7rem .75rem; }
+.hygiene-page .info-card { padding: .55rem .65rem; }
+.hygiene-page .info-card-title { font-size: .95rem; }
+.hygiene-page .info-card-text { font-size: .85rem; line-height: 1.45; margin-top: .08rem; }
+.hygiene-page .info-card-header { gap: .35rem; }
+.hygiene-page .info-card-icon-wrap { width: 1.85rem; height: 1.85rem; }
+.hygiene-page .info-card-icon { width: 1rem; height: 1rem; }
+.hygiene-page .mission-bar { margin: 0 0 .3rem; }
+.hygiene-page .mission-bar h2 { font-size: 1.25rem; }
+.hygiene-page .mini-info-grid { gap: .45rem; }
+.hygiene-page .wash-grid { gap: .45rem; }
+.hygiene-page .wash-step { padding: .55rem .65rem; gap: .5rem; }
+.hygiene-page .wash-step-num { width: 42px; height: 42px; font-size: .8rem; border-radius: 11px; }
+.hygiene-page .wash-step-title { font-size: .92rem; }
+.hygiene-page .wash-step-text { font-size: .82rem; line-height: 1.45; }
+.hygiene-page .wash-step-icon { width: 1.15rem; height: 1.15rem; }
+.hygiene-page .stat-card { padding: .45rem .35rem; }
+.hygiene-page .stat-card-icon-wrap { width: 2.3rem; height: 2.3rem; margin-bottom: .15rem; }
+.hygiene-page .stat-card-icon { width: 1.15rem; height: 1.15rem; }
+.hygiene-page .stat-card-label { font-size: .82rem; }
+.hygiene-page .stat-card-value { font-size: .95rem; }
+.hygiene-page .timeline-entry { padding-bottom: .5rem; }
+.hygiene-page .timeline-year { font-size: .78rem; min-width: 2.8rem; height: 1.6rem; padding: 0 .38rem; }
+.hygiene-page .timeline-title { font-size: .9rem; }
+.hygiene-page .timeline-text { font-size: .8rem; line-height: 1.45; }
+.hygiene-page .page-body { padding: .42in .5in .22in; gap: .75rem; }
 
-/* Compact heroes */
-.hygiene-page .hygiene-hero { padding: .55rem .7rem; }
-.hygiene-page .hygiene-main-title { font-size: 1.3rem; }
-.hygiene-page .hero-sub { font-size: .68rem; }
-.hygiene-page .hero-product-photo { max-width: 220px; max-height: 165px; }
-.hygiene-page .product-showcase { gap: .3rem; padding: .2rem 0; }
-.hygiene-page .product-showcase-img { max-width: 280px; max-height: 190px; }
+/* Heroes */
+.hygiene-page .hygiene-hero { padding: .8rem .95rem; }
+.hygiene-page .hygiene-main-title { font-size: 1.55rem; }
+.hygiene-page .hero-sub { font-size: .9rem; }
+.hygiene-page .hero-product-photo { max-width: 260px; max-height: 200px; }
+.hygiene-page .product-showcase { gap: .5rem; padding: .3rem 0; }
+.hygiene-page .product-showcase-img { max-width: 320px; max-height: 230px; }
 
-/* Compact product-timeline */
-.hygiene-page .product-timeline { gap: .4rem; }
-.hygiene-page .product-timeline-img { max-height: 220px; }
-.hygiene-page .product-timeline-feats { gap: .15rem; }
-.hygiene-page .product-showcase-feat { padding: .15rem .32rem; }
-.hygiene-page .product-showcase-feat-icon-wrap { width: 1.3rem; height: 1.3rem; }
-.hygiene-page .product-showcase-feat-icon { width: .7rem; height: .7rem; }
-.hygiene-page .product-showcase-feat-label { font-size: .58rem; }
+/* Product-timeline */
+.hygiene-page .product-timeline { gap: .6rem; }
+.hygiene-page .product-timeline-img { max-height: 260px; }
+.hygiene-page .product-timeline-feats { gap: .25rem; }
+.hygiene-page .product-showcase-feat { padding: .25rem .45rem; }
+.hygiene-page .product-showcase-feat-icon-wrap { width: 1.6rem; height: 1.6rem; }
+.hygiene-page .product-showcase-feat-icon { width: .88rem; height: .88rem; }
+.hygiene-page .product-showcase-feat-label { font-size: .76rem; }
 
-/* Compact limpieza-header — icon · kicker · title all on one line */
-.hygiene-page .limpieza-header { padding: .28rem .45rem; }
+/* Limpieza-header — icon · kicker · title all on one line */
+.hygiene-page .limpieza-header { padding: .42rem .6rem; }
 .hygiene-page .limpieza-title-row {
-  display: flex; align-items: center; gap: .35rem; flex-wrap: nowrap;
+  display: flex; align-items: center; gap: .45rem; flex-wrap: nowrap;
 }
-.hygiene-page .limpieza-hdr-icon { width: 1.2rem; height: 1.2rem; flex-shrink: 0; }
+.hygiene-page .limpieza-hdr-icon { width: 1.5rem; height: 1.5rem; flex-shrink: 0; }
 .hygiene-page .limpieza-title-row .hero-kicker {
-  font-size: .55rem; margin: 0; white-space: nowrap; opacity: .7;
+  font-size: .72rem; margin: 0; white-space: nowrap; opacity: .7;
 }
-.hygiene-page .limpieza-title-row .hygiene-main-title { font-size: 1.05rem; margin: 0; }
+.hygiene-page .limpieza-title-row .hygiene-main-title { font-size: 1.3rem; margin: 0; }
 
-/* Compact highlight-bar */
-.hygiene-page .highlight-bar { padding: .35rem .45rem; gap: .35rem; }
-.hygiene-page .highlight-bar-icon-wrap { width: 2rem; height: 2rem; }
-.hygiene-page .highlight-bar-title { font-size: .72rem; }
-.hygiene-page .highlight-bar-list { font-size: .62rem; line-height: 1.45; margin: .08rem 0 0 .75rem; }
+/* Highlight-bar */
+.hygiene-page .highlight-bar { padding: .55rem .65rem; gap: .5rem; }
+.hygiene-page .highlight-bar-icon-wrap { width: 2.5rem; height: 2.5rem; }
+.hygiene-page .highlight-bar-title { font-size: .95rem; }
+.hygiene-page .highlight-bar-list { font-size: .85rem; line-height: 1.5; margin: .12rem 0 0 .85rem; }
 
-/* Compact chip-row */
-.hygiene-page .mission-chip { padding: .24rem .42rem; font-size: .58rem; }
-.hygiene-page .chip-row { gap: .25rem; margin-top: .18rem; }
+/* Chip-row */
+.hygiene-page .mission-chip { padding: .32rem .55rem; font-size: .78rem; }
+.hygiene-page .chip-row { gap: .35rem; margin-top: .28rem; }
+
+/* ── Page 5 (tecnologias) — roomier layout ───────────────────── */
+#tecnologias .page-body { padding: .5in .55in .25in; gap: 1.1rem; }
+#tecnologias .hygiene-block { padding: .55rem .6rem; }
+#tecnologias .info-card {
+  border: 1px solid rgba(0, 82, 155, .12);
+  background: linear-gradient(135deg, rgba(0, 82, 155, .04), #fff);
+}
+#tecnologias .hygiene-block + .hygiene-block { margin-top: .5rem; }
+#tecnologias .limpieza-header { padding: .45rem .6rem; }
+#tecnologias .limpieza-title-row .hygiene-main-title { font-size: 1.5rem; }
+#tecnologias .limpieza-hdr-icon { width: 1.7rem; height: 1.7rem; }
+#tecnologias .limpieza-title-row .hero-kicker { font-size: .78rem; }
+#tecnologias .mission-bar { margin: 0 0 .35rem; }
+#tecnologias .mission-bar h2 { font-size: 1.3rem; }
+#tecnologias .mission-bar > .icon { width: 1.5rem; height: 1.5rem; }
+#tecnologias .info-card { padding: .55rem .65rem; }
+#tecnologias .info-card-title { font-size: 1rem; }
+#tecnologias .info-card-text { font-size: .88rem; line-height: 1.45; }
+#tecnologias .info-card-icon-wrap { width: 2rem; height: 2rem; }
+#tecnologias .info-card-icon { width: 1.1rem; height: 1.1rem; }
+#tecnologias .mini-info-grid { gap: .5rem; }
+#tecnologias .timeline-year { font-size: .82rem; min-width: 3rem; height: 1.7rem; padding: 0 .42rem; }
+#tecnologias .timeline-title { font-size: .95rem; }
+#tecnologias .timeline-text { font-size: .82rem; line-height: 1.45; }
+#tecnologias .timeline-entry { padding-bottom: .55rem; }
 
 /* Dense pages use 3-col info-grid to reduce rows */
 #agrastrip .mini-info-grid,
 #elisa .mini-info-grid,
 #abt-servicios .mini-info-grid { grid-template-columns: repeat(3, 1fr); }
+
+/* ── Layout: #agrastrip-historia ───────────────────────────── */
+#agrastrip-historia .page-body { padding: .35in .5in .2in; gap: .55rem; }
+#agrastrip-historia .limpieza-header { padding: .28rem .5rem; }
+#agrastrip-historia .limpieza-title-row .hygiene-main-title { font-size: 1.08rem; }
+#agrastrip-historia .limpieza-title-row .hero-kicker { font-size: .6rem; }
+#agrastrip-historia .limpieza-hdr-icon { width: 1.2rem; height: 1.2rem; }
+#agrastrip-historia .product-timeline { gap: .4rem; }
+#agrastrip-historia .product-timeline-img { max-height: 175px; }
+#agrastrip-historia .product-timeline-feats { gap: .12rem; }
+#agrastrip-historia .product-showcase-feat { padding: .14rem .3rem; }
+#agrastrip-historia .product-showcase-feat-icon-wrap { width: 1.25rem; height: 1.25rem; }
+#agrastrip-historia .product-showcase-feat-label { font-size: .58rem; }
+#agrastrip-historia .timeline-entry { padding-bottom: .28rem; }
+#agrastrip-historia .timeline-year { font-size: .58rem; min-width: 2.2rem; height: 1.2rem; padding: 0 .26rem; }
+#agrastrip-historia .timeline-title { font-size: .72rem; }
+#agrastrip-historia .timeline-text { font-size: .64rem; line-height: 1.35; }
+#agrastrip-historia .hygiene-block { padding: .4rem .5rem; }
+#agrastrip-historia .hygiene-block + .hygiene-block { margin-top: .35rem; }
+#agrastrip-historia .hygiene-block + .highlight-bar { margin-top: .65rem; }
+#agrastrip-historia .highlight-bar {
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(0,0,0,.05);
+  box-shadow: var(--shadow-sm);
+  padding: .4rem .5rem;
+  gap: .4rem;
+}
+#agrastrip-historia .highlight-bar-icon-wrap { background: rgba(122,182,72,.15); }
+#agrastrip-historia .highlight-bar-icon { color: var(--section-color); }
+#agrastrip-historia .highlight-bar-list li::marker { color: var(--section-color); }
+#agrastrip-historia .mission-bar { margin: 0 0 .15rem; }
+#agrastrip-historia .mission-bar h2 { font-size: 1rem; }
+#agrastrip-historia .info-card { padding: .38rem .45rem; }
+#agrastrip-historia .info-card-title { font-size: .78rem; }
+#agrastrip-historia .info-card-text { font-size: .68rem; line-height: 1.35; }
+#agrastrip-historia .info-card-icon-wrap { width: 1.45rem; height: 1.45rem; }
+#agrastrip-historia .mini-info-grid { gap: .3rem; }
+#agrastrip-historia .highlight-bar-title { font-size: .8rem; }
+#agrastrip-historia .highlight-bar-list { font-size: .7rem; line-height: 1.5; }
+
+/* ── Fix overflow: page 8 (#agraquant-historia) ─────────────── */
+#agraquant-historia .page-body { padding: .28in .42in .14in; gap: .4rem; }
+#agraquant-historia .limpieza-header { padding: .22rem .42rem; }
+#agraquant-historia .limpieza-title-row .hygiene-main-title { font-size: 1.05rem; }
+#agraquant-historia .limpieza-title-row .hero-kicker { font-size: .55rem; }
+#agraquant-historia .limpieza-hdr-icon { width: 1.15rem; height: 1.15rem; }
+#agraquant-historia .product-timeline { gap: .3rem; }
+#agraquant-historia .product-timeline-img { max-height: 160px; }
+#agraquant-historia .product-timeline-feats { gap: .08rem; }
+#agraquant-historia .product-showcase-feat { padding: .1rem .25rem; }
+#agraquant-historia .product-showcase-feat-icon-wrap { width: 1.2rem; height: 1.2rem; }
+#agraquant-historia .product-showcase-feat-label { font-size: .55rem; }
+#agraquant-historia .timeline-entry { padding-bottom: .2rem; }
+#agraquant-historia .timeline-year { font-size: .55rem; min-width: 2.1rem; height: 1.15rem; padding: 0 .22rem; }
+#agraquant-historia .timeline-title { font-size: .68rem; }
+#agraquant-historia .timeline-text { font-size: .6rem; line-height: 1.3; }
+#agraquant-historia .hygiene-block { padding: .32rem .42rem; }
+#agraquant-historia .mission-bar { margin: 0 0 .1rem; }
+#agraquant-historia .mission-bar h2 { font-size: .95rem; }
+#agraquant-historia .wash-grid { gap: .22rem; }
+#agraquant-historia .wash-step { padding: .28rem .38rem; gap: .3rem; }
+#agraquant-historia .wash-step-num { width: 30px; height: 30px; font-size: .58rem; }
+#agraquant-historia .wash-step-title { font-size: .68rem; }
+#agraquant-historia .wash-step-text { font-size: .6rem; line-height: 1.3; }
+#agraquant-historia .wash-step-icon { width: .85rem; height: .85rem; }
+
+/* ── Fix overflow: page 12 (#elisa-historia) ────────────────── */
+#elisa-historia .page-body { padding: .32in .45in .16in; gap: .5rem; }
+#elisa-historia .product-timeline { gap: .35rem; }
+#elisa-historia .product-timeline-img { max-height: 180px; }
+#elisa-historia .product-timeline-feats { gap: .1rem; }
+#elisa-historia .product-showcase-feat { padding: .12rem .28rem; }
+#elisa-historia .product-showcase-feat-label { font-size: .58rem; }
+#elisa-historia .timeline-entry { padding-bottom: .25rem; }
+#elisa-historia .timeline-year { font-size: .58rem; min-width: 2.2rem; height: 1.2rem; }
+#elisa-historia .timeline-title { font-size: .72rem; }
+#elisa-historia .timeline-text { font-size: .62rem; line-height: 1.3; }
+#elisa-historia .hygiene-block { padding: .35rem .45rem; }
+#elisa-historia .info-card { padding: .32rem .42rem; }
+#elisa-historia .info-card-title { font-size: .78rem; }
+#elisa-historia .info-card-text { font-size: .68rem; line-height: 1.3; }
+#elisa-historia .stat-card { padding: .25rem .2rem; }
+#elisa-historia .stat-card-icon-wrap { width: 1.8rem; height: 1.8rem; }
+#elisa-historia .stat-card-label { font-size: .65rem; }
+#elisa-historia .stat-card-value { font-size: .78rem; }
+#elisa-historia .mission-bar h2 { font-size: 1.05rem; }
+#elisa-historia .product-timeline-disclaimer { font-size: .55rem; padding-top: .2rem; }
 
 /* Featured image grid — first card spans full width */
 .image-grid--featured { grid-template-columns: repeat(2, 1fr); }
@@ -2167,21 +2326,23 @@
     break-inside: avoid;
   }
 
-  /* ⑥ Unclip page body; re-apply physical inch padding */
+  /* ⑥ Match screen layout; unclip page body */
   .page-body {
-    padding: .55in .65in .25in !important;
+    padding: .4in .5in .2in !important;
+    gap: .4rem !important;
     overflow-y: visible !important;
     overflow: visible !important;
     min-height: 0;
     flex: 1;
   }
+  .hygiene-page .page-body { padding: .42in .5in .22in !important; gap: .75rem !important; }
   .hygiene-body { overflow-y: visible !important; overflow: visible !important; }
   .page-footer { padding: .18in .65in !important; }
 
   /* ⑦ All animated elements are immediately visible */
   .animate { opacity: 1 !important; transform: none !important; }
 
-  /* ⑧ Grid/flex layout fixes */
+  /* ⑧ Grid/flex layout fixes + prevent overflow */
   .duo-grid,
   .mission-grid,
   .mini-info-grid,
@@ -2205,7 +2366,7 @@
   /* ⑩ Risk page overflow */
   .risk-page-body { overflow: visible !important; }
 
-  /* ⑪ Kill every filter / backdrop-filter — these produce black boxes in PDF */
+  /* ⑪ Kill filter/backdrop-filter — these produce black/grey boxes in PDF */
   * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; filter: none !important; }
 
   /* ⑫ Replace conic-gradient hero-ring (PDF renderer can't rasterise it) */
@@ -2215,11 +2376,15 @@
     box-shadow: none !important;
   }
 
-  /* ⑫b Solid backgrounds — avoid dark boxes from color-mix/gradients in PDF */
+  /* ⑫b Solid backgrounds — avoid dark/grey boxes from gradients in PDF */
   .portada-page { background: #fff !important; }
   .portada-body { background: #fff !important; }
   .portada-overlay { background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,.8) 85%, #fff 100%) !important; }
-  .hygiene-page { background: #fff !important; }
+  .hygiene-page,
+  #agrastrip-historia,
+  #agrastrip,
+  #introduccion { background: #fff !important; }
+  .page-bg-photo { opacity: .3 !important; }
   .hygiene-body::before { background: var(--section-color, var(--brand-primary, #00529b)) !important; }
   .hygiene-hero,
   .handwash-head {
@@ -2266,10 +2431,15 @@
   .product-timeline { background: #fff !important; }
   .product-timeline-img { filter: none !important; }
   .product-timeline-disclaimer { color: #666 !important; border-top-color: #ddd !important; }
+  #tecnologias .hygiene-block,
+  #tecnologias .info-card {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
   .full-image-page { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .full-image-overlay { background: linear-gradient(0deg, rgba(0,0,0,.7), rgba(0,0,0,.3) 60%, transparent) !important; }
   .limpieza-header { background: rgba(0,0,0,.03) !important; }
-  .page-bg-photo { opacity: .08 !important; }
   .image-card-overlay { background: linear-gradient(0deg, rgba(0,0,0,.65), transparent) !important; }
   .intro-header {
     background: var(--brand-primary, #c44b1a) !important;
@@ -2283,6 +2453,37 @@
   .gd-tip    { background: #f5f7e8 !important; border-color: rgba(180,188,69,.4) !important; }
   .glossary-detail-page:has(.gd-hero.theme-cold) .gd-illus-wrap { background: #f0f7ff !important; }
   .glossary-detail-page:has(.gd-hero.theme-cold) .gd-tip { background: #e8f0fa !important; }
+
+  /* ⑫d Page 4 (#introduccion): match preview, solid backgrounds for PDF */
+  #introduccion .page-body { padding: .42in .5in .22in !important; gap: .7rem !important; }
+  #introduccion .hygiene-hero { padding: .75rem .9rem !important; }
+  #introduccion .hero-product-photo { max-height: 185px !important; }
+  #introduccion .info-card { background: #f0f5fa !important; border-color: rgba(0,82,155,.2) !important; padding: .4rem .5rem !important; }
+  #introduccion .stat-card { background: #f5f8fc !important; border-color: rgba(0,82,155,.18) !important; padding: .35rem .3rem !important; }
+  #introduccion .stat-card-value { font-size: .85rem !important; }
+  #introduccion .highlight-bar { background: #e8f0f8 !important; border-color: rgba(0,82,155,.25) !important; padding: .48rem .58rem !important; }
+
+  /* ⑫e Dense pages: tighter layout to prevent overflow */
+  #agrastrip-historia .page-body,
+  #agraquant-historia .page-body,
+  #elisa-historia .page-body { padding: .32in .45in .16in !important; gap: .4rem !important; }
+  #agrastrip-historia .hygiene-block,
+  #agraquant-historia .hygiene-block,
+  #elisa-historia .hygiene-block { padding: .3rem .4rem !important; }
+  #agrastrip-historia .highlight-bar,
+  #agraquant-historia .highlight-bar { padding: .3rem .4rem !important; }
+  #agrastrip-historia .product-timeline-img { max-height: 140px !important; }
+  #agraquant-historia .product-timeline-img { max-height: 130px !important; }
+  #elisa-historia .product-timeline-img { max-height: 150px !important; }
+  #agrastrip-historia .timeline-text,
+  #agraquant-historia .timeline-text,
+  #elisa-historia .timeline-text { font-size: .58rem !important; line-height: 1.3 !important; }
+  #agrastrip-historia .info-card-text,
+  #agraquant-historia .info-card-text,
+  #elisa-historia .info-card-text { font-size: .62rem !important; }
+  #agrastrip-historia .highlight-bar-list,
+  #agraquant-historia .highlight-bar-list,
+  #elisa-historia .highlight-bar-list { font-size: .65rem !important; }
 
   /* ⑬ Index / TOC print enhancements */
   .index-entry,
@@ -2310,7 +2511,78 @@
   .gd-illus-wrap    { justify-content: flex-start; }
 }
 
-@media (max-width: 840px) {
+@media print {
+  /* Print parity overrides: keep PDF close to preview */
+  .page-body { padding: .4in .5in .2in !important; gap: .4rem !important; }
+  .hygiene-page .page-body { padding: .42in .5in .22in !important; gap: .75rem !important; }
+  /* PDF artifact fix: avoid grey rectangles from shadow rasterization */
+  .page :is(.hygiene-block, .duo-panel, .info-card, .visitor-zone, .wash-step, .stat-card, .mission-card, .product-card, .product-showcase-feat, .toc-card, .image-card, .highlight-bar, .risk-cause, .gd-card, .gd-feat-img-wrap, .gd-hero-diagram) {
+    box-shadow: none !important;
+  }
+  .hygiene-block,
+  .duo-panel {
+    background: rgba(255,255,255,.82) !important;
+    border: 1px solid rgba(0,0,0,.05) !important;
+    box-shadow: none !important;
+  }
+  .info-card,
+  .visitor-zone,
+  .wash-step,
+  .stat-card {
+    background: #fff !important;
+    border: 1px solid rgba(0,0,0,.06) !important;
+    box-shadow: none !important;
+  }
+  .highlight-bar {
+    background: rgba(243, 156, 18, .1) !important;
+    border: 1px solid rgba(243, 156, 18, .25) !important;
+  }
+  .page-bg-photo { opacity: .3 !important; }
+
+  /* Restore page-specific styles changed by print-only tweaks */
+  #tecnologias .info-card {
+    background: linear-gradient(135deg, rgba(0, 82, 155, .04), #fff) !important;
+    border: 1px solid rgba(0, 82, 155, .12) !important;
+    box-shadow: none !important;
+  }
+  #introduccion .info-card {
+    background: linear-gradient(135deg, rgba(0, 82, 155, .06), #fff) !important;
+    border: 1px solid rgba(0, 82, 155, .12) !important;
+    padding: .4rem .5rem !important;
+    box-shadow: none !important;
+  }
+  #introduccion .stat-card {
+    background: linear-gradient(135deg, rgba(0, 82, 155, .05), #fff) !important;
+    border: 1px solid rgba(0, 82, 155, .1) !important;
+    padding: .34rem .28rem !important;
+    box-shadow: none !important;
+  }
+  #introduccion .highlight-bar {
+    background: linear-gradient(135deg, rgba(0, 82, 155, .08), rgba(255,255,255,.95)) !important;
+    border: 1px solid rgba(0, 82, 155, .15) !important;
+    padding: .36rem .46rem !important;
+    box-shadow: none !important;
+  }
+  #introduccion .page-body { gap: .6rem !important; }
+  #introduccion .hygiene-hero {
+    align-items: flex-start !important;
+    padding: .68rem .82rem !important;
+    gap: .56rem !important;
+  }
+  #introduccion .hero-copy { max-width: 60% !important; }
+  #introduccion .hero-product-img { align-self: flex-start !important; }
+  #introduccion .hero-product-photo {
+    max-width: 240px !important;
+    max-height: 160px !important;
+  }
+  #introduccion .mini-info-grid { gap: .28rem !important; }
+  #introduccion .stat-grid { gap: .3rem !important; }
+  #introduccion .stat-card-label { font-size: .6rem !important; line-height: 1.25 !important; }
+  #introduccion .stat-card-value { font-size: .76rem !important; }
+  #introduccion .highlight-bar-list { font-size: .72rem !important; line-height: 1.35 !important; }
+}
+
+@media screen and (max-width: 840px) {
   .reader {
     touch-action: pan-x pan-y pinch-zoom;
   }

@@ -103,35 +103,38 @@
                    :subtitle "Resultados en 4–10 minutos. Análisis en planta o campo sin laboratorio."
                    :hero-img "agrastrip-single-test.png"}
             :blocks [{:type :product-showcase
-                      :img "agrastrip-cartridges.png"
-                      :alt "AgraStrip cartuchos"
                       :features [{:icon "zap" :label "4–10 min"}
                                  {:icon "user-check" :label "Sin especialista"}
                                  {:icon "map-pin" :label "Campo/planta"}
                                  {:icon "scan-line" :label "Flujo lateral"}
                                  {:icon "monitor" :label "AgraVision™"}
                                  {:icon "award" :label "AOAC"}]}
-                     {:type :info-grid :icon "zap" :title "Características y catálogo"
-                      :items (vec (concat c/agrastrip-features c/agrastrip-catalogo))}
+                     {:type :info-grid :icon "zap" :title "Catálogo de analitos"
+                      :items c/agrastrip-catalogo}
                      {:type :chip-row :icon "map-pin" :title "Aplicaciones"
                       :items c/agrastrip-applications}]}}
 
     ;; 6. AgraStrip — Historia con imagen de fondo
     {:template :blocks
      :data {:id "agrastrip-historia"
-            :bg-img "agrastrip-cartridges-lab.png"
             :header {:icon "history"
                      :kicker "AgraStrip®"
                      :title "Historia y significado"}
             :blocks [{:type :product-timeline
-                      :img "agrastrip-single-test.png"
-                      :alt "AgraStrip test rápido"
+                      :img "agrastrip-cartridges-lab.png"
+                      :alt "AgraStrip cartuchos en laboratorio"
                       :features [{:icon "zap" :label "Rápido"}
                                  {:icon "scan-line" :label "Lateral flow"}
                                  {:icon "award" :label "AOAC"}]
                       :timeline-items c/agrastrip-historia-timeline}
                      {:type :info-grid :icon "book-open" :title "Significado del nombre"
-                      :items c/agrastrip-nombre-desglose}]}}
+                      :items c/agrastrip-nombre-desglose}
+                     {:type :highlight
+                      :icon "lightbulb"
+                      :title "¿Por qué AgraStrip?"
+                      :items ["Combina simplicidad de uso con resultados confiables validados por AOAC y GIPSA. Los kits incluyen todo lo necesario para ejecutar el análisis en pocos minutos, con interpretación visual directa o lectura digital opcional."
+                              "Ideal para screening en planta sin necesidad de laboratorio ni personal especializado. El operador sigue las instrucciones paso a paso; no se requieren pipetas de precisión ni equipos complejos. Resultados en 4–10 minutos según analito."
+                              "Integración con AgraVision™ permite pasar de cualitativo a cuantitativo cuando se requiere trazabilidad. La tira se puede leer a ojo para un sí/no, o escanear con AgraVision Pro para obtener valores numéricos exportables a LIMS y cumplimiento regulatorio."]}]}}
 
     ;; 7. AgraQuant — intro + historia + producto (all-in-one dense)
     {:template :hero-section
@@ -141,8 +144,6 @@
                    :subtitle "Cuantificación precisa en microplaca de 96 pocillos. Mide ppm/ppb exactos."
                    :hero-img "agraquant-kit.jpeg"}
             :blocks [{:type :product-showcase
-                      :img "agraquant-kit.jpeg"
-                      :alt "AgraQuant kit ELISA"
                       :features [{:icon "bar-chart-3" :label "Cuantitativo"}
                                  {:icon "layout-grid" :label "96 pozos"}
                                  {:icon "target" :label "Alta sensibilidad"}
@@ -269,7 +270,6 @@
                      :kicker "ABT Internacional"
                      :title "Servicios y ventajas"}
             :blocks [{:type :image-grid :icon "camera" :title "Nuestros servicios"
-                      :featured? true
                       :items c/abt-servicios-grid}
                      {:type :info-grid :icon "star" :title "¿Por qué trabajar con nosotros?"
                       :items c/abt-porque-trabajar}
