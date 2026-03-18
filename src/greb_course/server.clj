@@ -3,7 +3,8 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.util.response :as response]
             [ring.middleware.file :refer [wrap-file]]
-            [compojure.core :refer [GET POST defroutes]]
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
+            [compojure.core :refer [GET POST DELETE defroutes]]
             [compojure.route :as route]
             [clojure.java.io :as io])
   (:import [java.io File]))
@@ -29,6 +30,44 @@
     (if f
       (response/file-response (.getPath f))
       (response/not-found (str "image " path)))))
+
+(def ^:private images-root "images")
+
+(defn- resolve-upload-dir
+  "Resolve target directory within the images volume.
+   subdir can be nil (root) or e.g. \"courses/romerlabs\"."
+  [subdir]
+  (let [dir (if (and subdir (not= subdir ""))
+              (File. images-root subdir)
+              (File. images-root))]
+    (.mkdirs dir)
+    dir))
+
+(defn- upload-image!
+  "Save an uploaded file (multipart map) to the images volume under subdir."
+  [{:keys [tempfile filename]} subdir]
+  (let [dir  (resolve-upload-dir subdir)
+        dest (File. dir filename)]
+    (io/copy tempfile dest)
+    (.getPath dest)))
+
+(defn- list-images
+  "List image files in a subdirectory of the images volume."
+  [subdir]
+  (let [dir (resolve-upload-dir subdir)]
+    (->> (.listFiles dir)
+         (filter #(.isFile %))
+         (map #(.getName %))
+         sort
+         vec)))
+
+(defn- delete-image!
+  "Delete an image from the images volume."
+  [subdir filename]
+  (let [f (File. (resolve-upload-dir subdir) filename)]
+    (when (.exists f)
+      (.delete f)
+      true)))
 
 (defn- open-in-editor!
   "Open a file in the default editor. Supports optional line number."
@@ -69,6 +108,32 @@
            (serve-image org slug path)
            (response/not-found "Not found"))))
 
+  ;; --- Image management API ---
+
+  ;; List images: GET /api/images?subdir=courses/romerlabs
+  (GET "/api/images" [subdir]
+       (-> (response/response (pr-str (list-images subdir)))
+           (response/content-type "application/edn")))
+
+  ;; Upload image: POST /api/images  (multipart, field "file", optional "subdir")
+  (POST "/api/images" {params :params}
+        (let [file   (get params "file")
+              subdir (get params "subdir")]
+          (if file
+            (let [path (upload-image! file subdir)]
+              (-> (response/response (str "{:ok true :path \"" path "\"}"))
+                  (response/content-type "application/edn")))
+            (-> (response/response "{:ok false :error \"no file\"}")
+                (response/status 400)
+                (response/content-type "application/edn")))))
+
+  ;; Delete image: DELETE /api/images?subdir=courses/romerlabs&name=foo.png
+  (DELETE "/api/images" [subdir name]
+          (if (delete-image! subdir name)
+            (-> (response/response (str "{:ok true :deleted \"" name "\"}"))
+                (response/content-type "application/edn"))
+            (response/not-found (str "{:ok false :error \"not found: " name "\"}"))))
+
   ;; Static assets (css, js) — served by wrap-file below
   (route/not-found "Not found"))
 
@@ -84,7 +149,9 @@
           (handler req)
           (file-handler req))))))
 
-(def handler (wrap-file-safe app "public"))
+(def handler (-> app
+                  wrap-multipart-params
+                  (wrap-file-safe "public")))
 
 (defn -main [& _]
   (let [port (Integer/parseInt (or (System/getenv "PORT") "8020"))]
