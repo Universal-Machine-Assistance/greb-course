@@ -16,14 +16,17 @@
    {:id "recepcion-almacenamiento" :label "Recepción — Inspección"          :page 9}
    {:id "recepcion-controles"      :label "Recepción — Bodega y Controles"  :page 10}
    {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 11}
-   {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 12}
-   {:id "riesgos-divider"          :label "Familias de Riesgo"              :page 13}
-   {:id "riesgo-microbiologico"    :label "Riesgo microbiológico"           :page 14}
-   {:id "riesgo-fisico"            :label "Riesgo físico"                   :page 15}
-   {:id "riesgo-alergenos"         :label "Riesgo de alérgenos"             :page 16}
-   {:id "riesgo-quimico"           :label "Riesgo químico"                  :page 17}
-   {:id "glosario"                 :label "Glosario de Términos"            :page 18}
-   {:id "creditos"                 :label "Créditos"                        :page 26}])
+   {:id "limpieza-spread-intro"    :label "Limpieza — Desplegar sección"    :page 12}
+   {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 13}
+   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 14}
+   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 15}
+   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 16}
+   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 17}
+   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 18}
+   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 19}
+   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 20}
+   {:id "glosario"                  :label "Glosario de Términos"            :page 21}
+   {:id "creditos"                  :label "Créditos"                        :page 29}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Guía de Higiene de los Alimentos para las Tiendas de Valentino")
@@ -150,6 +153,29 @@
 
 (def risk-families-title "Cuatro familias de Riesgos")
 
+(def riesgos-familias-intro-paras
+  ["En seguridad alimentaria los peligros se agrupan en cuatro familias. No es solo teoría: en la tienda cada familia se gestiona con medidas concretas. El riesgo microbiológico se combate con cadena de frío, caducidades, higiene de manos y limpieza de superficies y utensilios. El físico se previene inspeccionando insumos, cuidando equipos y evitando joyas, pelo suelto o prácticas que introduzcan cuerpos extraños."
+   "Los alérgenos exigen saber qué lleva cada sabor, etiquetar con claridad y evitar cruces entre cucuruchos, cucharones y superficies. El riesgo químico aparece cuando desinfectantes, detergentes o productos de limpieza quedan mal guardados, sin etiqueta o cerca del helado o los ingredientes. Mezclar estos controles en la cabeza del equipo reduce errores y quejas."
+   "Reconocer las cuatro familias es el primer paso para proteger al cliente y a la marca Valentino. Abajo tienes un resumen visual de cada una; las páginas siguientes profundizan en señales, causas y prevención adaptada a heladería."])
+
+(def riesgos-familias-bolas
+  [{:img "riesgo-bola-microbiologico.png" :tone "micro"
+    :title "Microbiológico"
+    :lead "Gérmenes y toxinas"
+    :text "Bacterias y microorganismos si fallan frío, higiene o caducidad. Provoca gastroenteritis e intoxicaciones alimentarias."}
+   {:img "riesgo-bola-fisico.png" :tone "fisico"
+    :title "Físico"
+    :lead "Cuerpos extraños"
+    :text "Vidrio, metal, plástico, pelo… que entran por equipos, empaques o prácticas deficientes. Un solo caso es grave para el cliente y la marca."}
+   {:img "riesgo-bola-alergenos.png" :tone "alergeno"
+    :title "Alérgenos"
+    :lead "Leche, frutos secos, gluten…"
+    :text "Reacciones leves a anafilaxia. Exige conocer fichas, etiquetar bien y evitar contaminación cruzada entre sabores y utensilios."}
+   {:img "riesgo-bola-quimico.png" :tone "quimico"
+    :title "Químico"
+    :lead "Limpieza y químicos"
+    :text "Desinfectantes mal guardados, sin etiqueta o cerca del producto pueden contaminar. Residuo químico en helado: riesgo inaceptable."}])
+
 ;; ── Risk families ───────────────────────────────────────────────
 (def risk-families
   [{:id "riesgo-microbiologico"
@@ -158,6 +184,7 @@
     :title "Riesgo microbiológico"
     :sub   "Puede provocar enfermedades o intoxicación alimentaria por bacterias o toxinas de bacterias como resultado de:"
     :enhanced? true
+    :hero-bola "riesgo-bola-microbiologico.png"
     :items [{:label "Malas condiciones de almacenamiento o transporte"          :icon "package-x"}
             {:label "Exceder la fecha de caducidad"                             :icon "calendar-x"}
             {:label "Romper la cadena de frío"                                  :icon "snowflake"}
@@ -175,9 +202,9 @@
                {:name "Listeria" :icon "bug" :source "Lácteos no pasteurizados" :effect "Meningitis, abortos"}
                {:name "E. coli" :icon "bug" :source "Agua contaminada, carnes" :effect "Diarrea hemorrágica"}
                {:name "S. aureus" :icon "bug" :source "Piel, nariz, heridas" :effect "Vómitos, diarrea"}]
-    :stats [{:value "600M" :label "personas enferman/año (OMS)"}
-            {:value "420K" :label "muertes/año por ETA"}
-            {:value "x2" :label "bacterias cada 20 min en zona de peligro"}]
+    :stats [{:value "~600 M" :label "personas con enfermedad transmitida por alimentos al año (orden OMS)"}
+            {:value "~420 K" :label "muertes anuales vinculadas a alimentación insegura en el mundo"}
+            {:value "×2" :label "duplicación aprox. de bacterias cada 20 min entre 5 °C y 60 °C"}]
     :prevention [{:icon "snowflake" :title "Cadena de frío" :text "Mantener helados ≤ -18°C"}
                  {:icon "hand" :title "Lavado de manos" :text "Cada 30 min y entre tareas"}
                  {:icon "spray-can" :title "Desinfección" :text "Superficies y utensilios"}
@@ -187,23 +214,82 @@
     :color "green"
     :title "Riesgo físico"
     :sub   "Derivado de la presencia de cuerpos extraños en los helados debido a:"
+    :enhanced? true
+    :hero-bola "riesgo-bola-fisico.png"
     :items [{:label "Uso de joyas, uñas postizas, peinado inadecuado"           :icon "gem"}
             {:label "Incumplimiento de las buenas prácticas de almacenamiento"  :icon "archive-x"}
-            {:label "Problemas en instalaciones — luces descubiertas"           :icon "lightbulb-off"}]}
+            {:label "Problemas en instalaciones — luces descubiertas"           :icon "lightbulb-off"}]
+    :contaminants [{:type "Metal" :icon "wrench" :examples "Tornillos, clips, grapas, cuchillas" :severity "high"}
+                   {:type "Vidrio" :icon "glass-water" :examples "Ampolletas, vasos rotos, luces" :severity "high"}
+                   {:type "Plástico" :icon "package" :examples "Fragmentos de envase, guantes rotos" :severity "medium"}
+                   {:type "Orgánico" :icon "leaf" :examples "Cabello, uñas, insectos, astillas" :severity "medium"}
+                   {:type "Piedra" :icon "mountain" :examples "Piedras, arena en materias primas" :severity "low"}
+                   {:type "Hueso" :icon "bone" :examples "Fragmentos en insumos con proteínas" :severity "low"}]
+    :stats [{:value "⚠" :label "Principal causa de quejas del consumidor"}
+            {:value "35%" :label "de retiros de producto son por contaminación física"}
+            {:value "0" :label "tolerancia — un solo incidente es grave"}]
+    :sources [{:area "Personal" :icon "user" :detail "Joyas, cabello suelto, uñas postizas, curitas sin guante"}
+              {:area "Equipos" :icon "settings" :detail "Tornillos flojos, cuchillas desgastadas, empaques rotos"}
+              {:area "Instalaciones" :icon "building" :detail "Luces sin protección, pintura descascarada, techos con filtraciones"}
+              {:area "Insumos" :icon "package" :detail "Envolturas plásticas, grapas de cajas, fragmentos de empaque"}]
+    :prevention [{:icon "scan-eye" :title "Inspección visual" :text "Revisar producto e insumos al recibir"}
+                 {:icon "hard-hat" :title "Uniforme completo" :text "Gorro, sin joyas, uñas cortas"}
+                 {:icon "wrench" :title "Mantenimiento" :text "Revisión periódica de equipos e instalaciones"}
+                 {:icon "shield-check" :title "Protocolo" :text "Proteger luces, reportar roturas de inmediato"}]}
    {:id "riesgo-alergenos"
     :icon  "triangle-alert"
     :color "yellow"
     :title "Riesgo de Alérgenos"
     :sub   "Reacciones inmunitarias que pueden provocar síntomas leves o graves (shock anafiláctico) resultantes de:"
+    :enhanced? true
+    :hero-bola "riesgo-bola-alergenos.png"
     :items [{:label "Falta o desinformación sobre composición y alérgenos del producto" :icon "info"}
-            {:label "Contaminación cruzada de alérgenos"                               :icon "shuffle"}]}
+            {:label "Contaminación cruzada de alérgenos"                               :icon "shuffle"}
+            {:label "No cambiar guantes ni lavar manos entre preparaciones"             :icon "hand"}
+            {:label "Uso compartido de utensilios sin limpieza"                        :icon "utensils"}]
+    :allergens [{:name "Leche" :icon "milk" :source "Helados, cremas, toppings lácteos" :reaction "Urticaria, vómitos, anafilaxia" :severity "high"}
+                {:name "Frutos secos" :icon "nut" :source "Toppings, pralinés, salsas" :reaction "Edema, dificultad respiratoria" :severity "high"}
+                {:name "Maní" :icon "bean" :source "Mantequilla de maní, toppings" :reaction "Anafilaxia severa" :severity "high"}
+                {:name "Gluten" :icon "wheat" :source "Conos, galletas, brownies" :reaction "Inflamación intestinal, celiaquía" :severity "medium"}
+                {:name "Huevo" :icon "egg" :source "Bases de helado, merengue" :reaction "Urticaria, vómitos" :severity "medium"}
+                {:name "Soja" :icon "leaf" :source "Lecitina en chocolate, bases" :reaction "Dermatitis, edema leve" :severity "low"}]
+    :cross-contam-steps [{:icon "ice-cream-cone" :label "Servir sabor A"}
+                         {:icon "hand" :label "Misma cuchara / guante"}
+                         {:icon "ice-cream-cone" :label "Servir sabor B"}
+                         {:icon "alert-triangle" :label "Cliente alérgico expuesto"}]
+    :stats [{:value "14" :label "alérgenos de declaración obligatoria (UE)"}
+            {:value "2%" :label "adultos con alergia alimentaria"}
+            {:value "8%" :label "niños afectados por algún alérgeno"}]
+    :prevention [{:icon "clipboard-list" :title "Conocer el producto" :text "Consultar fichas técnicas de cada sabor"}
+                 {:icon "hand" :title "Cambiar guantes" :text "Entre cada cliente con solicitud especial"}
+                 {:icon "spray-can" :title "Limpiar utensilios" :text "Separar cucharas por tipo de producto"}
+                 {:icon "message-circle" :title "Comunicar" :text "Informar con exactitud, nunca improvisar"}]}
    {:id "riesgo-quimico"
     :icon  "flask-conical"
     :color "dark"
     :title "Riesgo químico"
     :sub   "Contaminación por productos tóxicos resultante de:"
-    :items [{:label "Almacenamiento conjunto de productos alimentarios y de mantenimiento" :icon "layers"}
-            {:label "Incumplimiento de los protocolos de limpieza"                        :icon "clipboard-x"}]}])
+    :hero-bola "riesgo-bola-quimico.png"
+   :enhanced? true
+   :items [{:label "Almacenamiento conjunto de productos alimentarios y de mantenimiento" :icon "layers"}
+           {:label "Incumplimiento de los protocolos de limpieza"                        :icon "clipboard-x"}
+           {:label "Químicos sin etiqueta o diluciones incorrectas"                      :icon "tag"}
+           {:label "Uso de recipientes no aptos para contacto alimentario"               :icon "beaker"}]
+   :stats [{:value "0" :label "tolerancia a residuos químicos en producto"}
+           {:value "1" :label "error de dosificación puede contaminar lote"}
+           {:value "100%" :label "químicos deben estar identificados y segregados"}]
+   :chemical-sources [{:title "Almacenamiento" :icon "archive-x" :detail "Limpiadores junto a envases, cucharas o materias primas." :level "high"}
+                      {:title "Preparación" :icon "beaker" :detail "Diluciones sin medir o mezcla de químicos incompatibles." :level "high"}
+                      {:title "Servicio" :icon "spray-can" :detail "Aplicar químicos cerca del producto expuesto al cliente." :level "medium"}
+                      {:title "Utensilios" :icon "utensils-crossed" :detail "Recipientes de limpieza reutilizados para alimentos." :level "high"}]
+   :chemical-examples [{:icon "spray-can" :title "Desinfectante en vitrina" :text "Rociar cerca de helados listos para consumo puede dejar residuos."}
+                       {:icon "package-x" :title "Envase sin etiqueta" :text "No identificar el producto químico impide uso seguro y trazable."}
+                       {:icon "beaker" :title "Dilución incorrecta" :text "Una concentración mayor a la indicada puede contaminar superficies."}
+                       {:icon "utensils-crossed" :title "Recipiente compartido" :text "Usar el mismo envase para limpiar y manipular alimento es crítico."}]
+   :prevention [{:icon "archive" :title "Separación estricta" :text "Químicos en área exclusiva, cerrada y señalizada"}
+                {:icon "tag" :title "Etiquetado completo" :text "Nombre, dilución, fecha y responsable en cada envase"}
+                {:icon "clipboard-check" :title "Protocolo de limpieza" :text "Seguir tiempos, dosis y enjuague según ficha técnica"}
+                {:icon "shield-check" :title "Verificación final" :text "Confirmar ausencia de residuos antes de operar"}]}])
 
 ;; ── Operations ──────────────────────────────────────────────────
 (def recepcion-title "Recepción y Almacenamiento")
@@ -213,77 +299,117 @@
 
 (def recepcion-criteria
   [{:que "Temperatura del producto"
+    :icon "thermometer"
     :como "Termómetro infrarrojo"
     :criterio "T = -18°C. Rechazar si la temperatura interna no es conforme."}
    {:que "Limpieza del vehículo"
+    :icon "truck"
     :como "Inspección visual"
     :criterio "Rechazar si el vehículo está sucio."}
    {:que "Condición del producto"
+    :icon "package-check"
     :como "Inspección visual"
     :criterio "Rechazar si la condición no es apta."}
    {:que "Número de lote"
+    :icon "hash"
     :como "Inspección visual"
     :criterio "Rechazar si no está el número de lote."}
    {:que "Registro de recepción"
+    :icon "clipboard-check"
     :como "Formulario"
     :criterio "Completar: fecha, temperatura, condición, vehículo, lote. Marcar aceptado o rechazado."}])
 
 (def almacenamiento-rules
   [{:title "Nunca en el suelo"
+    :icon  "ban"
     :text "El producto para consumo nunca se coloca directamente en el piso. Usar recipientes plásticos o tramos."}
    {:title "Cuarto frío — rotación PEPS"
+    :icon  "arrow-right-left"
     :text "Producto nuevo a la izquierda, más viejo a la derecha. Despachar siempre el producto más antiguo."}
    {:title "Productos secos"
+    :icon  "package"
     :text "Conos y envases se organizan en tramos del almacén seco o área de servicio."}
    {:title "Producto refrigerado"
+    :icon  "refrigerator"
     :text "Colocar en las neveras del área de servicio."}
    {:title "Bandejas de helado"
+    :icon  "ice-cream-cone"
     :text "Colocar en cuartos fríos sobre los tramos. Etiquetar debidamente con fecha y lote."}])
 
 (def temp-control-rules
   [{:title "Registro matutino"
+    :icon  "sunrise"
     :text "Antes de abrir, registrar la temperatura del cuarto frío en el formulario de control."}
    {:title "Registro vespertino"
+    :icon  "sunset"
     :text "Con poca actividad, cerrar el cuarto frío 15–20 min hasta estabilizar la temperatura. Anotar el valor."}
    {:title "Mantenimiento preventivo"
+    :icon  "wrench"
     :text "Las cámaras frías reciben mantenimiento regular con frecuencia programada. Registrar cada intervención."}
    {:title "Vencimiento"
+    :icon  "calendar-check"
     :text "Verificar fechas al recibir y al usar. Todo producto que llegue a su fecha de vencimiento debe descartarse."}])
+
+(def recepcion-alertas-clave
+  ["Controlar y registrar temperaturas al recibir, al almacenar y al cerrar."
+   "Aplicar PEPS todos los días: producto más antiguo sale primero."
+   "Separar productos secos, refrigerados y congelados para evitar cruces."
+   "Si un criterio falla, documentar, aislar y escalar al responsable."])
+
+(def recepcion-controles-gallery
+  [{:img "cadena-nevera.png"
+    :kicker "Bodega"
+    :title "Orden y segregación por zona térmica"}
+   {:img "cadena-termometro.png"
+    :kicker "Control"
+    :title "Toma de temperatura en puntos críticos"}
+   {:img "cadena-registro-papel.png"
+    :kicker "Trazabilidad"
+    :title "Registro diario de controles y acciones"}])
 
 (def limpieza-title "Limpieza y Desinfección")
 
 (def limpieza-def-limpiar
-  "Resultado «estético»: sin residuo orgánico visible. Elimina suciedad, grasa y partículas.")
+  "Resultado «estético»: sin residuo orgánico visible. Elimina suciedad, grasa y partículas antes de desinfectar.")
 
 (def limpieza-def-desinfectar
-  "Resultado «microscópico»: sin gérmenes. Usar solo productos profesionales autorizados para entornos alimentarios.")
+  "Resultado «microscópico»: reducción de gérmenes a nivel seguro. Usar solo productos profesionales autorizados para entornos alimentarios.")
 
 (def limpieza-productos
   [{:nombre "Detergente desinfectante alimentario"
+    :icon   "spray-can"
     :uso    "Para toda superficie en contacto con alimentos o zona de almacenamiento."
     :tipo   "superficie"}
    {:nombre "Toallitas desinfectantes"
+    :icon   "hand"
     :uso    "Desinfección rápida entre preparaciones, sin enjuague — encimeras, utensilios, etc."
     :tipo   "superficie"}
    {:nombre "Detergente alcalino fuerte"
+    :icon   "flask-conical"
     :uso    "Eliminar grasa cocida — hornos, placas y freidoras."
     :tipo   "maquinas"}
    {:nombre "Agente desincrustante"
+    :icon   "beaker"
     :uso    "Retirar depósitos minerales y sarro de equipos."
     :tipo   "maquinas"}
    {:nombre "Detergente lavavajillas"
+    :icon   "settings"
     :uso    "Lavar utensilios y recipientes en máquina lavavajillas."
     :tipo   "maquinas"}
    {:nombre "Líquido lavavajillas a mano"
+    :icon   "hand"
     :uso    "Lavar utensilios y recipientes a mano."
     :tipo   "superficie"}
    {:nombre "Jabón antibacterial líquido"
+    :icon   "hand"
     :uso    "Lavado de manos CON AGUA en zonas de preparación."
     :tipo   "manos"}
    {:nombre "Gel desinfectante de manos"
+    :icon   "droplets"
     :uso    "Desinfección SIN AGUA en puntos de venta. No permitido en zona de preparación."
     :tipo   "manos"}
    {:nombre "Limpiador de pisos y superficies"
+    :icon   "sparkles"
     :uso    "Limpieza de pisos, paredes y superficies no en contacto directo con alimentos."
     :tipo   "superficie"}])
 
@@ -291,21 +417,155 @@
   "PROHIBIDO: esponjas, mopas de hilo y escobas comunes. Usar cepillos de cerdas para uso diario y mopas planas. Aspiradora solo en zona de ventas — prohibida en zona de preparación.")
 
 (def limpieza-vitrina-steps
-  [{:step "01" :title "Preparar solución" :text "Preparar recipiente con jabón y cloro."}
-   {:step "02" :title "Limpiar interior" :text "Paño con detergente: paredes, superficie, bordes de soportes y separadores frontales."}
-   {:step "03" :title "Enjuagar" :text "Pasar paño con agua clara para eliminar residuos de productos químicos."}
-   {:step "04" :title "Cortina y vidrio" :text "Limpiar la cortina de protección por dentro y fuera. Limpiar el vidrio por dentro."}
-   {:step "05" :title "Encender" :text "Encender la nevera y las luces. Dejar estabilizar."}
-   {:step "06" :title "Colocar bandejas" :text "Retirar bandejas del cuarto frío y colocarlas con las etiquetas debidamente visibles. Limpiar vidrio exterior con limpiacristales."}])
+  [{:step "01" :icon "beaker" :title "Preparar solución"
+    :text "Preparar recipiente con jabón y cloro en dilución indicada; usar paños limpios diferenciados."}
+   {:step "02" :icon "spray-can" :title "Limpiar interior"
+    :text "Paño con detergente: paredes, superficie, bordes de soportes y separadores frontales; retirar residuos visibles."}
+   {:step "03" :icon "droplets" :title "Enjuagar"
+    :text "Pasar paño con agua clara hasta eliminar por completo residuos de productos químicos."}
+   {:step "04" :icon "scan-eye" :title "Cortina y vidrio"
+    :text "Limpiar la cortina por dentro y fuera, y verificar transparencia del vidrio interior antes de cargar producto."}
+   {:step "05" :icon "power" :title "Encender y estabilizar"
+    :text "Encender nevera y luces; esperar estabilidad térmica antes de colocar bandejas."}
+   {:step "06" :icon "ice-cream-cone" :title "Colocar bandejas"
+    :text "Retirar bandejas del cuarto frío, validar etiqueta (fecha/lote) y limpiar vidrio exterior con limpiacristales."}])
 
 (def limpieza-schedule
-  [{:freq "Diario" :area "Vitrina de helados" :text "Al inicio del turno: limpiar por dentro con paño desinfectante y enjuagar. Limpiar vidrio exterior con limpiacristales."}
-   {:freq "Diario" :area "Piso general" :text "Inicio/final de turno: barrer debajo de mesas, sillas y neveras; trapear con cubeta de agua y desinfectante. A mediodía: solo áreas de tránsito."}
-   {:freq "Diario" :area "Piso interior y cuarto frío" :text "Barrer el área interior moviendo lo necesario. Trapear almacén y cuarto frío con cubeta de agua y desinfectante."}
-   {:freq "Diario" :area "Mesas y sillas" :text "Inicio/final de turno: paño húmedo con cloro. Después de cada cliente: limpiar tras cada uso."}
-   {:freq "Diario" :area "Recipiente scooper" :text "Inicio y final del día: vaciar, lavar con estropajo, enjuagar con agua corriente hasta obtener solo agua limpia."}
-   {:freq "Semanal" :area "Armarios — básico" :text "Revisar tramos, pasar paño húmedo si es necesario y reorganizar."}
-   {:freq "Mensual" :area "Armarios — profundo" :text "Retirar todo el material, limpiar con paño húmedo desinfectante, secar y reorganizar tramos."}])
+  [{:freq "Diario" :icon "refrigerator" :days-label "Lun-Dom" :month-count "31" :area "Vitrina de helados"
+    :text "Inicio de turno: limpiar interior, enjuagar y dejar seca; limpiar vidrio exterior. Registrar ejecución en checklist."}
+   {:freq "Diario" :icon "house" :days-label "Lun-Dom" :month-count "31" :area "Piso general"
+    :text "Inicio/final: barrer bajo mesas, sillas y neveras; trapear con desinfectante. Mediodía: solo áreas de tránsito."}
+   {:freq "Diario" :icon "snowflake" :days-label "Lun-Dom" :month-count "31" :area "Piso interior y cuarto frío"
+    :text "Barrer moviendo lo necesario y trapear almacén/cuarto frío con solución aprobada para entorno alimentario."}
+   {:freq "Diario" :icon "table" :days-label "Lun-Dom" :month-count "31" :area "Mesas y sillas"
+    :text "Inicio/final: paño húmedo con cloro. Durante servicio: limpiar después de cada cliente."}
+   {:freq "Diario" :icon "cup-soda" :days-label "Lun-Dom" :month-count "31" :area "Recipiente scooper"
+    :text "Inicio y cierre: vaciar, lavar, enjuagar hasta agua clara y reponer agua limpia."}
+   {:freq "Semanal" :icon "archive" :days-label "Sabado" :month-count "4" :area "Armarios — básico"
+    :text "Revisar tramos, limpiar superficies visibles y reorganizar insumos por tipo y rotación."}
+   {:freq "Mensual" :icon "clipboard-check" :days-label "Semana 1" :month-count "1" :area "Armarios — profundo"
+    :text "Retirar todo el material, limpiar/desinfectar a fondo, secar y reordenar con control visual."}])
+
+(def limpieza-gantt
+  {:title "Ciclo calendario de limpieza"
+   :days ["L" "M" "X" "J" "V" "S" "D"]
+   :rows [{:label "Diario" :icon "sun" :active [0 1 2 3 4 5 6] :note "Todos los dias"}
+          {:label "Semanal" :icon "calendar-check" :active [5] :note "Cada sabado"}
+          {:label "Mensual" :icon "calendar" :active [0] :note "Primera semana"}]
+   :note "Referencia visual para planificar el turno y distribuir tareas de limpieza."})
+
+(def limpieza-calendar
+  {:title "Calendario operativo de limpieza"
+   :default-mode "unificado"
+   :default-day "l"
+   :month 3
+   :year 2026
+   :month-label "Marzo 2026"
+   :modes [{:id "unificado" :label "Unificado" :icon "layers" :tone "unificado"}
+           {:id "diario" :label "Diario" :icon "sun" :tone "diario"}
+           {:id "semanal" :label "Semanal" :icon "calendar-check" :tone "semanal"}
+           {:id "mensual" :label "Mensual" :icon "calendar" :tone "mensual"}]
+   :days [{:id "l" :label "Lun"}
+          {:id "m" :label "Mar"}
+          {:id "x" :label "Mie"}
+          {:id "j" :label "Jue"}
+          {:id "v" :label "Vie"}
+          {:id "s" :label "Sab"}
+          {:id "d" :label "Dom"}]
+   :date-cells [nil nil nil nil nil nil {:date 1 :day "d"}
+                {:date 2 :day "l"} {:date 3 :day "m"} {:date 4 :day "x"} {:date 5 :day "j"} {:date 6 :day "v"} {:date 7 :day "s"} {:date 8 :day "d"}
+                {:date 9 :day "l"} {:date 10 :day "m"} {:date 11 :day "x"} {:date 12 :day "j"} {:date 13 :day "v"} {:date 14 :day "s"} {:date 15 :day "d"}
+                {:date 16 :day "l"} {:date 17 :day "m"} {:date 18 :day "x"} {:date 19 :day "j"} {:date 20 :day "v"} {:date 21 :day "s"} {:date 22 :day "d"}
+                {:date 23 :day "l"} {:date 24 :day "m"} {:date 25 :day "x"} {:date 26 :day "j"} {:date 27 :day "v"} {:date 28 :day "s"} {:date 29 :day "d"}
+                {:date 30 :day "l"} {:date 31 :day "m"} nil nil nil]
+   :activities [{:mode "diario" :days ["l" "m" "x" "j" "v" "s" "d"] :time "Apertura" :icon "refrigerator"
+                 :task "Vitrina: limpiar interior, enjuagar y dejar seca; registrar checklist."}
+                {:mode "diario" :days ["l" "m" "x" "j" "v" "s" "d"] :time "Mediodia" :icon "house"
+                 :task "Piso general: mantenimiento de areas de transito y puntos de contacto."}
+                {:mode "diario" :days ["l" "m" "x" "j" "v" "s" "d"] :time "Cierre" :icon "cup-soda"
+                 :task "Recipiente scooper: vaciar, lavar, enjuagar hasta agua clara y reponer."}
+                {:mode "semanal" :days ["s"] :time "10:00" :icon "archive"
+                 :task "Armarios basico: revisar tramos, limpiar superficies y reorganizar por rotacion."}
+                {:mode "semanal" :days ["s"] :time "18:30" :icon "clipboard-check"
+                 :task "Checklist semanal: validacion de tareas y firma de encargado."}
+                {:mode "mensual" :days ["l"] :time "Semana 1" :icon "sparkles"
+                 :task "Armarios profundo: retiro total, desinfeccion, secado y reordenamiento completo."}
+                {:mode "mensual" :days ["l"] :time "Semana 1" :icon "folder-check"
+                 :task "Consolidar y archivar registros diarios/semanales para auditoria."}]
+   :note "Haz click en modo y dia para ver exactamente que tareas corresponden."})
+
+(def limpieza-registro-modos
+  [{:id "diario" :label "Diario" :icon "sun"}
+   {:id "semanal" :label "Semanal" :icon "calendar-check"}
+   {:id "mensual" :label "Mensual" :icon "calendar"}])
+
+(def limpieza-spread-intro
+  {:img "ValenAgostoA40of49-scaled.jpg"
+   :alt "Helados Valentino — higiene y operación en tienda"
+   :kicker "Desplegar"
+   :title "Amplía esta sección"
+   :subtitle "A la izquierda, vitrina y frecuencias; a la derecha, calendario, registro de ejemplo y consejos."
+   :caption "Helados Valentino"})
+
+(def limpieza-registro-meta-hint
+  "Días anteriores: en papel, una hoja por día con la fecha indicada. El calendario arriba en esta página muestra qué tareas correspondían a cada día.")
+
+(def limpieza-registro-meta
+  [{:label "Sucursal" :value "_________________________"}
+   {:label "Encargado" :value "_________________________"}
+   {:label "Fecha" :value "____ / ____ / ______"}])
+
+(def limpieza-registro-sucursales
+  [{:id "suc-centro" :name "Sucursal Centro" :icon "store" :address "Av. Principal 123, Centro" :manager "Ana Gomez"}
+   {:id "suc-norte" :name "Sucursal Norte" :icon "building-2" :address "Calle Norte 45, Plaza Norte" :manager "Luis Perez"}
+   {:id "suc-sur" :name "Sucursal Sur" :icon "map-pin" :address "Bulevar Sur 88, Local 7" :manager "Marta Ruiz"}])
+
+(def limpieza-registro-timeframes
+  [{:id "apertura" :label "Apertura 06:30-10:00" :icon "sunrise"}
+   {:id "operacion" :label "Operacion 10:00-18:00" :icon "sun"}
+   {:id "cierre" :label "Cierre 18:00-22:00" :icon "sunset"}])
+
+(def limpieza-registro-stats
+  [{:icon "check-check" :value "12" :label "controles diarios"}
+   {:icon "calendar-check" :value "4" :label "controles semanales"}
+   {:icon "calendar-range" :value "1" :label "control mensual"}
+   {:icon "clipboard-list" :value "100%" :label "registro requerido"}])
+
+(def limpieza-registro-ejemplo
+  [{:freq "diario"
+    :hora "07:30"
+    :control "Temperatura vitrina y estado general"
+    :accion "T: -18°C. Vitrina limpia, seca y operativa. Firma: Operador A."}
+   {:freq "diario"
+    :hora "08:10"
+    :control "Limpieza de vidrio y cortina"
+    :accion "Interior/exterior sin residuos. Producto visible. Firma: Operador A."}
+   {:freq "diario"
+    :hora "14:20"
+    :control "Piso general y zona de tránsito"
+    :accion "Barrido y trapeado parcial de mantenimiento. Sin obstrucciones."}
+   {:freq "semanal"
+    :hora "SAB 10:00"
+    :control "Armarios — limpieza básica"
+    :accion "Revisión de tramos, limpieza visible y reorganización por rotación."}
+   {:freq "semanal"
+    :hora "SAB 18:30"
+    :control "Verificación de checklist semanal"
+    :accion "Checklist semanal firmada y archivada por encargado de turno."}
+   {:freq "mensual"
+    :hora "SEM 1"
+    :control "Armarios — limpieza profunda"
+    :accion "Retiro total de material, desinfección profunda, secado y reordenamiento."}
+   {:freq "mensual"
+    :hora "SEM 1"
+    :control "Consolidado y resguardo de registros"
+    :accion "Compilar registros diario/semanal y archivar para auditoría."}])
+
+(def limpieza-registro-tips
+  [{:icon "clock-3" :text "Escribir hora exacta y responsable en cada control."}
+   {:icon "shield-alert" :text "Registrar no conformidades y acción correctiva aplicada."}
+   {:icon "ban" :text "Evitar celdas vacías: usar N/A cuando corresponda."}
+   {:icon "archive" :text "Conservar el registro para auditoría y trazabilidad."}])
 
 ;; ── Glossary ────────────────────────────────────────────────────
 (def glosario-title "Glosario de Términos")

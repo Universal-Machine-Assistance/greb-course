@@ -16,10 +16,12 @@
       (response/not-found "index.html not found"))))
 
 (defn- serve-image [org slug path]
-  (let [;; Try course-specific images first, then root images fallback
+  (let [;; courses/org/images, then public/org/slug/images (static tree), then repo images/
         course-f (File. (str "courses/" org "/images") path)
+        public-f (File. (str "public/" org "/" slug "/images") path)
         root-f   (File. "images" path)
         f        (cond (.exists course-f) course-f
+                       (.exists public-f) public-f
                        (.exists root-f)   root-f
                        :else              nil)]
     (if f

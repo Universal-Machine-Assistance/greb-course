@@ -72,9 +72,9 @@
   (.replaceState js/history nil "" (str "#" hash)))
 
 ;; ── Navigator ────────────────────────────────────────────────────
-(defn- build-navigator [spreads spread-ids dots indicator prev-btn next-btn]
+(defn- build-navigator [spreads spread-ids dots indicator prev-btn next-btn initial-idx]
   (let [n     (count spreads)
-        state (atom 0)
+        state (atom (max 0 (min (dec n) (or initial-idx 0))))
         go!   (fn [i dir]
                 (let [ni (max 0 (min (dec n) i))
                       cur @state]
@@ -152,8 +152,8 @@
 (defn- toolbar [indicator toggle-toc! theme]
   (let [logo      (get theme :logo)
         brand     (get theme :brand-name "")
-        back-btn  (doto (d/el :a {:href "/" :class "toolbar-ghost-btn"}
-                              (d/ic "arrow-left" "") "Catalog")
+        back-btn  (doto (d/el :a {:href "/" :class "toolbar-catalog-link" :title "Catalog" :aria-label "Catalog"}
+                              (d/ic "house" ""))
                         (.addEventListener "click"
                           (fn [e]
                             (.preventDefault e)
@@ -165,10 +165,9 @@
                               (d/ic "list" "") (i18n/t :index))
                         (.addEventListener "click" toggle-toc!))]
     (d/el :nav {:class "toolbar"}
-          back-btn
           (d/el :a {:href "#portada" :class "toolbar-logo"}
                 (when logo (d/src-img logo brand nil)))
-          indicator idx-btn print-btn)))
+          indicator idx-btn print-btn back-btn)))
 
 ;; ── Apply theme CSS custom properties ────────────────────────────
 (defn- hex->rgba [hex alpha]
@@ -221,20 +220,23 @@
         indicator  (d/el :span {:class "spread-indicator"} (str "1 / " n))
         prev-btn   (d/el :button {:class "nav-btn nav-prev"} (d/ic "chevron-left" ""))
         next-btn   (d/el :button {:class "nav-btn nav-next"} (d/ic "chevron-right" ""))
-        go!        (build-navigator spreads spread-ids dots indicator prev-btn next-btn)
+        init-idx   (or (get id->spread (current-hash)) 0)
+        go!        (build-navigator spreads spread-ids dots indicator prev-btn next-btn init-idx)
         _          (reset! current-nav {:go! go! :id->spread id->spread :spread-ids spread-ids
                                         :spread->pages (into {} (map-indexed
                                                         (fn [si group]
                                                           [si (mapv #(.-id %) (filter some? group))])
                                                         groups))})
-        {:keys [overlay panel toggle!]} (build-toc-panel go! id->spread toc-groups)
-        init-idx   (get id->spread (current-hash) 0)]
-    (.add (.-classList (first spreads)) "active")
-    (.add (.-classList (first dots))    "active")
-    (set! (.-disabled prev-btn) true)
-    (animate-spread! (first spreads))
-    (when-not (current-hash) (set-hash! (first spread-ids)))
-    (when (> init-idx 0) (js/setTimeout #(go! init-idx nil) 50))
+        {:keys [overlay panel toggle!]} (build-toc-panel go! id->spread toc-groups)]
+    (doseq [s spreads] (.remove (.-classList s) "active"))
+    (doseq [d dots] (.remove (.-classList d) "active"))
+    (.add (.-classList (nth spreads init-idx)) "active")
+    (.add (.-classList (nth dots init-idx)) "active")
+    (set! (.-textContent indicator) (str (inc init-idx) " / " n))
+    (set! (.-disabled prev-btn) (= init-idx 0))
+    (set! (.-disabled next-btn) (= init-idx (dec n)))
+    (when-not (current-hash) (set-hash! (nth spread-ids init-idx "")))
+    (animate-spread! (nth spreads init-idx))
     (.addEventListener js/window "hashchange"
       (fn []
         (when-let [idx (get id->spread (current-hash))]
@@ -382,6 +384,15 @@
             course color-keys)))
 
 ;; ── Boot ─────────────────────────────────────────────────────────
+(defn- hide-boot-loader! []
+  (when-let [el (.getElementById js/document "app-boot-loader")]
+    (.add (.-classList el) "app-boot-loader--out")
+    (js/setTimeout
+      (fn []
+        (when (and el (.-parentNode el))
+          (.remove el)))
+      480)))
+
 (defn- boot-course [course]
   (let [course    (apply-overrides course)
         meta-data (:meta course)
@@ -405,7 +416,11 @@
         (reset! scale-resize-bound? true))
       (when (and js/lucide (.-createIcons js/lucide))
         (.createIcons js/lucide))
-      ;; Auto-run preflight overflow check after images load
+      (js/requestAnimationFrame
+        (fn []
+          (js/requestAnimationFrame
+            (fn []
+              (hide-boot-loader!)))))
       (js/setTimeout preflight! 1500))))
 
 (defn- boot-catalog [courses]
@@ -413,7 +428,12 @@
   (let [app (.getElementById js/document "app")]
     (.appendChild app (build-catalog courses))
     (when (and js/lucide (.-createIcons js/lucide))
-      (.createIcons js/lucide))))
+      (.createIcons js/lucide))
+    (js/requestAnimationFrame
+      (fn []
+        (js/requestAnimationFrame
+          (fn []
+            (hide-boot-loader!)))))))
 
 (defn- boot [courses]
   (reset! current-courses courses)

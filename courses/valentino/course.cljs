@@ -33,13 +33,13 @@
          {:label "Limpieza y Desinfección"
           :entries (subvec c/index-entries 10 12)}
          {:label "Riesgos"
-          :entries (subvec c/index-entries 12 17)}
+          :entries (subvec c/index-entries 14 20)}
          {:label "Glosario"
-          :entries (into [(nth c/index-entries 17)]
-                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 19 i)})
+          :entries (into [(nth c/index-entries 20)]
+                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 22 i)})
                                       c/glosario-terms))}
          {:label "Créditos"
-          :entries [(nth c/index-entries 18)]}]
+          :entries [(nth c/index-entries 21)]}]
 
    :pages
    [;; 1. Cover
@@ -67,8 +67,12 @@
                       :type :sections
                       :items c/contenido-sections}
                      {:label "Riesgos"
-                      :items (mapv (fn [{:keys [id icon title]}] {:id id :label title :icon icon :page (get (into {} (map (juxt :id :page) c/index-entries)) id)})
-                                   c/risk-families)
+                      :items (let [pg #(get (into {} (map (juxt :id :page) c/index-entries)) %)]
+                               (concat [{:id "riesgos-divider" :label "Familias de riesgo (portada)" :icon "image" :page (pg "riesgos-divider")}
+                                        {:id "riesgos-familias-intro" :label "Las cuatro familias explicadas" :icon "layout-grid" :page (pg "riesgos-familias-intro")}]
+                                       (mapv (fn [{:keys [id icon title]}]
+                                               {:id id :label title :icon icon :page (pg id)})
+                                             c/risk-families)))
                       :icon-default "file-text"}
                      {:label "Referencia"
                       :items [{:id "glosario" :label "Glosario de Términos" :icon "book-open"
@@ -153,7 +157,14 @@
             :blocks [{:type :info-grid :icon "archive" :title "Reglas de almacenamiento"
                       :items c/almacenamiento-rules}
                      {:type :info-grid :icon "thermometer" :title "Controles de temperatura y vencimiento"
-                      :items c/temp-control-rules}]}}
+                      :items c/temp-control-rules}
+                     {:type :image-grid
+                      :featured? false
+                      :items c/recepcion-controles-gallery}
+                     {:type :highlight
+                      :icon "sparkles"
+                      :title "Puntos críticos del turno"
+                      :items c/recepcion-alertas-clave}]}}
 
     ;; 11. Cleaning protocol (blocks with header)
     {:template :blocks
@@ -161,14 +172,20 @@
             :header {:icon "spray-can"
                      :kicker "Higiene del entorno"
                      :title c/limpieza-title
-                     :pills [{:icon "droplets" :label "Limpiar" :text c/limpieza-def-limpiar :css-class "def-limpiar"}
-                             {:icon "shield-check" :label "Desinfectar" :text c/limpieza-def-desinfectar :css-class "def-desinfectar"}]}
+                     :pills [{:icon "droplets" :label "Limpiar" :verb "Verbo clave: LAVAR"
+                              :text c/limpieza-def-limpiar :css-class "def-limpiar"}
+                             {:icon "shield-check" :label "Desinfectar" :verb "Verbo clave: DESINFECTAR"
+                              :text c/limpieza-def-desinfectar :css-class "def-desinfectar"}]}
             :blocks [{:type :product-grid :icon "flask-conical" :title "Selección de productos"
                       :legend true
                       :items c/limpieza-productos}]
             :callout c/limpieza-prohibido}}
 
-    ;; 12. Cleaning operations (blocks)
+    ;; 12. Spread intro — pairs with protocolo; next spread = operativa + registro
+    {:template :full-image
+     :data (assoc c/limpieza-spread-intro :id "limpieza-spread-intro")}
+
+    ;; 13–14. Cleaning operations + register (same spread)
     {:template :blocks
      :data {:id "limpieza-operativa"
             :blocks [{:type :wash-grid :icon "refrigerator" :title "Vitrina de helados — apertura"
@@ -176,16 +193,45 @@
                      {:type :sched-grid :icon "calendar-check" :title "Frecuencia de limpieza"
                       :items c/limpieza-schedule}]}}
 
-    ;; 13. Section divider — Riesgos
+    {:template :blocks
+     :data {:id "limpieza-registro"
+            :blocks [{:type :sched-grid :icon "calendar-days" :title "Calendario operativo de limpieza"
+                      :items []
+                      :calendar c/limpieza-calendar}
+                     {:type :registro-sheet :icon "clipboard-pen-line" :title "Ejemplo de registro diario"
+                      :modes c/limpieza-registro-modos
+                      :default-mode "diario"
+                      :meta-hint c/limpieza-registro-meta-hint
+                      :meta c/limpieza-registro-meta
+                      :branches c/limpieza-registro-sucursales
+                      :default-branch "suc-centro"
+                      :timeframes c/limpieza-registro-timeframes
+                      :default-timeframe "apertura"
+                      :stats c/limpieza-registro-stats
+                      :items c/limpieza-registro-ejemplo}
+                     {:type :highlight
+                      :icon "badge-check"
+                      :title "Cómo completar el registro"
+                      :items c/limpieza-registro-tips}]}}
+
+    ;; 15. Section divider — Riesgos
     {:template :full-image
      :data {:id "riesgos-divider"
-            :img "ValenAgostoA40of49-scaled.jpg"
-            :alt "Helados Valentino"
+            :img "cuatro-familias-riesgo.jpg"
+            :alt "Cuatro familias de riesgo: microbiológico, físico, alérgenos y químico"
             :kicker "Seguridad Alimentaria"
             :title "Cuatro Familias de Riesgo"
             :subtitle "Microbiológico · Físico · Alérgenos · Químico — Los riesgos que todo operador debe conocer y prevenir."}}
 
-    ;; 14-17. Risk pages
+    ;; 16. Guía visual — cada bola = una familia
+    {:template :blocks
+     :data {:id "riesgos-familias-intro"
+            :intro c/riesgos-familias-intro-paras
+            :blocks [{:type :risk-familias-bolas :icon "circle-dot" :title "Las cuatro familias de riesgo"
+                      :items c/riesgos-familias-bolas}]
+            :callout "Las páginas siguientes profundizan en cada familia: señales, causas y prevención en tienda."}}
+
+    ;; 17–20. Risk pages
     {:template :risk
      :data (assoc (nth c/risk-families 0) :images-for-sections c/images-for-sections)}
     {:template :risk
@@ -195,12 +241,12 @@
     {:template :risk
      :data (assoc (nth c/risk-families 3) :images-for-sections c/images-for-sections)}
 
-    ;; 18. Glossary index
+    ;; 19. Glossary index
     {:template :glossary-index
      :data {:title c/glosario-title
             :terms c/glosario-terms}}
 
-    ;; 18-24. Glossary detail pages
+    ;; 20-26. Glossary detail pages
     {:template :glossary-detail
      :data (assoc (nth c/glosario-terms 0) :all-terms c/glosario-terms)}
     {:template :glossary-detail
@@ -216,7 +262,7 @@
     {:template :glossary-detail
      :data (assoc (nth c/glosario-terms 6) :all-terms c/glosario-terms)}
 
-    ;; 25. Credits
+    ;; 27. Credits
     {:template :credits
      :data {:title c/credits-title
             :by    c/credits-by

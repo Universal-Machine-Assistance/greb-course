@@ -14,9 +14,9 @@
   --val-orange-bg: var(--brand-primary-bg);
   --val-green-bg:  var(--brand-secondary-bg);
   --val-yellow-bg: var(--brand-accent-bg);
-  --ink:   #1c1c1e;
-  --ink-2: #48484e;
-  --ink-3: #8e8e93;
+  --ink:   #121214;
+  --ink-2: #2e2e34;
+  --ink-3: #4a4a54;
   --paper: #e0dbd0;
   --page:  #fffffe;
   --font-display: "Playfair Display", Georgia, serif;
@@ -32,7 +32,7 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 20.8px; }
 
 body {
   font-family: var(--font-body);
@@ -41,6 +41,41 @@ body {
   color: var(--ink);
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Full-screen boot — hides flash of wrong spread while JS loads */
+.app-boot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(165deg, #16161a 0%, #25252c 55%, #1e1e24 100%);
+  transition: opacity .4s var(--ease), visibility .4s var(--ease);
+}
+.app-boot-loader--out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.app-boot-inner { text-align: center; padding: 1.5rem; }
+.app-boot-spinner {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 1.1rem;
+  border: 3px solid rgba(255,255,255,.1);
+  border-top-color: var(--brand-primary, #e4602c);
+  border-radius: 50%;
+  animation: app-boot-spin .65s linear infinite;
+}
+@keyframes app-boot-spin { to { transform: rotate(360deg); } }
+.app-boot-text {
+  font-family: var(--font-head);
+  font-size: .88rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.72);
+  letter-spacing: .06em;
 }
 
 h1 { font-family: var(--font-display); font-weight: 900; line-height: 1.15; letter-spacing: -.02em; }
@@ -101,6 +136,27 @@ h3, h4 { font-family: var(--font-head); font-weight: 600; }
 .toolbar-btn .icon { width: .9rem; height: .9rem; }
 .toolbar-btn:hover { background: #cc4a1e; transform: translateY(-1px); box-shadow: var(--shadow-md); }
 .toolbar-btn:active { transform: translateY(0); }
+
+/* Subtle catalog link in toolbar */
+.toolbar-catalog-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  color: rgba(255,255,255,.62);
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  transition: color .16s, border-color .16s, background .16s;
+}
+.toolbar-catalog-link .icon { width: .88rem; height: .88rem; }
+.toolbar-catalog-link:hover {
+  color: rgba(255,255,255,.9);
+  background: rgba(255,255,255,.1);
+  border-color: rgba(255,255,255,.28);
+}
 
 /* ── Floating TOC panel ─────────────────────────────────────── */
 .toc-overlay {
