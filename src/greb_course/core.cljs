@@ -157,26 +157,70 @@
     (do (when (.-requestFullscreen overlay) (.requestFullscreen overlay))
         (when (.-webkitRequestFullscreen overlay) (.webkitRequestFullscreen overlay)))))
 
+(defn- pres-toggle-section-mode! []
+  "Toggle section highlight/navigate mode — keeps section bar visible, emphasizes navigation."
+  (when-let [{:keys [overlay]} @pres-state]
+    (if (.contains (.-classList overlay) "pres-overlay--section-mode")
+      (do (.remove (.-classList overlay) "pres-overlay--section-mode")
+          (swap! pres-state assoc :section-mode? false))
+      (do (.add (.-classList overlay) "pres-overlay--section-mode")
+          (swap! pres-state assoc :section-mode? true)))))
+
+(defn- pres-toggle-maximize! []
+  "Toggle current slide to fill entire window (like portada)."
+  (when-let [{:keys [overlay max-btn]} @pres-state]
+    (let [maximized? (.contains (.-classList overlay) "pres-overlay--slide-maximized")]
+      (if maximized?
+        (do (.remove (.-classList overlay) "pres-overlay--slide-maximized")
+            (swap! pres-state assoc :slide-maximized? false)
+            (when max-btn
+              (doto max-btn
+                (.setAttribute "title" (i18n/t :maximize-slide))
+                (.setAttribute "aria-label" (i18n/t :maximize-slide)))
+              (when-let [ic (.querySelector max-btn ".icon")]
+                (.setAttribute ic "data-lucide" "square"))
+              (when (and js/lucide (.-createIcons js/lucide))
+                (.createIcons js/lucide #js {:root max-btn}))))
+        (do (.add (.-classList overlay) "pres-overlay--slide-maximized")
+            (swap! pres-state assoc :slide-maximized? true)
+            (when max-btn
+              (doto max-btn
+                (.setAttribute "title" (i18n/t :restore-slide))
+                (.setAttribute "aria-label" (i18n/t :restore-slide)))
+              (when-let [ic (.querySelector max-btn ".icon")]
+                (.setAttribute ic "data-lucide" "minimize-2"))
+              (when (and js/lucide (.-createIcons js/lucide))
+                (.createIcons js/lucide #js {:root max-btn}))))))))
+
 (defn- fit-pres-scale! []
   (when-let [overlay (:overlay @pres-state)]
     (let [vw      (.-innerWidth js/window)
           vh      (.-innerHeight js/window)
           mobile? (< vw 840)
           pad     (if mobile? 20 80)
-          scale   (min 1 (/ (- vw pad) 1280) (/ (- vh pad) 720))]
+          zoom    (or (:zoom @pres-state) 1.0)
+          scale   (* zoom (min 1 (/ (- vw pad) 1280) (/ (- vh pad) 720)))]
       (.setProperty (.-style overlay) "--pres-scale" (str scale)))))
 
 (defn- pres-save-session! [idx]
-  "Persist presentation slide index to sessionStorage."
-  (.setItem js/sessionStorage "greb-pres-idx" (str idx)))
+  "Persist presentation slide index and zoom to sessionStorage."
+  (.setItem js/sessionStorage "greb-pres-idx" (str idx))
+  (when-let [z (:zoom @pres-state)]
+    (.setItem js/sessionStorage "greb-pres-zoom" (str z))))
 
 (defn- pres-clear-session! []
-  (.removeItem js/sessionStorage "greb-pres-idx"))
+  (.removeItem js/sessionStorage "greb-pres-idx")
+  (.removeItem js/sessionStorage "greb-pres-zoom"))
 
 (defn- pres-restore-session []
   "Returns saved slide index or nil."
   (when-let [v (.getItem js/sessionStorage "greb-pres-idx")]
     (js/parseInt v 10)))
+
+(defn- pres-restore-zoom []
+  "Returns saved zoom level or nil."
+  (when-let [v (.getItem js/sessionStorage "greb-pres-zoom")]
+    (js/parseFloat v)))
 
 (defn- pres-update-section! [idx]
   "Highlight the current section in index panel and section dots."
@@ -265,6 +309,19 @@
     (.remove (.-classList node) "visible"))
   (.remove (.-classList root) "visible"))
 
+(def ^:private block-container-selectors
+  ".page-body, .toc-grid, .pres-grouped, .mission-grid, .wash-grid, .mini-info-grid, .stat-grid, .product-grid, .rq-causes, .gd-cols, .duo-grid, .intro-layout")
+
+(defn- add-block-animations! [root]
+  "Add .animate and staggered d1-d4 to block-level children for offset transition."
+  (doseq [container (array-seq (.querySelectorAll root block-container-selectors))]
+    (doseq [[i child] (map-indexed vector (array-seq (.-children container)))]
+      (when (.-classList child)
+        (when-not (.contains (.-classList child) "animate")
+          (.add (.-classList child) "animate"))
+        (when-not (some #(.contains (.-classList child) %) ["d1" "d2" "d3" "d4"])
+          (.add (.-classList child) (str "d" (inc (mod i 4)))))))))
+
 (defn- sparse-content? [el]
   "Returns true if the element has very little text content (single sentence)."
   (let [text (.-textContent el)
@@ -273,6 +330,7 @@
 
 (defn- make-slide [content-el full? theme-classes page-bg bg-img-src]
   "Wrap a cloned element in the pres-slide > pres-slide-inner structure."
+  (when (not full?) (add-block-animations! content-el))
   (let [inner (d/el :div {:class "pres-slide-inner"})
         slide (d/el :div {:class (str "pres-slide" (when full? " pres-slide--full"))})]
     ;; Background image (from .page-bg-img pages) — set as CSS background
@@ -587,10 +645,48 @@
           fs-btn      (doto (d/el :button {:class "pres-toolbar-btn" :title (i18n/t :fullscreen)}
                                   (d/ic "maximize-2" ""))
                         (.addEventListener "click" #(pres-toggle-fullscreen! overlay)))
+          max-btn     (doto (d/el :button {:class "pres-toolbar-btn"
+                                          :title (i18n/t :maximize-slide)
+                                          :aria-label (i18n/t :maximize-slide)}
+                                  (d/ic "square" ""))
+                        (.addEventListener "click" #(pres-toggle-maximize!)))
+          sec-btn     (doto (d/el :button {:class "pres-toolbar-btn"
+                                          :title (i18n/t :section-mode)
+                                          :aria-label (i18n/t :section-mode)}
+                                  (d/ic "layers" ""))
+                        (.addEventListener "click" #(pres-toggle-section-mode!)))
           exit-btn    (doto (d/el :button {:class "pres-toolbar-btn" :aria-label (i18n/t :close)}
                                   (d/ic "x" ""))
                             (.addEventListener "click" #(exit-presentation!)))
-          toolbar-el  (d/el :div {:class "pres-toolbar"} idx-btn fs-btn exit-btn)
+          ;; ── Zoom controls ──
+          zoom-label  (d/el :span {:class "pres-zoom-label"} "100%")
+          zoom-slider (doto (d/el :input {:type "range" :class "pres-zoom-slider"
+                                          :min "25" :max "200" :step "5" :value "100"})
+                        (.addEventListener "input"
+                          (fn [e]
+                            (let [v (/ (js/parseFloat (.. e -target -value)) 100)]
+                              (swap! pres-state assoc :zoom v)
+                              (set! (.-textContent zoom-label) (str (js/Math.round (* v 100)) "%"))
+                              (fit-pres-scale!)))))
+          set-zoom!   (fn [z]
+                        (let [z (max 0.25 (min 2.0 z))]
+                          (swap! pres-state assoc :zoom z)
+                          (set! (.-value zoom-slider) (str (js/Math.round (* z 100))))
+                          (set! (.-textContent zoom-label) (str (js/Math.round (* z 100)) "%"))
+                          (fit-pres-scale!)))
+          zoom-out-btn (doto (d/el :button {:class "pres-toolbar-btn pres-zoom-btn"
+                                            :title (i18n/t :zoom-out)}
+                                   (d/ic "minus" ""))
+                         (.addEventListener "click"
+                           (fn [] (set-zoom! (- (or (:zoom @pres-state) 1.0) 0.1)))))
+          zoom-in-btn  (doto (d/el :button {:class "pres-toolbar-btn pres-zoom-btn"
+                                            :title (i18n/t :zoom-in)}
+                                   (d/ic "plus" ""))
+                         (.addEventListener "click"
+                           (fn [] (set-zoom! (+ (or (:zoom @pres-state) 1.0) 0.1)))))
+          zoom-controls (d/el :div {:class "pres-zoom-controls"}
+                              zoom-out-btn zoom-slider zoom-label zoom-in-btn)
+          toolbar-el  (d/el :div {:class "pres-toolbar"} idx-btn zoom-controls fs-btn max-btn sec-btn exit-btn)
           on-key      (fn [e]
                         (case (.-key e)
                           ("ArrowRight" "ArrowDown" " ")
@@ -602,6 +698,15 @@
                           "Escape"
                           (do (.preventDefault e) (.stopPropagation e)
                               (exit-presentation!))
+                          ("+" "=")
+                          (do (.preventDefault e) (.stopPropagation e)
+                              (set-zoom! (+ (or (:zoom @pres-state) 1.0) 0.1)))
+                          "-"
+                          (do (.preventDefault e) (.stopPropagation e)
+                              (set-zoom! (- (or (:zoom @pres-state) 1.0) 0.1)))
+                          "0"
+                          (do (.preventDefault e) (.stopPropagation e)
+                              (set-zoom! 1.0))
                           nil))
           on-fschange (fn []
                         (when (and (nil? (.-fullscreenElement js/document))
@@ -617,8 +722,13 @@
                           :slides slide-els :page-ids page-ids :n n :current -1
                           :slide->section slide->section :entry-els entry-els
                           :section-dots section-dots :current-section nil
-                          :fs-btn fs-btn :on-key on-key :on-fschange on-fschange
+                          :zoom (or (pres-restore-zoom) 1.0)
+                          :fs-btn fs-btn :max-btn max-btn :on-key on-key :on-fschange on-fschange
                           :on-resize on-resize})
+      ;; Sync zoom UI with restored value
+      (let [z (or (:zoom @pres-state) 1.0)]
+        (set! (.-value zoom-slider) (str (js/Math.round (* z 100))))
+        (set! (.-textContent zoom-label) (str (js/Math.round (* z 100)) "%")))
       ;; Compute scale
       (fit-pres-scale!)
       ;; Add presenting class (hides document)
@@ -630,11 +740,11 @@
       (.addEventListener js/window "resize" on-resize)
       ;; Show starting slide — use same path as navigation so it looks like the rest
       (pres-show-page! start nil)
+      ;; Tag slide landmarks for View Transition matching
+      (tag-vt! (nth slide-els start))
       ;; Re-render lucide icons
       (when (and js/lucide (.-createIcons js/lucide))
         (.createIcons js/lucide #js {:root overlay}))
-      ;; Tag slide landmarks for View Transition matching
-      (tag-vt! (nth slide-els start))
       ;; Return overlay for fullscreen
       overlay)))
 
