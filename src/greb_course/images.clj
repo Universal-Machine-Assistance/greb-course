@@ -156,19 +156,16 @@
         {:width (Integer/parseInt w) :height (Integer/parseInt h)}))))
 
 (defn- target-ext
-  "Determine output extension. TIF/BMP always become WebP. PNG/JPG can stay or become WebP."
+  "Determine output extension. Everything becomes WebP."
   [original-ext]
-  (let [e (str/lower-case (or original-ext "png"))]
-    (case e
-      ("tif" "tiff" "bmp") "webp"
-      "webp" "webp"
-      ;; For PNG/JPG, convert to WebP for size savings
-      "webp")))
+  "webp")
 
 (defn optimize-image!
   "Optimize a single image using ImageMagick. Returns {:optimized-path ... :size ...} or nil."
   [^String src-path ^String dest-path]
-  (let [{:keys [exit err]} (sh/sh "convert" src-path
+  ;; Use [0] suffix to take first frame of multi-layer TIF/PSD files
+  (let [src-arg  (str src-path "[0]")
+        {:keys [exit err]} (sh/sh "convert" src-arg
                                   "-resize" (str max-dimension "x" max-dimension ">")
                                   "-strip"
                                   "-quality" (str webp-quality)
@@ -177,7 +174,7 @@
       (let [f (File. dest-path)]
         {:optimized-path dest-path
          :size           (.length f)})
-      (do (println "ImageMagick error:" err) nil))))
+      (do (println "ImageMagick error for" src-path ":" err) nil))))
 
 (defn process-entry!
   "Process one manifest entry: copy original to originals/, optimize to optimized/."

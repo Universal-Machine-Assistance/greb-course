@@ -15,7 +15,7 @@ RUN npx shadow-cljs release app
 
 # Stage 2: Run Clojure server (slim)
 FROM clojure:temurin-21-tools-deps-alpine AS runner
-RUN apk add --no-cache imagemagick libwebp-tools
+RUN apk add --no-cache imagemagick libwebp-tools tiff-tools imagemagick-libs
 WORKDIR /app
 COPY deps.edn ./
 RUN clojure -P
