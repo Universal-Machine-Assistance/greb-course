@@ -381,7 +381,5 @@ html.presenting .toc-panel { z-index: 10006; }
 }
 
 @media (max-width: 840px) {
-  .spread { flex-direction: column !important; align-items: center !important; }
-  .page { width: min(96vw, 600px) !important; min-height: unset !important; }
   .catalog-grid { grid-template-columns: 1fr; }
 }
