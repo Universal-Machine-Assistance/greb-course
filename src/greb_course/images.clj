@@ -218,7 +218,7 @@
   [^String images-root manifest]
   (let [entries (:entries manifest)
         updated (mapv (fn [entry]
-                        (if (= :pending (:status entry))
+                        (if (#{:pending :error} (:status entry))
                           (do (println "Optimizing:" (:original entry) "(" (:subdir entry) ")")
                               (or (process-entry! images-root entry)
                                   entry))
