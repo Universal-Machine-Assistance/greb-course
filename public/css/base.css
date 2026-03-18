@@ -382,4 +382,6 @@ html.presenting .toc-panel { z-index: 10006; }
 
 @media (max-width: 840px) {
   .catalog-grid { grid-template-columns: 1fr; }
+  .toolbar-logo img { height: 22px; }
+  .toolbar-logo span { display: none; }
 }

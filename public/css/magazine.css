@@ -5573,10 +5573,17 @@ html.ui-hidden .pres-section-bar {
     padding: .55rem 1rem;
   }
   .reader--mobile .nav-btn {
-    width: 38px;
-    height: 38px;
+    width: 30px;
+    height: 30px;
     top: calc(50% + 22px);
+    opacity: .35;
+    background: rgba(255,255,255,.55);
+    box-shadow: none;
   }
+  .reader--mobile .nav-btn:active { opacity: .8; }
+  .reader--mobile .nav-prev { left: .3rem; }
+  .reader--mobile .nav-next { right: .3rem; }
+  .reader--mobile .nav-btn .icon { width: .8rem; height: .8rem; }
   .hygiene-hero,
   .handwash-head { flex-direction: column; }
   .hero-copy { max-width: none; }
