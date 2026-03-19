@@ -825,27 +825,6 @@
           on-mouse    (fn [e]
                         (.setProperty (.-style hl-cursor) "--hl-x" (str (.-clientX e) "px"))
                         (.setProperty (.-style hl-cursor) "--hl-y" (str (.-clientY e) "px")))
-          ;; ── Touch pan for presentation mode (mobile) ─────────────
-          touch-pan   (atom nil)   ;; {:x :y :t} on start
-          on-touch-start (fn [e]
-                           (when (= (.-touches.length e) 1)
-                             (let [t (aget (.-touches e) 0)]
-                               (reset! touch-pan {:x (.-clientX t) :y (.-clientY t) :moved false}))))
-          on-touch-move  (fn [e]
-                           (.preventDefault e)
-                           (when-let [p @touch-pan]
-                             (when (= (.-touches.length e) 1)
-                               (let [t   (aget (.-touches e) 0)
-                                     dx  (- (.-clientX t) (:x p))
-                                     dy  (- (.-clientY t) (:y p))
-                                     spd 1.8]
-                                 ;; Feed into wheel-style impulse for physics engine
-                                 (set! (.-wx phy) (+ (.-wx phy) (* dx spd)))
-                                 (set! (.-wy phy) (+ (.-wy phy) (* dy spd)))
-                                 (ensure-raf!)
-                                 (reset! touch-pan {:x (.-clientX t) :y (.-clientY t) :moved true})))))
-          on-touch-end   (fn [e]
-                           (reset! touch-pan nil))
           ;; ── Game-engine style smooth pan + zoom (delta-time based) ──
           held-keys      (atom #{})
           ;; Mutable physics state in a single JS object for zero GC pressure
@@ -964,6 +943,24 @@
           ensure-raf!    (fn [] (when-not @pan-raf
                                   (set! (.-last phy) 0)
                                   (reset! pan-raf (js/requestAnimationFrame pan-tick))))
+          ;; ── Touch pan for presentation mode (mobile) ─────────────
+          touch-pan      (atom nil)
+          on-touch-start (fn [e]
+                           (when (= (.-touches.length e) 1)
+                             (let [t (aget (.-touches e) 0)]
+                               (reset! touch-pan {:x (.-clientX t) :y (.-clientY t)}))))
+          on-touch-move  (fn [e]
+                           (.preventDefault e)
+                           (when-let [p @touch-pan]
+                             (when (= (.-touches.length e) 1)
+                               (let [t   (aget (.-touches e) 0)
+                                     dx  (- (.-clientX t) (:x p))
+                                     dy  (- (.-clientY t) (:y p))]
+                                 (set! (.-wx phy) (+ (.-wx phy) (* dx 1.8)))
+                                 (set! (.-wy phy) (+ (.-wy phy) (* dy 1.8)))
+                                 (ensure-raf!)
+                                 (reset! touch-pan {:x (.-clientX t) :y (.-clientY t)})))))
+          on-touch-end   (fn [_] (reset! touch-pan nil))
           on-key      (fn [e]
                         (let [k (.-key e)]
                           (if (#{"h" "j" "k" "l" "u" "m"} k)
