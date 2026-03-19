@@ -948,19 +948,36 @@
           on-touch-start (fn [e]
                            (when (= (.-length (.-touches e)) 1)
                              (let [t (aget (.-touches e) 0)]
-                               (reset! touch-pan {:x (.-clientX t) :y (.-clientY t)}))))
+                               (reset! touch-pan {:x0 (.-clientX t) :y0 (.-clientY t)
+                                                  :x  (.-clientX t) :y  (.-clientY t)
+                                                  :moved false}))))
           on-touch-move  (fn [e]
                            (.preventDefault e)
                            (when-let [p @touch-pan]
                              (when (= (.-length (.-touches e)) 1)
                                (let [t   (aget (.-touches e) 0)
                                      dx  (- (.-clientX t) (:x p))
-                                     dy  (- (.-clientY t) (:y p))]
-                                 (set! (.-wx phy) (+ (.-wx phy) (* dx 1.8)))
-                                 (set! (.-wy phy) (+ (.-wy phy) (* dy 1.8)))
-                                 (ensure-raf!)
-                                 (reset! touch-pan {:x (.-clientX t) :y (.-clientY t)})))))
-          on-touch-end   (fn [_] (reset! touch-pan nil))
+                                     dy  (- (.-clientY t) (:y p))
+                                     tot-dx (js/Math.abs (- (.-clientX t) (:x0 p)))
+                                     tot-dy (js/Math.abs (- (.-clientY t) (:y0 p)))
+                                     moved? (or (:moved p) (> (+ tot-dx tot-dy) 10))]
+                                 (when moved?
+                                   (set! (.-wx phy) (+ (.-wx phy) (* dx 1.8)))
+                                   (set! (.-wy phy) (+ (.-wy phy) (* dy 1.8)))
+                                   (ensure-raf!))
+                                 (reset! touch-pan {:x0 (:x0 p) :y0 (:y0 p)
+                                                    :x  (.-clientX t) :y (.-clientY t)
+                                                    :moved moved?})))))
+          on-touch-end   (fn [e]
+                           (when-let [p @touch-pan]
+                             ;; Tap (no significant move) → navigate by screen half
+                             (when (not (:moved p))
+                               (let [mid (/ (.-innerWidth js/window) 2)
+                                     x   (:x0 p)]
+                                 (if (< x mid)
+                                   (pres-show-page! (dec (or (:current @pres-state) 0)) "going-back")
+                                   (pres-show-page! (inc (or (:current @pres-state) 0)) nil)))))
+                           (reset! touch-pan nil))
           on-key      (fn [e]
                         (let [k (.-key e)]
                           (if (#{"h" "j" "k" "l" "u" "m"} k)
