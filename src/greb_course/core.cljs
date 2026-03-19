@@ -973,13 +973,17 @@
                              ;; Tap (no significant move) → navigate by screen half
                              ;; but NOT if the tap landed on a toolbar/UI element
                              (when (not (:moved p))
-                               (let [target (.-target e)
-                                     on-ui? (.closest target ".pres-toolbar, .pres-toolbar-btn, .pres-index, .pres-index-scrim, .pres-section-bar, .pres-indicator, button, a")]
+                               (let [raw-target (.-target e)
+                                     target (if (= (.-nodeType raw-target) 1)
+                                              raw-target
+                                              (.-parentElement raw-target))
+                                     on-ui? (when target
+                                              (.closest target ".pres-toolbar, .pres-toolbar-btn, .pres-index, .pres-index-scrim, .pres-section-bar, .pres-indicator, button, a"))]
                                  (when-not on-ui?
                                    (let [mid (/ (.-innerWidth js/window) 2)
                                          x   (:x0 p)]
                                      (if (< x mid)
-                                       (pres-show-page! (dec (or (:current @pres-state) 0)) "going-back")
+                                       (pres-show-page! (dec (or (:current @pres-state) 0)) :back)
                                        (pres-show-page! (inc (or (:current @pres-state) 0)) nil)))))))
                            (reset! touch-pan nil))
           on-key      (fn [e]
