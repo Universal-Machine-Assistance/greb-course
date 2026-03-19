@@ -185,29 +185,69 @@
     (.appendChild panel container)
     {:panel panel :container container :status status :prompt prompt-input}))
 
-(defn- init-monaco! [container source]
-  (if (and js/monaco (.-editor js/monaco))
-    (let [ed (.create (.-editor js/monaco) container
-               #js {:value          source
-                    :language       "clojure"
-                    :theme          "vs-dark"
-                    :fontSize       13
-                    :lineNumbers    "on"
-                    :minimap        #js {:enabled false}
-                    :wordWrap       "on"
-                    :scrollBeyondLastLine false
-                    :automaticLayout true
-                    :tabSize        2})]
-      (.addCommand ed
-        (bit-or (.. js/monaco -KeyMod -CtrlCmd)
-                (.. js/monaco -KeyCode -Enter))
-        (fn [] (send-to-claude!)))
-      (.addCommand ed
-        (.. js/monaco -KeyCode -Escape)
-        (fn [] (dismiss!)))
-      ed)
-    (do (js/console.error "Monaco editor not loaded")
-        nil)))
+(defonce ^:private monaco-loading? (atom false))
+
+(defn- load-monaco! [callback]
+  "Lazily load Monaco Editor from CDN, then call (callback)."
+  (if (and (exists? js/monaco) (.-editor js/monaco))
+    (callback)
+    (if @monaco-loading?
+      ;; Already loading — poll until ready
+      (let [poll (atom nil)]
+        (reset! poll
+          (js/setInterval
+            (fn []
+              (when (and (exists? js/monaco) (.-editor js/monaco))
+                (js/clearInterval @poll)
+                (callback)))
+            100)))
+      (do
+        (reset! monaco-loading? true)
+        ;; Load CSS
+        (let [link (.createElement js/document "link")]
+          (set! (.-rel link) "stylesheet")
+          (.setAttribute link "data-name" "vs/editor/editor.main")
+          (set! (.-href link) "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.css")
+          (.appendChild (.-head js/document) link))
+        ;; Set require config
+        (when-not (exists? js/require)
+          (set! js/require #js {:paths #js {:vs "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs"}}))
+        ;; Load loader → nls → main
+        (let [s1 (.createElement js/document "script")]
+          (set! (.-src s1) "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js")
+          (set! (.-onload s1)
+            (fn []
+              (let [s2 (.createElement js/document "script")]
+                (set! (.-src s2) "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.nls.js")
+                (set! (.-onload s2)
+                  (fn []
+                    (let [s3 (.createElement js/document "script")]
+                      (set! (.-src s3) "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/editor/editor.main.js")
+                      (set! (.-onload s3) (fn [] (callback)))
+                      (.appendChild (.-head js/document) s3))))
+                (.appendChild (.-head js/document) s2))))
+          (.appendChild (.-head js/document) s1))))))
+
+(defn- create-monaco-editor! [container source]
+  (let [ed (.create (.-editor js/monaco) container
+             #js {:value          source
+                  :language       "clojure"
+                  :theme          "vs-dark"
+                  :fontSize       13
+                  :lineNumbers    "on"
+                  :minimap        #js {:enabled false}
+                  :wordWrap       "on"
+                  :scrollBeyondLastLine false
+                  :automaticLayout true
+                  :tabSize        2})]
+    (.addCommand ed
+      (bit-or (.. js/monaco -KeyMod -CtrlCmd)
+              (.. js/monaco -KeyCode -Enter))
+      (fn [] (send-to-claude!)))
+    (.addCommand ed
+      (.. js/monaco -KeyCode -Escape)
+      (fn [] (dismiss!)))
+    ed))
 
 ;; ── Claude API integration ─────────────────────────────────────
 
@@ -374,25 +414,26 @@
         (let [{:keys [panel container status prompt]} (create-editor-panel!)]
           ;; Inject editor panel into the target page element
           (.appendChild target panel)
-          ;; Force layout before creating Monaco
-          (.-offsetHeight container)
-          (let [ed       (init-monaco! container source)
-                ;; Listen to editor changes and live-sync to the page
-                listener (when ed
-                           ;; API lives on the editor, not getModel() (model uses onDidChangeContent)
-                           (.onDidChangeModelContent ed (fn [_] (schedule-sync!))))]
-            (reset! editor-state {:active?   true
-                                  :instance  ed
-                                  :panel     panel
-                                  :page-idx  page-idx
-                                  :target    target
-                                  :edit-page edit-page
-                                  :listener  listener})
-            (set! (.-textContent status) (str "Editing page " (inc page-idx)))
-            ;; Refresh lucide icons for the buttons
-            (when (and js/lucide (.-createIcons js/lucide))
-              (.createIcons js/lucide #js {:attrs #js {:class "icon"}}))
-            (.focus prompt)))))))
+          (set! (.-textContent status) "Loading editor…")
+          ;; Lazy-load Monaco, then create editor
+          (load-monaco!
+            (fn []
+              ;; Force layout before creating Monaco
+              (.-offsetHeight container)
+              (let [ed       (create-monaco-editor! container source)
+                    listener (when ed
+                               (.onDidChangeModelContent ed (fn [_] (schedule-sync!))))]
+                (reset! editor-state {:active?   true
+                                      :instance  ed
+                                      :panel     panel
+                                      :page-idx  page-idx
+                                      :target    target
+                                      :edit-page edit-page
+                                      :listener  listener})
+                (set! (.-textContent status) (str "Editing page " (inc page-idx)))
+                (when (and js/lucide (.-createIcons js/lucide))
+                  (.createIcons js/lucide #js {:attrs #js {:class "icon"}}))
+                (.focus prompt)))))))))
 
 (defn dismiss! []
   (when-let [{:keys [instance panel active? listener]} @editor-state]
