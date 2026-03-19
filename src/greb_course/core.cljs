@@ -118,26 +118,28 @@
     (doseq [[i dot] (map-indexed vector dots)]
       (.addEventListener dot "click"
         #(go! i (if (< i @state) "going-back" nil))))
-    ;; ── Swipe gestures (touch) ────────────────────────────────────
+    ;; ── Swipe gestures (touch) — reader only, not during presentation ──
     (let [touch-x (atom nil)
           touch-y (atom nil)]
       (.addEventListener js/document "touchstart"
         (fn [e]
-          (let [t (aget (.-touches e) 0)]
-            (reset! touch-x (.-clientX t))
-            (reset! touch-y (.-clientY t))))
+          (when-not (.contains (.-classList (.-documentElement js/document)) "presenting")
+            (let [t (aget (.-touches e) 0)]
+              (reset! touch-x (.-clientX t))
+              (reset! touch-y (.-clientY t)))))
         #js {:passive true})
       (.addEventListener js/document "touchend"
         (fn [e]
-          (when-let [x0 @touch-x]
-            (let [t  (aget (.-changedTouches e) 0)
-                  dx (- (.-clientX t) x0)
-                  dy (- (.-clientY t) @touch-y)]
-              (when (and (> (js/Math.abs dx) 48)
-                         (< (js/Math.abs dy) (js/Math.abs dx)))
-                (if (< dx 0)
-                  (go! (inc @state) nil)
-                  (go! (dec @state) "going-back")))
+          (when-not (.contains (.-classList (.-documentElement js/document)) "presenting")
+            (when-let [x0 @touch-x]
+              (let [t  (aget (.-changedTouches e) 0)
+                    dx (- (.-clientX t) x0)
+                    dy (- (.-clientY t) @touch-y)]
+                (when (and (> (js/Math.abs dx) 48)
+                           (< (js/Math.abs dy) (js/Math.abs dx)))
+                  (if (< dx 0)
+                    (go! (inc @state) nil)
+                    (go! (dec @state) "going-back"))))
               (reset! touch-x nil)
               (reset! touch-y nil))))
         #js {:passive true}))
@@ -823,6 +825,27 @@
           on-mouse    (fn [e]
                         (.setProperty (.-style hl-cursor) "--hl-x" (str (.-clientX e) "px"))
                         (.setProperty (.-style hl-cursor) "--hl-y" (str (.-clientY e) "px")))
+          ;; ── Touch pan for presentation mode (mobile) ─────────────
+          touch-pan   (atom nil)   ;; {:x :y :t} on start
+          on-touch-start (fn [e]
+                           (when (= (.-touches.length e) 1)
+                             (let [t (aget (.-touches e) 0)]
+                               (reset! touch-pan {:x (.-clientX t) :y (.-clientY t) :moved false}))))
+          on-touch-move  (fn [e]
+                           (.preventDefault e)
+                           (when-let [p @touch-pan]
+                             (when (= (.-touches.length e) 1)
+                               (let [t   (aget (.-touches e) 0)
+                                     dx  (- (.-clientX t) (:x p))
+                                     dy  (- (.-clientY t) (:y p))
+                                     spd 1.8]
+                                 ;; Feed into wheel-style impulse for physics engine
+                                 (set! (.-wx phy) (+ (.-wx phy) (* dx spd)))
+                                 (set! (.-wy phy) (+ (.-wy phy) (* dy spd)))
+                                 (ensure-raf!)
+                                 (reset! touch-pan {:x (.-clientX t) :y (.-clientY t) :moved true})))))
+          on-touch-end   (fn [e]
+                           (reset! touch-pan nil))
           ;; ── Game-engine style smooth pan + zoom (delta-time based) ──
           held-keys      (atom #{})
           ;; Mutable physics state in a single JS object for zero GC pressure
@@ -1044,6 +1067,7 @@
                           :text-scale (or (pres-restore-text-scale) 1.0)
                           :fs-btn fs-btn :max-btn max-btn
                           :on-key on-key :on-keyup on-keyup :on-mouse on-mouse :on-wheel on-wheel
+                          :on-touch-start on-touch-start :on-touch-move on-touch-move :on-touch-end on-touch-end
                           :held-keys held-keys :phy phy :pan-raf pan-raf
                           :on-fschange on-fschange :on-resize on-resize})
       ;; Sync zoom & text-scale UI with restored values
@@ -1065,6 +1089,9 @@
       (.addEventListener js/window "resize" on-resize)
       (.addEventListener js/window "mousemove" on-mouse)
       (.addEventListener js/document "wheel" on-wheel #js {:passive false})
+      (.addEventListener overlay "touchstart" on-touch-start #js {:passive true})
+      (.addEventListener overlay "touchmove"  on-touch-move  #js {:passive false})
+      (.addEventListener overlay "touchend"   on-touch-end   #js {:passive true})
       ;; Show starting slide — use same path as navigation so it looks like the rest
       (pres-show-page! start nil)
       ;; Tag slide landmarks for View Transition matching
@@ -1079,6 +1106,7 @@
   "Core teardown: remove listeners, clear state. Returns [overlay target-page-id]."
   []
   (when-let [{:keys [overlay on-key on-keyup on-mouse on-wheel on-fschange on-resize
+                     on-touch-start on-touch-move on-touch-end
                      held-keys ^js phy pan-raf page-ids current slides]} @pres-state]
     (let [target-page-id (nth page-ids (or current 0) nil)
           active-slide   (nth slides (or current 0) nil)]
@@ -1093,6 +1121,9 @@
       (.removeEventListener js/window "resize" on-resize)
       (.removeEventListener js/window "mousemove" on-mouse)
       (when on-wheel (.removeEventListener js/document "wheel" on-wheel))
+      (when on-touch-start (.removeEventListener overlay "touchstart" on-touch-start))
+      (when on-touch-move  (.removeEventListener overlay "touchmove"  on-touch-move))
+      (when on-touch-end   (.removeEventListener overlay "touchend"   on-touch-end))
       (when phy
         (set! (.-vx phy) 0) (set! (.-vy phy) 0)
         (set! (.-zv phy) 0) (set! (.-wx phy) 0) (set! (.-wy phy) 0))
