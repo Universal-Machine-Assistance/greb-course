@@ -10,7 +10,10 @@
         :select-section "Seleccionar sección"
         :maximize-slide "Maximizar slide" :restore-slide "Restaurar tamaño"
         :section-mode "Modo secciones" :exit-section-mode "Salir modo secciones"
-        :zoom-in "Acercar" :zoom-out "Alejar" :zoom-reset "Restablecer zoom"}
+        :zoom-in "Acercar" :zoom-out "Alejar" :zoom-reset "Restablecer zoom"
+        :toc-tagline "Visor interactivo de documentos"
+        :toc-mode-doc "Modo documento" :toc-mode-pres "Modo presentación"
+        :toc-shortcuts-title "Atajos"}
    :en {:print "Print / PDF" :index "Index" :close "Close"
         :page-of "{current} / {total}" :toc-title "Index"
         :prev "Previous" :next "Next" :glossary "Glossary"
@@ -19,7 +22,10 @@
         :select-section "Select section"
         :maximize-slide "Maximize slide" :restore-slide "Restore size"
         :section-mode "Section mode" :exit-section-mode "Exit section mode"
-        :zoom-in "Zoom in" :zoom-out "Zoom out" :zoom-reset "Reset zoom"}})
+        :zoom-in "Zoom in" :zoom-out "Zoom out" :zoom-reset "Reset zoom"
+        :toc-tagline "Interactive document viewer"
+        :toc-mode-doc "Document mode" :toc-mode-pres "Presentation mode"
+        :toc-shortcuts-title "Shortcuts"}})
 
 (defonce ^:private current-strings (atom (:en base-strings)))
 

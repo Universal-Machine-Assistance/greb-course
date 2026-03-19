@@ -2,12 +2,14 @@
   "Wiring file — registers all courses, boots the right one based on URL."
   (:require [greb-course.core :as core]
             [valentino.course :as valentino]
-            [romerlabs.course :as romerlabs]))
+            [romerlabs.course :as romerlabs]
+            [grebdocs.course :as grebdocs]))
 
 ;; All available courses — add new ones here
 (def courses
   [valentino/course
-   romerlabs/course])
+   romerlabs/course
+   grebdocs/course])
 
 (defn init [] (core/init! courses))
 

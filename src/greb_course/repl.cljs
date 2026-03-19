@@ -1,6 +1,7 @@
 (ns greb-course.repl
   "REPL helpers for managing courses and pages live."
   (:require [greb-course.core :as core]
+            [greb-course.editor :as editor]
             [clojure.string :as str]))
 
 ;; ── Edit in editor ──────────────────────────────────────────────
@@ -47,6 +48,15 @@
    Usage: (go! 5)  or  (go! \"riesgo-quimico\")"
   [target]
   (core/navigate! target))
+
+(defn ask!
+  "Claude quick question (same HTTP path as omnibar ask). Prints reply or error.
+   Usage: (ask! \"hello world\")  or  (require '[greb-course.repl :as r]) (r/ask! \"hi\")"
+  [prompt]
+  (-> (editor/anthropic-quick-ask! prompt)
+      (.then (fn [r] (println r)))
+      (.catch (fn [e] (println "Error:" (.-message e)))))
+  nil)
 
 ;; ── List ────────────────────────────────────────────────────────
 (defn list-courses

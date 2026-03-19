@@ -1,13 +1,15 @@
 (ns greb-course.templates.components
   "Shared sub-components used across templates."
-  (:require [greb-course.dom :as d]))
+  (:require [greb-course.dom :as d]
+            [greb-course.rich-text :as rich]))
 
 (defn mission-card [{:keys [label tone]}]
   (d/el :article {:class (str "mission-card animate tone-" tone)}
         (d/el :div {:class "mission-card-top"}
               (d/ic "badge-check" "mission-card-icon")
               (d/el :span {:class "mission-tag"} "Checklist"))
-        (d/el :p {:class "mission-copy"} label)))
+        (apply d/el :p {:class "mission-copy"}
+               (rich/inline-children (str label)))))
 
 (defn info-card [{:keys [title text icon]}]
   (d/el :article {:class "info-card animate"}
@@ -15,14 +17,17 @@
               (when icon
                 (d/el :div {:class "info-card-icon-wrap"}
                       (d/ic icon "info-card-icon")))
-              (d/el :h3 {:class "info-card-title"} title))
-        (d/el :p {:class "info-card-text"} text)))
+              (apply d/el :h3 {:class "info-card-title"}
+                     (rich/inline-children title)))
+        (apply d/el :p {:class "info-card-text"}
+               (rich/inline-children text))))
 
 (defn stat-card [{:keys [icon label value]}]
   (d/el :article {:class "stat-card animate"}
         (d/el :div {:class "stat-card-icon-wrap"}
               (d/ic icon "stat-card-icon"))
-        (d/el :p {:class "stat-card-label"} label)
+        (apply d/el :p {:class "stat-card-label"}
+               (rich/inline-children (str label)))
         (when value (d/el :p {:class "stat-card-value"} value))))
 
 (defn timeline-entry [{:keys [year title text]}]
@@ -30,8 +35,10 @@
         (d/el :div {:class "timeline-marker"}
               (d/el :span {:class "timeline-year"} year))
         (d/el :div {:class "timeline-content"}
-              (d/el :h3 {:class "timeline-title"} title)
-              (d/el :p {:class "timeline-text"} text))))
+              (apply d/el :h3 {:class "timeline-title"}
+                     (rich/inline-children (str title)))
+              (apply d/el :p {:class "timeline-text"}
+                     (rich/inline-children (str text))))))
 
 (defn timeline [items]
   (apply d/el :div {:class "timeline"}
@@ -69,15 +76,18 @@
         (d/el :div {:class "highlight-bar-icon-wrap"}
               (d/ic icon "highlight-bar-icon"))
         (d/el :div {:class "highlight-bar-body"}
-              (d/el :p {:class "highlight-bar-title"} title)
+              (apply d/el :p {:class "highlight-bar-title"}
+                     (rich/inline-children (str title)))
               (apply d/el :ul {:class "highlight-bar-list"}
                      (mapv (fn [item]
                              (if (map? item)
                                (d/el :li {:class "highlight-step-item"}
                                      (when-let [item-icon (:icon item)]
                                        (d/ic item-icon "highlight-step-icon"))
-                                     (d/el :span {:class "highlight-step-text"} (:text item)))
-                               (d/el :li {} item)))
+                                     (apply d/el :span {:class "highlight-step-text"}
+                                            (rich/inline-children (str (:text item)))))
+                               (apply d/el :li {}
+                                      (rich/inline-children (str item)))))
                            items)))))
 
 (defn product-showcase [{:keys [img alt features]}]
@@ -90,7 +100,8 @@
                        (d/el :div {:class "product-showcase-feat"}
                              (d/el :div {:class "product-showcase-feat-icon-wrap"}
                                    (d/ic icon "product-showcase-feat-icon"))
-                             (d/el :span {:class "product-showcase-feat-label"} label)))
+                             (apply d/el :span {:class "product-showcase-feat-label"}
+                                    (rich/inline-children (str label)))))
                      features))))
 
 (defn image-card [{:keys [img kicker title]}]
@@ -115,29 +126,43 @@
                                (d/el :div {:class "product-showcase-feat"}
                                      (d/el :div {:class "product-showcase-feat-icon-wrap"}
                                            (d/ic icon "product-showcase-feat-icon"))
-                                     (d/el :span {:class "product-showcase-feat-label"} label)))
+                                     (apply d/el :span {:class "product-showcase-feat-label"}
+                                            (rich/inline-children (str label)))))
                              features))))
         (d/el :div {:class "product-timeline-right"}
               (apply d/el :div {:class "timeline timeline--compact"}
                      (mapv timeline-entry timeline-items)))
         (when disclaimer
-          (d/el :p {:class "product-timeline-disclaimer"} disclaimer))))
+          (apply d/el :p {:class "product-timeline-disclaimer"}
+                 (rich/inline-children (str disclaimer))))))
 
 (defn mission-chip [label]
-  (d/el :span {:class "mission-chip animate"} label))
+  (apply d/el :span {:class "mission-chip animate"}
+         (rich/inline-children (str label))))
 
 (defn wash-step [{:keys [step title text icon]}]
   (d/el :article {:class "wash-step animate"}
         (d/el :div {:class "wash-step-num"}
               (if icon (d/ic icon "wash-step-icon") step))
         (d/el :div {:class "wash-step-body"}
-              (d/el :h3 {:class "wash-step-title"} title)
-              (d/el :p {:class "wash-step-text"} text))))
+              (apply d/el :h3 {:class "wash-step-title"}
+                     (rich/inline-children (str title)))
+              (apply d/el :p {:class "wash-step-text"}
+                     (rich/inline-children (str text))))))
 
 (defn section-bar [icon-name title]
   (d/el :div {:class "section-bar mission-bar"}
         (d/ic icon-name "bar-icon")
         (d/el :h2 {} title)))
+
+(defn omnibar-embed-block [{:keys [icon title caption]}]
+  (d/el :section {:class "hygiene-block omni-embed-section"}
+        (when (or icon title)
+          (section-bar (or icon "terminal") (or title "OmniREPL — prueba interactiva")))
+        (when caption
+          (apply d/el :p {:class "omni-embed-caption"}
+                 (rich/inline-children (str caption))))
+        (d/el :div {:class "omni-embed-host"})))
 
 (defn criteria-row [{:keys [que como criterio icon]}]
   (d/el :tr {:class "criteria-row"}
@@ -515,6 +540,7 @@
 
 (defn visitor-zone [{:keys [zone items]}]
   (d/el :article {:class "visitor-zone animate"}
-        (d/el :h3 {:class "visitor-zone-title"} zone)
+        (apply d/el :h3 {:class "visitor-zone-title"}
+               (rich/inline-children (str zone)))
         (apply d/el :div {:class "chip-row"}
                (mapv mission-chip items))))

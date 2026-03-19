@@ -83,6 +83,9 @@
     :highlight
     (comp/highlight-bar block)
 
+    :omni-embed
+    (comp/omnibar-embed-block block)
+
     :risk-familias-bolas
     (comp/risk-familias-bolas-grid items {:hide-visuals? (:hide-visuals? block)})
 
@@ -91,7 +94,7 @@
            (mapv comp/info-card items))))
 
 (defn- render-block [block]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid} (:type block))
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed} (:type block))
     (render-block-content block)
     (d/el :section {:class "hygiene-block"}
           (comp/section-bar (:icon block) (:title block))

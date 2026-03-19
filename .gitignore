@@ -9,3 +9,7 @@ public/js/cljs-runtime/
 public/js/main.js
 public/js/manifest.edn
 *.DS_Store
+# API keys and other secrets (never commit)
+.env
+.env.local
+src/greb_course/.env
