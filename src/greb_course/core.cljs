@@ -946,13 +946,13 @@
           ;; ── Touch pan for presentation mode (mobile) ─────────────
           touch-pan      (atom nil)
           on-touch-start (fn [e]
-                           (when (= (.-touches.length e) 1)
+                           (when (= (.-length (.-touches e)) 1)
                              (let [t (aget (.-touches e) 0)]
                                (reset! touch-pan {:x (.-clientX t) :y (.-clientY t)}))))
           on-touch-move  (fn [e]
                            (.preventDefault e)
                            (when-let [p @touch-pan]
-                             (when (= (.-touches.length e) 1)
+                             (when (= (.-length (.-touches e)) 1)
                                (let [t   (aget (.-touches e) 0)
                                      dx  (- (.-clientX t) (:x p))
                                      dy  (- (.-clientY t) (:y p))]
@@ -1236,8 +1236,8 @@
         idx-btn   (doto (d/el :button {:class "toolbar-ghost-btn"}
                               (d/ic "list" "") (i18n/t :index))
                         (.addEventListener "click" toggle-toc!))
-        pres-btn  (doto (d/el :button {:class (str "toolbar-ghost-btn" (when mobile? " toolbar-desktop-only"))}
-                              (d/ic "play" "") (i18n/t :present))
+        pres-btn  (doto (d/el :button {:class (str "toolbar-ghost-btn" (when mobile? " toolbar-icon-only"))}
+                              (d/ic "play" "") (when-not mobile? (i18n/t :present)))
                         (.addEventListener "click" #(enter-presentation!)))]
     (d/el :nav {:class "toolbar"}
           (d/el :a {:href "#portada" :class "toolbar-logo"}
