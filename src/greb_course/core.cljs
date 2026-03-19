@@ -971,12 +971,16 @@
           on-touch-end   (fn [e]
                            (when-let [p @touch-pan]
                              ;; Tap (no significant move) → navigate by screen half
+                             ;; but NOT if the tap landed on a toolbar/UI element
                              (when (not (:moved p))
-                               (let [mid (/ (.-innerWidth js/window) 2)
-                                     x   (:x0 p)]
-                                 (if (< x mid)
-                                   (pres-show-page! (dec (or (:current @pres-state) 0)) "going-back")
-                                   (pres-show-page! (inc (or (:current @pres-state) 0)) nil)))))
+                               (let [target (.-target e)
+                                     on-ui? (.closest target ".pres-toolbar, .pres-toolbar-btn, .pres-index, .pres-index-scrim, .pres-section-bar, .pres-indicator, button, a")]
+                                 (when-not on-ui?
+                                   (let [mid (/ (.-innerWidth js/window) 2)
+                                         x   (:x0 p)]
+                                     (if (< x mid)
+                                       (pres-show-page! (dec (or (:current @pres-state) 0)) "going-back")
+                                       (pres-show-page! (inc (or (:current @pres-state) 0)) nil)))))))
                            (reset! touch-pan nil))
           on-key      (fn [e]
                         (let [k (.-key e)]
@@ -1158,10 +1162,11 @@
   ([] (enter-presentation! nil))
   ([start-idx]
    (when-not @pres-state
-     (let [slide-data (extract-slides)
+     (let [slide-data (try (extract-slides) (catch :default e (js/console.error "extract-slides error" e) []))
            page-ids   (mapv :page-id slide-data)
-           n          (count (mapv :slide slide-data))
-           auto-idx   (when (nil? start-idx)
+           n          (count slide-data)]
+       (when (pos? n)
+     (let [auto-idx   (when (nil? start-idx)
                         (when-let [hash (current-hash)]
                           (slide-idx-for-page page-ids hash)))
            start      (max 0 (min (dec n) (or start-idx auto-idx 0)))
@@ -1193,7 +1198,7 @@
          (let [overlay (setup-presentation! slide-data start)]
            (.add (.-classList overlay) "pres-overlay--fade-in")
            (js/requestAnimationFrame
-             #(.remove (.-classList overlay) "pres-overlay--fade-in"))))))))
+             #(.remove (.-classList overlay) "pres-overlay--fade-in"))))))))))
 
 (defn- exit-presentation! []
   (when @pres-state
