@@ -2,8 +2,10 @@
   "Full-page background image template with optional overlay text."
   (:require [greb-course.dom :as d]))
 
-(defn render [{:keys [id img alt kicker title subtitle caption]} page-num _theme]
-  (d/el :article {:class "page full-image-page" :id id}
+(defn render [{:keys [id img alt kicker title subtitle caption screenshot?]} page-num _theme]
+  (d/el :article {:class (str "page full-image-page"
+                               (when screenshot? " full-image-page--screenshot"))
+                  :id id}
         (d/el :div {:class "full-image-bg"}
               (d/src-img img (or alt title "") "full-image-photo"))
         (when (or kicker title subtitle)

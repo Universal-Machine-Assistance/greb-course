@@ -112,6 +112,7 @@
      :data {:id "img-dashboard"
             :img "home-selector.png"
             :alt "Dashboard de Harmonia"
+            :screenshot? true
             :kicker "Captura de Pantalla"
             :title "Dashboard"
             :subtitle "Panel principal con estadísticas, eventos y distribución académica"}}
@@ -146,6 +147,7 @@
      :data {:id "img-sedes"
             :img "sedes.png"
             :alt "Vista de Sedes en Harmonia"
+            :screenshot? true
             :kicker "Captura de Pantalla"
             :title "Sedes"
             :subtitle "Tarjetas glass-card con nombre, ciudad, dirección, encargado y conteo de cursos/salas"}}
@@ -177,6 +179,7 @@
      :data {:id "img-cursos"
             :img "cursos.png"
             :alt "Vista de Cursos en Harmonia"
+            :screenshot? true
             :kicker "Captura de Pantalla"
             :title "Grupos de Estudio"
             :subtitle "Tarjetas con nombre, sede, día/hora y cátedras asignadas. Filtros por sede y día"}}
@@ -208,6 +211,7 @@
      :data {:id "img-miembros"
             :img "miembros.png"
             :alt "Vista de Miembros en Harmonia"
+            :screenshot? true
             :kicker "Captura de Pantalla"
             :title "Miembros"
             :subtitle "Stats de totales, búsqueda por nombre, tabla con rol, estado y teléfono"}}
@@ -239,6 +243,7 @@
      :data {:id "img-biblioteca"
             :img "biblioteca.png"
             :alt "Catálogo de Biblioteca en Harmonia"
+            :screenshot? true
             :kicker "Captura de Pantalla"
             :title "Biblioteca"
             :subtitle "108 libros con portadas, búsqueda por título/autor/ISBN, filtros por tema"}}

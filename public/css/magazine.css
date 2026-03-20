@@ -277,6 +277,18 @@
   color: #fff;
   background: rgba(0,0,0,.75);
 }
+/* Screenshot variant: contain instead of cover, dark bg behind */
+.full-image-page--screenshot { background: #0f172a; }
+.full-image-page--screenshot .full-image-photo {
+  object-fit: contain;
+  padding: .15in;
+}
+.full-image-page--screenshot .full-image-overlay {
+  padding: .2in .5in .1in;
+  background: linear-gradient(0deg, rgba(15,23,42,.95) 0%, rgba(15,23,42,.7) 60%, transparent 100%);
+}
+.full-image-page--screenshot .full-image-title { font-size: 1.2rem; }
+.full-image-page--screenshot .full-image-subtitle { max-width: 90%; font-size: .6rem; }
 
 /* ── Portada (magazine cover) ────────────────────────────────── */
 .portada-page { background: var(--page, #fffffe); position: relative; }
