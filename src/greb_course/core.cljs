@@ -564,8 +564,15 @@
     (boot-catalog courses)))
 
 (defn init! [courses]
-  (dbg/install!)
-  (boot courses))
+  (try
+    (dbg/install!)
+    (boot courses)
+    (catch :default e
+      (let [d (.createElement js/document "pre")]
+        (set! (.. d -style -cssText)
+          "position:fixed;top:0;left:0;right:0;z-index:999999;background:red;color:#fff;font:12px/1.4 monospace;padding:12px;max-height:60vh;overflow:auto;white-space:pre-wrap")
+        (set! (.-textContent d) (str "BOOT ERROR: " (.-message e) "\n" (.-stack e)))
+        (.appendChild (.-body js/document) d)))))
 
 (defn reload! [courses]
   (when-let [app (.getElementById js/document "app")]
