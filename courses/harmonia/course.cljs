@@ -25,13 +25,13 @@
                     :body    "DM Sans"}}
 
    :toc [{:label "Introducción"
-          :entries (subvec c/index-entries 0 7)}
+          :entries (subvec c/index-entries 0 9)}
          {:label "Gestión Académica"
-          :entries (subvec c/index-entries 7 13)}
+          :entries (subvec c/index-entries 9 20)}
          {:label "Recursos"
-          :entries (subvec c/index-entries 13 16)}
+          :entries (subvec c/index-entries 20 22)}
          {:label "Administración"
-          :entries (subvec c/index-entries 16 29)}]
+          :entries (subvec c/index-entries 22 35)}]
 
    :pages
    [;; 1. Cover
@@ -92,7 +92,31 @@
                      {:type :info-grid :icon "shield" :title "Roles del Sistema"
                       :items c/acceso-roles}]}}
 
-    ;; 7. API REST
+    ;; 7. Perfil de Usuario
+    {:template :hero-section
+     :data {:id "perfil"
+            :hero {:kicker "Tu Cuenta"
+                   :title  c/perfil-title
+                   :subtitle c/perfil-subtitle
+                   :intro c/perfil-intro}
+            :blocks [{:type :info-grid :icon "link" :title "Vinculación Usuario → Miembro"
+                      :items c/perfil-vinculacion}
+                     {:type :info-grid :icon "user" :title "Contenido del Perfil"
+                      :items c/perfil-contenido}
+                     {:type :code-block
+                      :caption "Flujo de vinculación Usuario → Miembro (código)"
+                      :lines c/perfil-code-vinculacion}]}}
+
+    ;; 8. Vista: Dashboard
+    {:template :full-image
+     :data {:id "img-dashboard"
+            :img "home-selector.png"
+            :alt "Dashboard de Harmonia"
+            :kicker "Captura de Pantalla"
+            :title "Dashboard"
+            :subtitle "Panel principal con estadísticas, eventos y distribución académica"}}
+
+    ;; 9. API REST
     {:template :blocks
      :data {:id "api"
             :header {:icon "cloud"
@@ -117,7 +141,16 @@
                      {:type :info-grid :icon "compass" :title "Navegación en la App"
                       :items c/sedes-nav}]}}
 
-    ;; 9. Cátedras
+    ;; 11. Vista: Sedes
+    {:template :full-image
+     :data {:id "img-sedes"
+            :img "sedes.png"
+            :alt "Vista de Sedes en Harmonia"
+            :kicker "Captura de Pantalla"
+            :title "Sedes"
+            :subtitle "Tarjetas glass-card con nombre, ciudad, dirección, encargado y conteo de cursos/salas"}}
+
+    ;; 12. Cátedras
     {:template :hero-section
      :data {:id "catedras"
             :hero {:kicker "Gestión Académica"
@@ -139,7 +172,16 @@
                      {:type :info-grid :icon "compass" :title "Navegación en la App"
                       :items c/cursos-nav}]}}
 
-    ;; 11. Instructores
+    ;; 14. Vista: Cursos y Cátedras
+    {:template :full-image
+     :data {:id "img-cursos"
+            :img "cursos.png"
+            :alt "Vista de Cursos en Harmonia"
+            :kicker "Captura de Pantalla"
+            :title "Grupos de Estudio"
+            :subtitle "Tarjetas con nombre, sede, día/hora y cátedras asignadas. Filtros por sede y día"}}
+
+    ;; 15. Instructores
     {:template :hero-section
      :data {:id "instructores"
             :hero {:kicker "Gestión Académica"
@@ -161,7 +203,16 @@
                      {:type :info-grid :icon "compass" :title "Navegación en la App"
                       :items c/miembros-nav}]}}
 
-    ;; 13. Eventos y Asistencia
+    ;; 17. Vista: Miembros
+    {:template :full-image
+     :data {:id "img-miembros"
+            :img "miembros.png"
+            :alt "Vista de Miembros en Harmonia"
+            :kicker "Captura de Pantalla"
+            :title "Miembros"
+            :subtitle "Stats de totales, búsqueda por nombre, tabla con rol, estado y teléfono"}}
+
+    ;; 18. Eventos y Asistencia
     {:template :hero-section
      :data {:id "eventos"
             :hero {:kicker "Seguimiento"
@@ -183,7 +234,16 @@
                      {:type :info-grid :icon "globe" :title "Funcionalidades"
                       :items c/biblioteca-funciones}]}}
 
-    ;; 15. Contribuciones
+    ;; 20. Vista: Biblioteca
+    {:template :full-image
+     :data {:id "img-biblioteca"
+            :img "biblioteca.png"
+            :alt "Catálogo de Biblioteca en Harmonia"
+            :kicker "Captura de Pantalla"
+            :title "Biblioteca"
+            :subtitle "108 libros con portadas, búsqueda por título/autor/ISBN, filtros por tema"}}
+
+    ;; 21. Contribuciones
     {:template :blocks
      :data {:id "contribuciones"
             :header {:icon "credit-card"

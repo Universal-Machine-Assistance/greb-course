@@ -10,29 +10,35 @@
    {:id "arquitectura"   :label "Arquitectura del Sistema"      :page 4}
    {:id "esquema-bd"     :label "Esquema de Base de Datos"      :page 5}
    {:id "acceso"         :label "Acceso y Autenticación"        :page 6}
-   {:id "api"            :label "API REST"                      :page 7}
-   {:id "sedes"          :label "Sedes y Salas"                 :page 8}
-   {:id "catedras"       :label "Cátedras"                      :page 9}
-   {:id "cursos"         :label "Cursos y Asignaciones"         :page 10}
-   {:id "instructores"   :label "Instructores"                  :page 11}
-   {:id "miembros"       :label "Miembros"                      :page 12}
-   {:id "eventos"        :label "Eventos y Asistencia"          :page 13}
-   {:id "biblioteca"     :label "Biblioteca"                    :page 14}
-   {:id "contribuciones" :label "Contribuciones"                :page 15}
-   {:id "personajes"     :label "Personajes"                    :page 16}
-   {:id "administracion" :label "Administración y Usuarios"     :page 17}
-   {:id "multi-pais"     :label "Operación Multi-País"          :page 18}
-   {:id "code-entidades" :label "Código — Entidades REPL"        :page 19}
-   {:id "code-biblioteca" :label "Código — Biblioteca y Libros"  :page 20}
-   {:id "code-sql"       :label "Código — SQL y Esquema"         :page 21}
-   {:id "code-api"       :label "Código — API REST (JSON)"       :page 22}
-   {:id "omnirepl"       :label "OmniREPL — Paleta de Comandos"  :page 23}
-   {:id "omnirepl-code"  :label "OmniREPL — Ejemplos de Código"  :page 24}
-   {:id "repl"           :label "REPL — Código en Vivo"          :page 25}
-   {:id "repl-code"      :label "REPL — Ejemplos de Código"      :page 26}
-   {:id "repl-backend"   :label "REPL Backend y CLI"             :page 27}
-   {:id "repl-backend-code" :label "Backend — Ejemplos de Código" :page 28}
-   {:id "creditos"       :label "Créditos"                       :page 29}])
+   {:id "perfil"         :label "Perfil de Usuario"             :page 7}
+   {:id "img-dashboard"  :label "Vista: Dashboard"              :page 8}
+   {:id "api"            :label "API REST"                      :page 9}
+   {:id "sedes"          :label "Sedes y Salas"                 :page 10}
+   {:id "img-sedes"      :label "Vista: Sedes"                  :page 11}
+   {:id "catedras"       :label "Cátedras"                      :page 12}
+   {:id "cursos"         :label "Cursos y Asignaciones"         :page 13}
+   {:id "img-cursos"     :label "Vista: Cursos y Cátedras"      :page 14}
+   {:id "instructores"   :label "Instructores"                  :page 15}
+   {:id "miembros"       :label "Miembros"                      :page 16}
+   {:id "img-miembros"   :label "Vista: Miembros"               :page 17}
+   {:id "eventos"        :label "Eventos y Asistencia"          :page 18}
+   {:id "biblioteca"     :label "Biblioteca"                    :page 19}
+   {:id "img-biblioteca" :label "Vista: Biblioteca"             :page 20}
+   {:id "contribuciones" :label "Contribuciones"                :page 21}
+   {:id "personajes"     :label "Personajes"                    :page 22}
+   {:id "administracion" :label "Administración y Usuarios"     :page 23}
+   {:id "multi-pais"     :label "Operación Multi-País"          :page 24}
+   {:id "code-entidades" :label "Código — Entidades REPL"        :page 25}
+   {:id "code-biblioteca" :label "Código — Biblioteca y Libros"  :page 26}
+   {:id "code-sql"       :label "Código — SQL y Esquema"         :page 27}
+   {:id "code-api"       :label "Código — API REST (JSON)"       :page 28}
+   {:id "omnirepl"       :label "OmniREPL — Paleta de Comandos"  :page 29}
+   {:id "omnirepl-code"  :label "OmniREPL — Ejemplos de Código"  :page 30}
+   {:id "repl"           :label "REPL — Código en Vivo"          :page 31}
+   {:id "repl-code"      :label "REPL — Ejemplos de Código"      :page 32}
+   {:id "repl-backend"   :label "REPL Backend y CLI"             :page 33}
+   {:id "repl-backend-code" :label "Backend — Ejemplos de Código" :page 34}
+   {:id "creditos"       :label "Créditos"                       :page 35}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Harmonia — Manual de Usuario")
@@ -44,6 +50,7 @@
             {:label "Arquitectura del sistema"    :ok true}
             {:label "Esquema de base de datos"    :ok true}
             {:label "Acceso y autenticación"      :ok true}
+            {:label "Perfil de Usuario"           :ok true}
             {:label "API REST"                    :ok true}]}
    {:id "sedes" :title "Gestión Académica"
     :items [{:label "Sedes y Salas"               :ok true}
@@ -157,6 +164,69 @@
     :text "Vista de cursos asignados, lista de miembros de sus grupos, registro de asistencia y eventos. Puede estar vinculado a un registro de Instructor vía `miembroId`."}
    {:title "member"      :icon "user"
     :text "Rol por defecto al registrarse. Consulta su perfil personal, curso inscrito, historial de asistencia y contribuciones. Lectura de datos del país pero sin escritura al servidor."}])
+
+;; ── Perfil de Usuario ─────────────────────────────────────────
+(def perfil-title "Perfil de Usuario")
+(def perfil-subtitle "Cada usuario tiene un perfil personal vinculado a su ficha de miembro")
+
+(def perfil-intro
+  ["Cuando un usuario inicia sesión, Harmonia **vincula automáticamente** su cuenta con un registro de **Miembro**. Esto crea un perfil personal accesible desde `/{pais}/perfil` o haciendo clic en el avatar en la esquina superior derecha."
+   "Si no existe un miembro con el mismo correo, el sistema **crea uno automáticamente** con datos básicos. Así, todo usuario autenticado tiene siempre un perfil de miembro asociado."])
+
+(def perfil-vinculacion
+  [{:title "Vinculación Automática"   :icon "link"
+    :text "Al hacer login, la función `ensure-perfil-miembro!` busca un miembro cuyo `correo` coincida con el `email` del usuario. Si lo encuentra, vincula ambos registros mediante `miembroId`. Si no existe ningún miembro con ese correo, crea uno nuevo con rol **estudiante** y estado **member**."}
+   {:title "Acceso al Perfil"         :icon "user"
+    :text "Ruta `/{pais}/perfil` (ej: `/do/perfil`). También accesible haciendo clic en el avatar o el email en la barra superior. El slug especial `perfil` resuelve al miembro vinculado al usuario actual."}
+   {:title "Avatar"                   :icon "image"
+    :text "El avatar se resuelve en orden: **1)** foto del miembro (campo `imagen`), **2)** Gravatar del correo del miembro, **3)** Gravatar del email del usuario, **4)** fallback con inicial del email sobre un gradiente de color determinístico."}
+   {:title "Doble Identidad"          :icon "layers"
+    :text "Un **Usuario** es la cuenta de autenticación (email, password, role, JWT). Un **Miembro** es la ficha académica (nombre, apellido, curso, asistencia, contribuciones). Están vinculados por `miembroId` o coincidencia de email, pero son entidades separadas."}])
+
+(def perfil-contenido
+  [{:title "Datos Personales"     :icon "id-card"
+    :text "Nombre, apellido, correo, móvil, fecha de ingreso. Editables desde el formulario del perfil. Los cambios se guardan automáticamente al salir del campo (on-blur)."}
+   {:title "Estado y Rol"         :icon "badge"
+    :text "Rol del miembro (**estudiante**, **coordinador**, **delegado**, **voluntario**, **instructor**) y estado (**member**, **probacionismo**). Si es instructor, también muestra **título de instructor** y sus clases asignadas."}
+   {:title "Curso Inscrito"       :icon "book-open"
+    :text "El curso al que pertenece el miembro. Se puede cambiar desde el perfil (admin). Muestra nombre del curso, día, hora y sede."}
+   {:title "Biografía y Fotos"    :icon "camera"
+    :text "Campo de texto libre para biografía. Galería de imágenes (`imagenes` array). Foto de perfil principal (`imagen`). Las fotos se muestran en carrusel en la ficha completa."}
+   {:title "Historial Académico"  :icon "clock"
+    :text "Timeline de **asistencia** a eventos (fechas, tipo de evento, presente/ausente). **Contribuciones** (pagos, membresías, donaciones con montos y fechas). **Hechos** registrados por instructores."}
+   {:title "Compañeros"           :icon "users"
+    :text "Lista de otros miembros del mismo curso. Acceso rápido a sus perfiles. Visualización de la comunidad del grupo de estudio."}])
+
+(def perfil-code-vinculacion
+  [";; ── Flujo de vinculación Usuario → Miembro ──"
+   ""
+   ";; 1. Login exitoso"
+   {:text "(db/set-user! {:email \"eva@acropolis.org\"" :hl true}
+   {:text "               :role \"admin\"" :hl true}
+   {:text "               :token \"eyJhbGc...\"})" :hl true}
+   ""
+   ";; 2. ensure-perfil-miembro! se ejecuta automáticamente"
+   ";; Busca miembro con correo = email del usuario"
+   "(some #(when (= (lower (:correo %)) \"eva@acropolis.org\") %)"
+   "      (db/get-miembros))"
+   ""
+   ";; 3a. Si encuentra → vincula"
+   {:text "(swap! app-state assoc-in [:auth :miembroId] (:id miembro))" :hl true}
+   ""
+   ";; 3b. Si NO encuentra → crea miembro nuevo"
+   "(db/set-miembros!"
+   "  (conj (db/get-miembros)"
+   "    {:id (str (js/Date.now))"
+   "     :nombre \"\""
+   "     :apellido \"\""
+   "     :correo \"eva@acropolis.org\""
+   "     :role \"estudiante\""
+   {:text "     :status \"member\"" :hl true}
+   "     :countryCode \"DO\"}))"
+   ""
+   ";; 4. Acceder al perfil"
+   {:text ";; Navegar a /do/perfil" :hl true}
+   "(db/get-miembro-for-user)  ;; → {:nombre \"Eva\" ...}"])
 
 ;; ── API REST ──────────────────────────────────────────────────
 (def api-title "API REST")
