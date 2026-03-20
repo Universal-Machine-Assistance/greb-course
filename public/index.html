@@ -20,6 +20,20 @@
     </div>
   </div>
   <div id="app"></div>
+  <script>
+    window.onerror=function(m,s,l,c,e){
+      var d=document.createElement('pre');
+      d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999999;background:red;color:#fff;font:12px/1.4 monospace;padding:12px;max-height:50vh;overflow:auto;white-space:pre-wrap';
+      d.textContent='ERROR: '+m+'\n'+s+':'+l+':'+c+'\n'+(e&&e.stack||'');
+      document.body.appendChild(d);
+    };
+    window.addEventListener('unhandledrejection',function(ev){
+      var d=document.createElement('pre');
+      d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999999;background:#a00;color:#fff;font:12px/1.4 monospace;padding:12px;max-height:50vh;overflow:auto;white-space:pre-wrap';
+      d.textContent='UNHANDLED: '+(ev.reason&&ev.reason.stack||ev.reason||ev);
+      document.body.appendChild(d);
+    });
+  </script>
   <script src="/js/main.js"></script>
 </body>
 </html>
