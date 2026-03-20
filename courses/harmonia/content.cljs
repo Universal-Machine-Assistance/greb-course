@@ -22,13 +22,17 @@
    {:id "personajes"     :label "Personajes"                    :page 16}
    {:id "administracion" :label "Administración y Usuarios"     :page 17}
    {:id "multi-pais"     :label "Operación Multi-País"          :page 18}
-   {:id "omnirepl"       :label "OmniREPL — Paleta de Comandos"  :page 19}
-   {:id "omnirepl-code"  :label "OmniREPL — Ejemplos de Código" :page 20}
-   {:id "repl"           :label "REPL — Código en Vivo"         :page 21}
-   {:id "repl-code"      :label "REPL — Ejemplos de Código"     :page 22}
-   {:id "repl-backend"   :label "REPL Backend y CLI"            :page 23}
-   {:id "repl-backend-code" :label "Backend — Ejemplos de Código" :page 24}
-   {:id "creditos"       :label "Créditos"                      :page 25}])
+   {:id "code-entidades" :label "Código — Entidades REPL"        :page 19}
+   {:id "code-biblioteca" :label "Código — Biblioteca y Libros"  :page 20}
+   {:id "code-sql"       :label "Código — SQL y Esquema"         :page 21}
+   {:id "code-api"       :label "Código — API REST (JSON)"       :page 22}
+   {:id "omnirepl"       :label "OmniREPL — Paleta de Comandos"  :page 23}
+   {:id "omnirepl-code"  :label "OmniREPL — Ejemplos de Código"  :page 24}
+   {:id "repl"           :label "REPL — Código en Vivo"          :page 25}
+   {:id "repl-code"      :label "REPL — Ejemplos de Código"      :page 26}
+   {:id "repl-backend"   :label "REPL Backend y CLI"             :page 27}
+   {:id "repl-backend-code" :label "Backend — Ejemplos de Código" :page 28}
+   {:id "creditos"       :label "Créditos"                       :page 29}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Harmonia — Manual de Usuario")
@@ -383,6 +387,285 @@
     :text "Patrón: `/{countryCode}/{seccion}`. Ejemplos: `/do/sedes`, `/do/cursos`, `/do/miembros`, `/do/biblioteca`, `/do/calendario`, `/do/catedras`, `/do/asignaciones`. Gestionado con `window.history.pushState`."}
    {:title "ISBN Cross-Country"     :icon "search"
     :text "Única excepción al aislamiento: `GET /api/libro/{isbn}` consulta todos los países. La ruta `/libro/{isbn}` es global (sin prefijo de país). El mismo ISBN puede existir en DO y MX con diferentes ubicaciones."}])
+
+;; ── Código — Entidades REPL ────────────────────────────
+(def code-entidades-sedes
+  [";; ── Sedes, Salas, Instructores ──────────────"
+   ""
+   {:text "(sedes)                        ;; todas las sedes de DO" :hl true}
+   "(sedes \"MX\")                  ;; sedes de México"
+   "(first (sedes))                ;; ver estructura de una sede"
+   ""
+   ";; Salas"
+   "(->> (entities) :salas"
+   {:text "     (map #(select-keys % [:nombre :ciudad])))" :hl true}
+   ""
+   ";; Instructores"
+   "(->> (instructores) count)     ;; → 14"
+   "(->> (instructores)"
+   "     (filter #(not-empty (:miembroId %))))"
+   "     ;; → instructores vinculados a miembro"])
+
+(def code-entidades-cursos
+  [";; ── Cursos, Asignaciones, Cátedras ──────────"
+   ""
+   ";; Resumen de cursos"
+   "(->> (entities) :cursos"
+   {:text "     (map #(select-keys % [:nombre :dia :hora])))" :hl true}
+   ""
+   ";; Cursos del martes"
+   "(->> (entities) :cursos"
+   "     (filter #(= (:dia %) \"Martes\")))"
+   ""
+   ";; Cátedras por nivel"
+   "(->> (entities) :catedras"
+   {:text "     (group-by :nivel)" :hl true}
+   "     (map (fn [[n cs]] [n (count cs)])))"
+   ";; → ([\"Primer\" 4] [\"Segundo\" 11] ...)"
+   ""
+   ";; Siglas de cátedras"
+   "(->> (entities) :catedras (map :sigla) sort)"
+   ";; → (\"ALQU-702\" \"ANTG-503\" \"ASTL-701\" ...)"
+   ""
+   ";; Asignaciones de un curso"
+   "(->> (entities) :asignaciones"
+   "     (filter #(= (:cursoId %) \"1\")))"
+   ""
+   ";; Clases en una sala"
+   "(filterv #(= (:salaId %) \"1\")"
+   "  (db/get-asignaciones))"])
+
+(def code-entidades-miembros
+  [";; ── Miembros ────────────────────────────────"
+   ""
+   {:text "(->> (miembros) count)              ;; → 33" :hl true}
+   ""
+   ";; Conteo por rol"
+   {:text "(->> (miembros) (map :role) frequencies)" :hl true}
+   ";; → {\"estudiante\" 30, \"instructor\" 2, \"coordinador\" 1}"
+   ""
+   ";; Miembros de un curso"
+   "(->> (miembros)"
+   "     (filter #(= (:cursoId %) \"1\")))"
+   ""
+   ";; En probacionismo"
+   "(->> (miembros)"
+   "     (filter #(= (:status %) \"probacionismo\")))"
+   ""
+   ";; Miembro vinculado al usuario actual (frontend)"
+   "(db/get-miembro-for-user)"
+   ""
+   ";; Eventos y asistencia"
+   "(->> (entities) :eventos"
+   "     (filter #(= (:tipo %) \"clase\")) count)"
+   "(->> (entities) :eventos (sort-by :fecha) last)"
+   ""
+   ";; Asistencias de un evento"
+   "(->> (entities) :asistencias"
+   {:text "     (filter #(= (:eventoId %) \"e1\"))" :hl true}
+   "     (filter :presente) count)"])
+
+;; ── Código — Biblioteca ───────────────────────────────
+(def code-biblioteca-consultas
+  [";; ── Biblioteca — Consultas REPL ─────────────"
+   ""
+   {:text "(libros)                          ;; todos los libros de DO" :hl true}
+   "(->> (libros) count)              ;; → 108"
+   ""
+   ";; Ver estructura de un libro"
+   "(keys (first (libros)))"
+   ";; → (:id :titulo :autor :isbn :categoria ...)"
+   ""
+   ";; TODOS los campos que existen"
+   {:text "(->> (libros) (mapcat keys) distinct sort)" :hl true}
+   ""
+   ";; Categorías existentes"
+   "(->> (libros) (map :categoria) distinct sort)"
+   ";; → (\"Autoayuda\" \"Ciencias Sociales\" \"Filosofía\" ...)"
+   ""
+   ";; Conteo por biblioteca"
+   "(->> (libros) (map :biblioteca) frequencies)"
+   ";; → {\"NAC\" 108}"
+   ""
+   ";; Buscar por ISBN"
+   "(->> (libros)"
+   {:text "     (filter #(= (:isbn %) \"9879191102\"))" :hl true}
+   "     first)"
+   ""
+   ";; Buscar por autor"
+   "(->> (libros)"
+   "     (filter #(clojure.string/includes?"
+   "               (or (:autor %) \"\") \"Coelho\")))"])
+
+(def code-biblioteca-importar
+  [";; ── Importación y Modificación ──────────────"
+   ""
+   ";; Importar catálogo desde archivo JSON"
+   {:text "(import-json! :libro \"DO\" \"data/catalogo_libros.json\")" :hl true}
+   ";; => \"Imported 42 libro(s) for DO\""
+   ""
+   ";; Upsert un libro"
+   "(upsert! :libro \"DO\""
+   "  {:titulo \"La República\""
+   "   :autor \"Platón\""
+   "   :isbn \"978-0-14-044914-3\""
+   "   :categoria \"Filosofía\""
+   {:text "   :editorial \"Gredos\"})" :hl true}
+   ""
+   ";; SQL directo — campos JSONB de libros"
+   "(query"
+   "  \"SELECT DISTINCT jsonb_object_keys(attrs) AS k"
+   "   FROM entities WHERE type='libro' ORDER BY k\")"
+   ""
+   ";; SQL — buscar libro por ISBN"
+   "(query"
+   "  \"SELECT id, attrs->>'titulo' as titulo"
+   "   FROM entities"
+   "   WHERE type='libro'"
+   {:text "   AND attrs->>'isbn' = ?\" \"9879191102\")" :hl true}])
+
+;; ── Código — SQL y Esquema ────────────────────────────
+(def code-sql-esquema
+  [";; ── Esquema PostgreSQL ──────────────────────"
+   ""
+   {:text "CREATE TABLE IF NOT EXISTS entities (" :hl true}
+   "  id            UUID PRIMARY KEY"
+   "                DEFAULT gen_random_uuid(),"
+   "  type          VARCHAR(64) NOT NULL,"
+   "  country_code  VARCHAR(8)  NOT NULL,"
+   "  attrs         JSONB NOT NULL DEFAULT '{}',"
+   "  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),"
+   {:text "  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now());" :hl true}
+   ""
+   "CREATE INDEX idx_entities_type_country"
+   "  ON entities (type, country_code);"
+   "CREATE INDEX idx_entities_attrs"
+   "  ON entities USING gin (attrs);"
+   ""
+   {:text "CREATE TABLE IF NOT EXISTS links (" :hl true}
+   "  id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),"
+   "  from_id   UUID NOT NULL REFERENCES entities(id)"
+   "            ON DELETE CASCADE,"
+   "  to_id     UUID NOT NULL REFERENCES entities(id)"
+   "            ON DELETE CASCADE,"
+   "  link_type VARCHAR(64) NOT NULL,"
+   "  attrs     JSONB NOT NULL DEFAULT '{}',"
+   {:text "  UNIQUE (from_id, to_id, link_type));" :hl true}])
+
+(def code-sql-consultas
+  [";; ── Consultas SQL útiles ────────────────────"
+   ""
+   ";; Contar entidades por tipo"
+   {:text "SELECT type, count(*) FROM entities" :hl true}
+   {:text "  WHERE country_code='DO'" :hl true}
+   {:text "  GROUP BY type ORDER BY count DESC;" :hl true}
+   ""
+   ";; Contar por tipo y país"
+   "SELECT type, country_code, count(*)"
+   "  FROM entities"
+   "  GROUP BY type, country_code ORDER BY type;"
+   ""
+   ";; Ver todos los campos JSONB de un tipo"
+   {:text "SELECT DISTINCT jsonb_object_keys(attrs) AS campo" :hl true}
+   {:text "  FROM entities WHERE type = 'miembro' ORDER BY campo;" :hl true}
+   ""
+   ";; Buscar miembro por correo"
+   "SELECT id, attrs->>'nombre', attrs->>'correo'"
+   "  FROM entities"
+   "  WHERE type='miembro'"
+   "  AND attrs->>'correo' LIKE '%@gmail%';"
+   ""
+   ";; Entidades creadas hoy"
+   "SELECT type, id, attrs->>'nombre' as nombre"
+   "  FROM entities"
+   "  WHERE created_at::date = CURRENT_DATE;"
+   ""
+   ";; Últimas 10 modificaciones"
+   "SELECT type, attrs->>'nombre', updated_at"
+   "  FROM entities"
+   "  WHERE country_code='DO'"
+   "  ORDER BY updated_at DESC LIMIT 10;"
+   ""
+   ";; Patrón UPSERT"
+   {:text "INSERT INTO entities (id, type, country_code, attrs)" :hl true}
+   {:text "VALUES (?, ?, ?, ?::jsonb)" :hl true}
+   {:text "ON CONFLICT (id) DO UPDATE SET" :hl true}
+   {:text "  attrs = entities.attrs || EXCLUDED.attrs," :hl true}
+   {:text "  updated_at = now();" :hl true}])
+
+;; ── Código — API REST (JSON) ──────────────────────────
+(def code-api-login
+  [";; ── POST /api/auth/login ────────────────────"
+   ""
+   ";; Request:"
+   {:text "{ \"email\": \"eva@acropolis.org\"," :hl true}
+   {:text "  \"password\": \"filosofia\" }" :hl true}
+   ""
+   ";; Response:"
+   "{ \"user\": {"
+   "    \"id\": \"uuid-1234\","
+   "    \"email\": \"eva@acropolis.org\","
+   "    \"name\": \"Eva Rodriguez\","
+   {:text "    \"role\": \"admin\"," :hl true}
+   "    \"countryCode\": \"DO\""
+   "  },"
+   {:text "  \"token\": \"eyJhbGciOiJIUzI1NiJ9...\" }" :hl true}])
+
+(def code-api-entities
+  [";; ── GET /api/entities?country=DO ────────────"
+   ""
+   ";; Response — todas las entidades agrupadas:"
+   "{"
+   {:text "  \"sedes\":        [{\"id\":\"1\", \"nombre\":\"Los Prados\", ...}]," :hl true}
+   "  \"catedras\":     [{\"id\":\"ETIC-101\", \"nombre\":\"Ética\", ...}],"
+   "  \"instructores\": [{\"id\":\"1\", \"nombre\":\"Sally\", ...}],"
+   "  \"salas\":        [{\"id\":\"1\", \"nombre\":\"Ágora\", ...}],"
+   {:text "  \"cursos\":       [{\"id\":\"1\", \"nombre\":\"Miembros Viernes\", ...}]," :hl true}
+   "  \"asignaciones\": [{\"cursoId\":\"1\", \"salaId\":\"2\", ...}],"
+   "  \"eventos\":      [{\"titulo\":\"Clase 04\", \"fecha\":\"...\"}],"
+   {:text "  \"miembros\":     [{\"nombre\":\"Alvin\", \"role\":\"estudiante\", ...}]," :hl true}
+   "  \"asistencias\":  [...],"
+   "  \"contribuciones\": [],"
+   "  \"personajes\":   [{\"nombre\":\"Pitágoras\", ...}],"
+   "  \"libros\":       [{\"titulo\":\"El Caballero...\", ...}]"
+   "}"
+   ""
+   ";; ── POST /api/entities ─────────────────────"
+   ";; Requiere: Authorization: Bearer <JWT>"
+   ";; Body: mismo formato + \"country\": \"DO\""
+   ";; Response:"
+   {:text "{ \"ok\": true, \"country\": \"DO\" }" :hl true}])
+
+(def code-api-libro
+  [";; ── GET /api/libro/{isbn} ───────────────────"
+   ";; Búsqueda cross-country (todos los países)"
+   ""
+   ";; Response:"
+   "{"
+   "  \"book\": {"
+   "    \"titulo\": \"Ningún lugar está lejos\","
+   "    \"autor\": \"Richard Bach\","
+   {:text "    \"isbn\": \"9879191102\"" :hl true}
+   "  },"
+   "  \"locations\": ["
+   {:text "    { \"countryCode\": \"DO\"," :hl true}
+   {:text "      \"biblioteca\": \"NAC\"," :hl true}
+   {:text "      \"disponible\": true," :hl true}
+   {:text "      \"ubicacionFisica\": \"0.0\" }," :hl true}
+   "    { \"countryCode\": \"MX\","
+   "      \"biblioteca\": \"NAC-MX\","
+   "      \"disponible\": false }"
+   "  ]"
+   "}"
+   ""
+   ";; ── POST /api/upload-file ──────────────────"
+   ";; Request:"
+   "{ \"base64\": \"data:application/pdf;base64,...\","
+   "  \"entityType\": \"libro\","
+   "  \"entityId\": \"uuid\","
+   "  \"filename\": \"manual.pdf\" }"
+   ";; Response:"
+   {:text "{ \"url\": \"/uploads/libro/uuid/manual.pdf\" }" :hl true}])
 
 ;; ── OmniREPL ──────────────────────────────────────────
 (def omnirepl-title "OmniREPL — Paleta de Comandos")

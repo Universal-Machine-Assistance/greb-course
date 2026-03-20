@@ -31,7 +31,7 @@
          {:label "Recursos"
           :entries (subvec c/index-entries 13 16)}
          {:label "Administración"
-          :entries (subvec c/index-entries 16 25)}]
+          :entries (subvec c/index-entries 16 29)}]
 
    :pages
    [;; 1. Cover
@@ -221,7 +221,65 @@
             :blocks [{:type :info-grid :icon "globe" :title "Funcionamiento"
                       :items c/multipais-items}]}}
 
-    ;; 19. OmniREPL — Paleta de Comandos
+    ;; 19. Código — Entidades REPL
+    {:template :blocks
+     :data {:id "code-entidades"
+            :header {:icon "terminal"
+                     :kicker "Código"
+                     :title  "Entidades — Comandos REPL"}
+            :blocks [{:type :code-block
+                      :caption "Sedes, Salas e Instructores — Backend REPL"
+                      :lines c/code-entidades-sedes}
+                     {:type :code-block
+                      :caption "Cursos, Asignaciones y Cátedras — Backend REPL"
+                      :lines c/code-entidades-cursos}
+                     {:type :code-block
+                      :caption "Miembros, Eventos y Asistencia — Backend REPL"
+                      :lines c/code-entidades-miembros}]}}
+
+    ;; 20. Código — Biblioteca y Libros
+    {:template :blocks
+     :data {:id "code-biblioteca"
+            :header {:icon "library"
+                     :kicker "Código"
+                     :title  "Biblioteca — Comandos REPL"}
+            :blocks [{:type :code-block
+                      :caption "Consultas de libros — Backend REPL"
+                      :lines c/code-biblioteca-consultas}
+                     {:type :code-block
+                      :caption "Importación y modificación de libros"
+                      :lines c/code-biblioteca-importar}]}}
+
+    ;; 21. Código — SQL y Esquema
+    {:template :blocks
+     :data {:id "code-sql"
+            :header {:icon "database"
+                     :kicker "Código"
+                     :title  "SQL — Esquema y Consultas"}
+            :blocks [{:type :code-block
+                      :caption "Esquema PostgreSQL — tablas entities y links"
+                      :lines c/code-sql-esquema}
+                     {:type :code-block
+                      :caption "Consultas SQL útiles para administración"
+                      :lines c/code-sql-consultas}]}}
+
+    ;; 22. Código — API REST (JSON)
+    {:template :blocks
+     :data {:id "code-api"
+            :header {:icon "cloud"
+                     :kicker "Código"
+                     :title  "API REST — Peticiones y Respuestas"}
+            :blocks [{:type :code-block
+                      :caption "POST /api/auth/login — Autenticación"
+                      :lines c/code-api-login}
+                     {:type :code-block
+                      :caption "GET /api/entities — Todas las entidades de un país"
+                      :lines c/code-api-entities}
+                     {:type :code-block
+                      :caption "GET /api/libro/{isbn} — Búsqueda cross-country"
+                      :lines c/code-api-libro}]}}
+
+    ;; 23. OmniREPL — Paleta de Comandos
     {:template :hero-section
      :data {:id "omnirepl"
             :hero {:kicker "Desarrollo"
