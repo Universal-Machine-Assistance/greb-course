@@ -22,9 +22,13 @@
    {:id "personajes"     :label "Personajes"                    :page 16}
    {:id "administracion" :label "Administración y Usuarios"     :page 17}
    {:id "multi-pais"     :label "Operación Multi-País"          :page 18}
-   {:id "repl"           :label "REPL — Código en Vivo"         :page 19}
-   {:id "repl-backend"   :label "REPL Backend y CLI"            :page 20}
-   {:id "creditos"       :label "Créditos"                      :page 21}])
+   {:id "omnirepl"       :label "OmniREPL — Paleta de Comandos"  :page 19}
+   {:id "omnirepl-code"  :label "OmniREPL — Ejemplos de Código" :page 20}
+   {:id "repl"           :label "REPL — Código en Vivo"         :page 21}
+   {:id "repl-code"      :label "REPL — Ejemplos de Código"     :page 22}
+   {:id "repl-backend"   :label "REPL Backend y CLI"            :page 23}
+   {:id "repl-backend-code" :label "Backend — Ejemplos de Código" :page 24}
+   {:id "creditos"       :label "Créditos"                      :page 25}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Harmonia — Manual de Usuario")
@@ -51,6 +55,7 @@
    {:id "administracion" :title "Administración"
     :items [{:label "Usuarios y Roles"            :ok true}
             {:label "Operación Multi-País"        :ok true}
+            {:label "OmniREPL"                    :ok true}
             {:label "REPL Frontend"               :ok true}
             {:label "REPL Backend y CLI"          :ok true}]}])
 
@@ -379,6 +384,102 @@
    {:title "ISBN Cross-Country"     :icon "search"
     :text "Única excepción al aislamiento: `GET /api/libro/{isbn}` consulta todos los países. La ruta `/libro/{isbn}` es global (sin prefijo de país). El mismo ISBN puede existir en DO y MX con diferentes ubicaciones."}])
 
+;; ── OmniREPL ──────────────────────────────────────────
+(def omnirepl-title "OmniREPL — Paleta de Comandos")
+(def omnirepl-subtitle "Navegación, acciones y código Clojure desde Ctrl+G")
+
+(def omnirepl-intro
+  ["La **OmniREPL** es una paleta de comandos integrada en Harmonia. Abrila con `Ctrl+G` (o `Cmd+G` en macOS). Permite navegar secciones, ejecutar acciones administrativas y evaluar expresiones **Clojure** en tiempo real usando **SCI** (Small Clojure Interpreter)."
+   "Todo lo que escribís con paréntesis se evalúa como código Clojure con acceso completo al estado de la aplicación. Sin paréntesis, busca secciones para navegar."])
+
+(def omnirepl-items
+  [{:title "Abrir y Cerrar"        :icon "keyboard"
+    :text "`Ctrl+G` abre la paleta. `Escape` o `Ctrl+G` de nuevo la cierra. Mientras está abierta, escribí para filtrar secciones o ejecutar comandos."}
+   {:title "Navegación"            :icon "compass"
+    :text "Escribí el nombre de una sección y pulsá `Enter` para navegar: **sedes**, **cursos**, **miembros**, **biblioteca**, **catedras**, **asignaciones**, **calendario**, **instructores**, **usuarios**. Las flechas `↑`/`↓` seleccionan entre resultados."}
+   {:title "Expresiones Lisp"      :icon "braces"
+    :text "Cualquier texto con paréntesis se evalúa como Clojure: `(navigate :biblioteca)`, `(count (miembros))`, `(filter #(= (:role %) \"coordinador\") (miembros))`. El resultado aparece en la consola del navegador."}
+   {:title "Autocompletado"        :icon "text-cursor-input"
+    :text "`Tab` autocompleta comandos y cicla entre argumentos. Por ejemplo, escribí `nav` + `Tab` → `(navigate ...)`, luego `Tab` para rotar entre `:sedes`, `:cursos`, `:miembros`, etc."}])
+
+(def omnirepl-comandos
+  [{:title "(navigate :seccion)"       :icon "compass"
+    :text "Navega a una sección. Valores: `:dashboard`, `:sedes`, `:encargados`, `:cursos`, `:catedras`, `:instructores`, `:miembros`, `:salas`, `:personajes`, `:biblioteca`, `:asignaciones`, `:usuarios`, `:countries`."}
+   {:title "(action :accion)"          :icon "zap"
+    :text "Ejecuta una acción contextual. Valores: `:agregar-miembro-al-grupo`, `:nuevo-miembro`, `:agregar-evento-al-grupo`, `:nueva-sede`, `:nuevo-instructor`, `:nueva-catedra`."}
+   {:title "(crear-evento ...)"        :icon "calendar-plus"
+    :text "`(crear-evento \"cursoId\" \"2025-03-20\" \"Clase de Ética\" \"clase\")` — crea un evento directamente. Tipos: `clase`, `taller`, `examen`, `conferencia`, `ceremonia`, `actividad`."}
+   {:title "(crear-libro ...)"         :icon "book-plus"
+    :text "`(crear-libro \"La República\" {:autor \"Platón\" :categoria \"Filosofía\"})` — agrega un libro al catálogo con los metadatos proporcionados."}
+   {:title "(crear-miembro ...)"       :icon "user-plus"
+    :text "`(crear-miembro {:nombre \"Ana\" :apellido \"López\" :role \"estudiante\" :cursoId \"1\"})` — crea un miembro y lo inscribe al curso indicado."}
+   {:title "Clojure libre"            :icon "terminal"
+    :text "Cualquier expresión válida: `(+ 1 2)`, `(->> (miembros) (map :nombre) sort)`, `(merge {:a 1} {:b 2})`. Funciones disponibles: `map`, `filter`, `reduce`, `count`, `merge`, `assoc`, `get`, etc."}])
+
+;; Code examples for OmniREPL page
+(def omnirepl-code-nav
+  [";; ── Navegación desde la OmniREPL ──────────────"
+   ""
+   {:text "(navigate :dashboard)        ;; Ir al panel principal" :hl true}
+   "(navigate :sedes)            ;; Vista de sedes"
+   "(navigate :cursos)           ;; Vista de grupos"
+   "(navigate :miembros)         ;; Lista de miembros"
+   "(navigate :biblioteca)       ;; Catálogo de libros"
+   "(navigate :catedras)         ;; Materias por nivel"
+   "(navigate :asignaciones)     ;; Horarios"
+   "(navigate :instructores)     ;; Equipo docente"
+   "(navigate :calendario)       ;; Eventos y calendario"
+   "(navigate :countries)        ;; Selector de país"])
+
+(def omnirepl-code-acciones
+  [";; ── Acciones contextuales ────────────────────"
+   ""
+   {:text "(action :nuevo-miembro)                 ;; Abrir formulario" :hl true}
+   "(action :agregar-miembro-al-grupo)      ;; Agregar al curso actual"
+   "(action :agregar-evento-al-grupo)       ;; Nuevo evento en curso"
+   ""
+   ";; ── Crear entidades directamente ─────────────"
+   ""
+   {:text "(crear-evento \"1\" \"2025-03-20\" \"Clase de Ética\" \"clase\")" :hl true}
+   ""
+   "(crear-libro \"La República\""
+   "  {:autor \"Platón\""
+   "   :categoria \"Filosofía\""
+   "   :editorial \"Gredos\"})"
+   ""
+   "(crear-miembro"
+   "  {:nombre \"Ana\""
+   "   :apellido \"López\""
+   "   :role \"estudiante\""
+   "   :cursoId \"1\""
+   {:text "   :correo \"ana@ejemplo.com\"})" :hl true}])
+
+(def omnirepl-code-consultas
+  [";; ── Consultas en la OmniREPL ─────────────────"
+   ""
+   {:text "(count (miembros))                ;; → 33" :hl true}
+   "(count (cursos))                  ;; → 2"
+   "(count (libros))                  ;; → 108"
+   ""
+   ";; Filtrar miembros por rol"
+   {:text "(->> (miembros) (map :role) frequencies)" :hl true}
+   ";; → {\"estudiante\" 30, \"instructor\" 2, ...}"
+   ""
+   ";; Buscar un miembro por nombre"
+   "(->> (miembros)"
+   "     (filter #(= (:nombre %) \"Gabriel\"))"
+   "     first)"
+   ""
+   ";; Listar cursos con día y hora"
+   "(->> (cursos)"
+   {:text "     (map #(select-keys % [:nombre :dia :hora])))" :hl true}
+   ""
+   ";; Categorías de libros más populares"
+   "(->> (libros)"
+   "     (map :categoria)"
+   "     frequencies"
+   "     (sort-by val >))"])
+
 ;; ── REPL Frontend ─────────────────────────────────────────────
 (def repl-title "REPL — Código en Vivo")
 (def repl-subtitle "ClojureScript: cómo el código modifica la UI en tiempo real")
@@ -408,6 +509,53 @@
     :text "`(set! js/window.location.hash \"/do/biblioteca\")` → navega a biblioteca. `(db/current-country)` → país actual. Sincronizar: `(db/sync-with-api!)` descarga del servidor. `(db/save-to-api!)` sube al servidor."}
    {:title "Estadísticas al vuelo"   :icon "bar-chart"
     :text "`(->> (db/get-cursos) (group-by :dia) (map (fn [[d cs]] [d (count cs)])))` → cursos por día. `(->> (db/get-libros) (map :categoria) frequencies (sort-by val >))` → categorías más populares de la biblioteca."}])
+
+;; Code examples for REPL Frontend
+(def repl-code-estado
+  [";; ── El átomo de estado ───────────────────────"
+   ";; Todo el estado vive en un único átomo Reagent."
+   ";; Modificarlo actualiza la UI al instante."
+   ""
+   {:text "(defonce app-state (r/atom initial-state))" :hl true}
+   ""
+   ";; Getters — leer datos"
+   "(db/get-sedes)              ;; → [{:id \"1\" :nombre \"Los Prados\" ...} ...]"
+   "(db/get-cursos)             ;; → [{:id \"1\" :nombre \"Miembros Viernes\" ...}]"
+   "(db/get-miembros)           ;; → [33 miembros]"
+   "(db/get-libros)             ;; → [108 libros]"
+   "(db/get-catedras)           ;; → [38 cátedras]"
+   "(db/get-instructores)       ;; → [14 instructores]"
+   "(db/get-asignaciones)       ;; → [7 asignaciones]"
+   "(db/get-eventos)            ;; → eventos del país"
+   "(db/get-contribuciones)     ;; → contribuciones"
+   "(db/current-country)        ;; → \"DO\""
+   "(db/get-user)               ;; → {:email \"...\" :role \"admin\" :token \"...\"}"])
+
+(def repl-code-mutaciones
+  [";; ── Mutaciones — cambiar datos y ver la UI actualizarse ──"
+   ""
+   ";; Cambiar el país activo (toda la vista se actualiza)"
+   {:text "(swap! db/app-state assoc :current-country \"MX\")" :hl true}
+   ""
+   ";; Promover un miembro a coordinador"
+   "(db/set-miembros!"
+   "  (mapv #(if (= (:nombre %) \"María\")"
+   "           (assoc % :role \"coordinador\")"
+   "           %)"
+   {:text "    (db/get-miembros)))" :hl true}
+   ""
+   ";; Agregar una sede nueva (aparece al instante en la UI)"
+   "(db/set-sedes!"
+   "  (conj (db/get-sedes)"
+   "    {:id \"nueva-1\""
+   "     :nombre \"Sede Norte\""
+   "     :ciudad \"Puerto Plata\""
+   "     :tipo \"sub\""
+   {:text "     :countryCode \"DO\"}))" :hl true}
+   ""
+   ";; Sincronizar con el servidor"
+   "(db/sync-with-api!)         ;; ↓ descargar del servidor"
+   "(db/save-to-api!)           ;; ↑ subir al servidor"])
 
 ;; ── REPL Backend y CLI ────────────────────────────────────────
 (def repl-backend-title "REPL Backend y CLI")
@@ -440,6 +588,77 @@
     :text "Lista todos los usuarios registrados en la base de datos con id, email, name, role y countryCode. Útil para auditoría."}
    {:title "npm run cljs:dev"      :icon "monitor"
     :text "Inicia Shadow-CLJS en modo desarrollo → puerto 8280. Hot-reload: los cambios en `.cljs` se reflejan sin recargar. `npm run cljs:release` para build de producción. `npm run cljs:repl` para REPL del navegador."}])
+
+;; Code examples for Backend REPL
+(def repl-backend-code-helpers
+  [";; ── Backend REPL — Helpers de consulta ───────"
+   ";; Conectar: clj -M:repl (desde backend/)"
+   ""
+   {:text "(entities)                  ;; → mapa de TODAS las entidades de DO" :hl true}
+   ";; {:sedes [...] :cursos [...] :miembros [...] ...}"
+   ""
+   "(sedes)                     ;; → [{:id \"1\" :nombre \"Los Prados\" ...}]"
+   "(sedes \"MX\")                ;; → sedes de México"
+   "(cursos)                    ;; → todos los cursos"
+   "(miembros)                  ;; → todos los miembros"
+   "(libros)                    ;; → todos los libros"
+   "(instructores)              ;; → todos los instructores"
+   {:text "(count-entities)             ;; → conteo total" :hl true}])
+
+(def repl-backend-code-sql
+  [";; ── Consultas SQL directas ───────────────────"
+   ""
+   ";; Conteo de entidades por tipo"
+   {:text "(query \"SELECT type, count(*) FROM entities" :hl true}
+   {:text "        WHERE country_code='DO' GROUP BY type\")" :hl true}
+   ""
+   ";; Ver todos los campos JSONB de un tipo"
+   "(query \"SELECT DISTINCT jsonb_object_keys(attrs)"
+   "        FROM entities WHERE type='miembro'\")"
+   ""
+   ";; Buscar miembro por correo"
+   "(query \"SELECT id, attrs->>'nombre', attrs->>'correo'"
+   "        FROM entities"
+   "        WHERE type='miembro'"
+   {:text "        AND attrs->>'correo' LIKE '%@gmail%'\")" :hl true}
+   ""
+   ";; Últimas 10 entidades modificadas"
+   "(query \"SELECT type, attrs->>'nombre', updated_at"
+   "        FROM entities"
+   "        WHERE country_code='DO'"
+   "        ORDER BY updated_at DESC LIMIT 10\")"])
+
+(def repl-backend-code-upsert
+  [";; ── Upsert — crear/actualizar entidades ──────"
+   ""
+   ";; Crear una sede nueva en PostgreSQL"
+   {:text "(upsert! {:id \"sede-norte\"" :hl true}
+   {:text "          :type \"sede\"" :hl true}
+   {:text "          :country_code \"DO\"" :hl true}
+   {:text "          :attrs {:nombre \"Sede Norte\"" :hl true}
+   {:text "                  :ciudad \"Puerto Plata\"" :hl true}
+   {:text "                  :tipo \"sub\"}})" :hl true}
+   ""
+   ";; Crear una asignación (enlace de 4 vías)"
+   "(e/insert-entity! ds"
+   "  {:id \"asig-nueva\""
+   "   :type \"asignacion\""
+   "   :country_code \"DO\""
+   "   :attrs {:cursoId \"1\""
+   "           :salaId \"2\""
+   "           :catedraId \"ETIC-101\""
+   "           :instructorId \"3\"}})"
+   ""
+   ";; ── Scripts CLI ─────────────────────────────"
+   ""
+   {:text "clj -M:run              # Servidor API (puerto 3000)" :hl true}
+   {:text "clj -M:migrate          # Crear tablas entities + links" :hl true}
+   {:text "clj -M:seed             # Datos semilla (3 sedes, 75+ miembros...)" :hl true}
+   {:text "clj -M:setup-admins     # Crear usuarios admin" :hl true}
+   "clj -M:list-users        # Listar usuarios"
+   {:text "npm run cljs:dev        # Frontend dev (puerto 8280)" :hl true}
+   "npm run cljs:release      # Build producción"
+   "npm run cljs:repl         # REPL del navegador"])
 
 ;; ── Créditos ──────────────────────────────────────────────────
 (def credits-title "Créditos")

@@ -86,6 +86,19 @@
     :omni-embed
     (comp/omnibar-embed-block block)
 
+    :code-block
+    (let [lines (or (:lines block) items)]
+      (d/el :div {:class "code-block-wrapper"}
+            (when (:caption block)
+              (d/el :p {:class "code-block-caption"} (:caption block)))
+            (apply d/el :pre {:class "code-block"}
+                   (mapv (fn [line]
+                           (if (map? line)
+                             (d/el :code {:class (str "code-line" (when (:hl line) " code-hl"))}
+                                   (str (:text line) "\n"))
+                             (d/el :code {:class "code-line"} (str line "\n"))))
+                         lines))))
+
     :risk-familias-bolas
     (comp/risk-familias-bolas-grid items {:hide-visuals? (:hide-visuals? block)})
 
@@ -94,7 +107,7 @@
            (mapv comp/info-card items))))
 
 (defn- render-block [block]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed} (:type block))
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block} (:type block))
     (render-block-content block)
     (d/el :section {:class "hygiene-block"}
           (comp/section-bar (:icon block) (:title block))

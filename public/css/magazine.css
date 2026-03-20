@@ -979,6 +979,47 @@
   box-shadow: var(--pill-shadow, 0 1px 2px rgba(12, 74, 110, 0.1));
   vertical-align: 0.08em;
 }
+/* ── Code blocks ─────────────────────────────────────── */
+.code-block-wrapper {
+  margin: .8em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.code-block-caption {
+  margin: 0;
+  padding: .45em .9em;
+  font-size: .78em;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+.code-block {
+  margin: 0;
+  padding: .7em .9em;
+  background: #0f172a;
+  overflow-x: auto;
+  line-height: 1.55;
+}
+.code-line {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .72em;
+  color: #e2e8f0;
+  white-space: pre;
+}
+.code-line.code-hl {
+  background: rgba(56,189,248,.12);
+  border-left: 3px solid #38bdf8;
+  margin-left: -0.9em;
+  padding-left: calc(0.9em - 3px);
+  margin-right: -0.9em;
+  padding-right: 0.9em;
+}
+
 /* Hero gradient: legible body + frosted keys (vars inherit into .hero-intro-p) */
 .hygiene-hero .hero-copy {
   --rich-strong: #fff;

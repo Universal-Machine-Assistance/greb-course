@@ -31,7 +31,7 @@
          {:label "Recursos"
           :entries (subvec c/index-entries 13 16)}
          {:label "Administración"
-          :entries (subvec c/index-entries 16 21)}]
+          :entries (subvec c/index-entries 16 25)}]
 
    :pages
    [;; 1. Cover
@@ -221,7 +221,35 @@
             :blocks [{:type :info-grid :icon "globe" :title "Funcionamiento"
                       :items c/multipais-items}]}}
 
-    ;; 19. REPL — Código en Vivo (Frontend)
+    ;; 19. OmniREPL — Paleta de Comandos
+    {:template :hero-section
+     :data {:id "omnirepl"
+            :hero {:kicker "Desarrollo"
+                   :title  c/omnirepl-title
+                   :subtitle c/omnirepl-subtitle
+                   :intro c/omnirepl-intro}
+            :blocks [{:type :info-grid :icon "keyboard" :title "Uso Básico"
+                      :items c/omnirepl-items}
+                     {:type :info-grid :icon "terminal" :title "Comandos Disponibles"
+                      :items c/omnirepl-comandos}]}}
+
+    ;; 20. OmniREPL — Ejemplos de Código
+    {:template :blocks
+     :data {:id "omnirepl-code"
+            :header {:icon "braces"
+                     :kicker "OmniREPL"
+                     :title  "OmniREPL — Ejemplos de Código"}
+            :blocks [{:type :code-block :icon "compass" :title "Navegación"
+                      :caption "Ctrl+G → escribir comando → Enter"
+                      :lines c/omnirepl-code-nav}
+                     {:type :code-block :icon "zap" :title "Acciones y Creación"
+                      :caption "Crear entidades desde la paleta de comandos"
+                      :lines c/omnirepl-code-acciones}
+                     {:type :code-block :icon "search" :title "Consultas"
+                      :caption "Evaluar expresiones Clojure en tiempo real"
+                      :lines c/omnirepl-code-consultas}]}}
+
+    ;; 21. REPL — Código en Vivo (Frontend)
     {:template :hero-section
      :data {:id "repl"
             :hero {:kicker "Desarrollo"
@@ -233,7 +261,20 @@
                      {:type :info-grid :icon "terminal" :title "Ejemplos — Frontend REPL"
                       :items c/repl-ejemplos-items}]}}
 
-    ;; 20. REPL Backend y CLI
+    ;; 22. REPL — Ejemplos de Código
+    {:template :blocks
+     :data {:id "repl-code"
+            :header {:icon "code-2"
+                     :kicker "REPL Frontend"
+                     :title  "REPL — Ejemplos de Código"}
+            :blocks [{:type :code-block :icon "atom" :title "Estado"
+                      :caption "Leer el estado de la aplicación desde el REPL del navegador"
+                      :lines c/repl-code-estado}
+                     {:type :code-block :icon "pencil" :title "Mutaciones"
+                      :caption "Modificar datos — la UI se actualiza al instante"
+                      :lines c/repl-code-mutaciones}]}}
+
+    ;; 23. REPL Backend y CLI
     {:template :blocks
      :data {:id "repl-backend"
             :header {:icon "server"
@@ -245,7 +286,23 @@
                      {:type :info-grid :icon "terminal" :title "Scripts CLI"
                       :items c/repl-cli-items}]}}
 
-    ;; 21. Créditos
+    ;; 24. Backend — Ejemplos de Código
+    {:template :blocks
+     :data {:id "repl-backend-code"
+            :header {:icon "database"
+                     :kicker "REPL Backend"
+                     :title  "Backend — Ejemplos de Código"}
+            :blocks [{:type :code-block :icon "search" :title "Helpers"
+                      :caption "Funciones de consulta disponibles en el REPL backend"
+                      :lines c/repl-backend-code-helpers}
+                     {:type :code-block :icon "database" :title "SQL Directo"
+                      :caption "Consultas SQL contra PostgreSQL"
+                      :lines c/repl-backend-code-sql}
+                     {:type :code-block :icon "upload" :title "Upsert y CLI"
+                      :caption "Crear entidades y scripts de administración"
+                      :lines c/repl-backend-code-upsert}]}}
+
+    ;; 25. Créditos
     {:template :credits
      :data {:title c/credits-title
             :by    c/credits-by

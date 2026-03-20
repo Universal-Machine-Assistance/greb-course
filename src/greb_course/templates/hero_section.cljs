@@ -5,13 +5,24 @@
             [greb-course.templates.components :as comp]))
 
 (defn- render-block [{:keys [type icon title items] :as block}]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed} type)
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block} type)
     (case type
       :highlight (comp/highlight-bar block)
       :product-showcase (comp/product-showcase block)
       :product-timeline (comp/product-timeline block)
       :image-grid (comp/image-grid items block)
-      :omni-embed (comp/omnibar-embed-block block))
+      :omni-embed (comp/omnibar-embed-block block)
+      :code-block (let [lines (or (:lines block) items)]
+                    (d/el :div {:class "code-block-wrapper"}
+                          (when (:caption block)
+                            (d/el :p {:class "code-block-caption"} (:caption block)))
+                          (apply d/el :pre {:class "code-block"}
+                                 (mapv (fn [line]
+                                         (if (map? line)
+                                           (d/el :code {:class (str "code-line" (when (:hl line) " code-hl"))}
+                                                 (str (:text line) "\n"))
+                                           (d/el :code {:class "code-line"} (str line "\n"))))
+                                       lines)))))
     (d/el :section {:class "hygiene-block"}
         (comp/section-bar icon title)
         (case type
