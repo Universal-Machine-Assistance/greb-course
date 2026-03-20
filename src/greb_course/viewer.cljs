@@ -68,9 +68,17 @@
                                      (map-indexed vector groups)))
         spreads    (mapv (fn [group] (apply d/el :div {:class "spread"} group)) groups)
         n          (count spreads)
+        spread->pages (into {} (map-indexed
+                                 (fn [i group]
+                                   [i (vec (keep #(when % (.-id %)) group))])
+                                 groups))
         dots       (mapv (fn [i]
-                           (let [first-pg (inc (if mobile? i (* i 2)))]
-                             (d/el :button {:class "spread-dot" :data-page (str first-pg)} (str first-pg))))
+                           (let [pg-count (count (nth groups i))
+                                 first-pg (inc (if mobile? i (* i 2)))
+                                 label    (if (and (not mobile?) (= pg-count 2))
+                                            (str first-pg "·" (inc first-pg))
+                                            (str first-pg))]
+                             (d/el :button {:class "spread-dot" :data-page label} label)))
                          (range n))
         indicator  (d/el :span {:class "spread-indicator"} (str "1 / " n))
         prev-btn   (d/el :button {:class "nav-btn nav-prev"} (d/ic "chevron-left" ""))
@@ -84,10 +92,7 @@
         _          (reset! state/current-nav {:go! go! :nav-state nav-state :id->spread id->spread :spread-ids spread-ids
                                         :toc-groups toc-groups
                                         :toggle-toc! toggle!
-                                        :spread->pages (into {} (map-indexed
-                                                        (fn [si group]
-                                                          [si (mapv #(.-id %) (filter some? group))])
-                                                        groups))})]
+                                        :spread->pages spread->pages})]
     (doseq [s spreads] (.remove (.-classList s) "active"))
     (doseq [d dots] (.remove (.-classList d) "active"))
     (.add (.-classList (nth spreads init-idx)) "active")

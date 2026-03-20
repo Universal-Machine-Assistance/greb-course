@@ -174,13 +174,13 @@
   background: var(--brand-primary, #2563eb); opacity: 1;
   z-index: 2;
   box-shadow: 0 0 8px color-mix(in srgb, var(--brand-primary, #2563eb) 45%, transparent);
-  font-size: 5px; color: rgba(255,255,255,.9);
+  font-size: 4px; color: rgba(255,255,255,.9);
 }
 .spread-dot:hover {
   background: var(--brand-primary, #2563eb) !important;
   opacity: 1;
   z-index: 3;
-  font-size: 5px; color: rgba(255,255,255,.9);
+  font-size: 4px; color: rgba(255,255,255,.9);
 }
 /* Bar nudge (translate only — avoids scaleY squashing per-dot Dock transforms) */
 @keyframes dots-bounce {

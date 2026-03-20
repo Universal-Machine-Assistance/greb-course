@@ -897,7 +897,8 @@ html.presenting .toc-hjkl-dock { z-index: 10007; }
 }
 .editor-close-btn,
 .editor-send-btn,
-.editor-api-btn {
+.editor-api-btn,
+.editor-flip-btn {
   border: none;
   border-radius: 5px;
   padding: 0.25rem 0.5rem;
@@ -921,12 +922,15 @@ html.presenting .toc-hjkl-dock { z-index: 10007; }
 }
 .editor-send-btn:hover { background: #74c7ec; }
 .editor-send-btn .icon { width: 12px; height: 12px; }
-.editor-api-btn {
+.editor-api-btn,
+.editor-flip-btn {
   background: transparent;
   color: #6c7086;
   padding: 0.25rem;
 }
-.editor-api-btn:hover { color: #cdd6f4; }
+.editor-api-btn:hover,
+.editor-flip-btn:hover { color: #cdd6f4; }
+.editor-flip-btn .icon { width: 14px; height: 14px; }
 .editor-api-btn .icon { width: 13px; height: 13px; }
 .editor-prompt-row {
   padding: 0.3rem 0.65rem;

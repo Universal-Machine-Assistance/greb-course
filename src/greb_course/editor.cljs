@@ -13,6 +13,7 @@
 (declare dismiss!)
 (declare send-to-claude!)
 (declare set-status!)
+(declare edit!)
 
 ;; Resolved via GET /api/editor-config when using greb-course.server; else default anthropic URL.
 (defonce ^:private editor-remote-config (atom nil))
@@ -118,25 +119,24 @@
 
 ;; ── Find the adjacent page slot ────────────────────────────────
 
+(defonce ^:private edit-side (atom :left))
+
 (defn- find-editor-target
   "Given the current spread, find the page element where the editor should go.
    Returns {:edit-page <page being edited> :target <page hosting editor>} or nil.
-   The editor goes on the OTHER page in the spread (adjacent to the one being edited)."
+   Uses @edit-side (:left or :right) to decide which page is being edited."
   []
   (when-let [spread (.querySelector js/document ".spread.active")]
     (let [pages   (array-seq (.querySelectorAll spread ".page"))
-          n       (count pages)
-          hash-id (some-> js/location .-hash (subs 1))]
+          n       (count pages)]
       (cond
-        ;; Desktop: 2 pages in spread
+        ;; Desktop: 2 pages in spread — edit-side picks which one
         (= n 2)
-        (let [left       (first pages)
-              right      (second pages)
-              right-id   (.-id right)
-              on-right?  (= hash-id right-id)
-              edit-page  (if on-right? right left)
-              target     (if on-right? left right)]
-          {:edit-page edit-page :target target})
+        (let [left  (first pages)
+              right (second pages)]
+          (if (= @edit-side :right)
+            {:edit-page right :target left}
+            {:edit-page left  :target right}))
 
         ;; Mobile or single page: overlay on the same page
         (= n 1)
@@ -151,6 +151,11 @@
         header  (d/el :div {:class "editor-header"})
         title   (d/el :span {:class "editor-title"} "Page Editor")
         status  (d/el :span {:class "editor-status"} "Ready")
+        flip    (doto (d/el :button {:class "editor-flip-btn"
+                                       :title "Edit the other page in this spread"}
+                            (d/ic "arrow-left-right" ""))
+                      (.addEventListener "click"
+                        (fn [] (edit! (if (= @edit-side :left) :right :left)))))
         close   (doto (d/el :button {:class "editor-close-btn"} "\u2715")
                       (.addEventListener "click" #(dismiss!)))
         send    (doto (d/el :button {:class "editor-send-btn"}
@@ -176,6 +181,7 @@
         container (d/el :div {:class "editor-container"})]
     (.appendChild header title)
     (.appendChild header status)
+    (.appendChild header flip)
     (.appendChild header api-btn)
     (.appendChild header send)
     (.appendChild header close)
@@ -401,39 +407,37 @@
 ;; ── Public API ─────────────────────────────────────────────────
 
 (defn edit!
-  "Open editor for the current page. Shows Monaco in the adjacent page slot."
-  []
-  (when (:active? @editor-state)
-    (dismiss!))
-  (when-let [{:keys [edit-page target]} (find-editor-target)]
-    (let [edit-id (.-id edit-page)
-          {:keys [spread->pages spread-ids]} @state/current-nav
-          all-ids      (vec (mapcat (fn [si] (get spread->pages si)) (range (count spread-ids))))
-          page-idx     (.indexOf all-ids edit-id)]
-      (when-let [source (page-source page-idx)]
-        (let [{:keys [panel container status prompt]} (create-editor-panel!)]
-          ;; Inject editor panel into the target page element
-          (.appendChild target panel)
-          (set! (.-textContent status) "Loading editor…")
-          ;; Lazy-load Monaco, then create editor
-          (load-monaco!
-            (fn []
-              ;; Force layout before creating Monaco
-              (.-offsetHeight container)
-              (let [ed       (create-monaco-editor! container source)
-                    listener (when ed
-                               (.onDidChangeModelContent ed (fn [_] (schedule-sync!))))]
-                (reset! editor-state {:active?   true
-                                      :instance  ed
-                                      :panel     panel
-                                      :page-idx  page-idx
-                                      :target    target
-                                      :edit-page edit-page
-                                      :listener  listener})
-                (set! (.-textContent status) (str "Editing page " (inc page-idx)))
-                (when (and js/lucide (.-createIcons js/lucide))
-                  (.createIcons js/lucide #js {:attrs #js {:class "icon"}}))
-                (.focus prompt)))))))))
+  "Open editor for a page. Pass :left or :right to choose which page in the spread."
+  ([] (edit! nil))
+  ([side]
+   (when (:active? @editor-state) (dismiss!))
+   (when side (reset! edit-side side))
+   (when-let [{:keys [edit-page target]} (find-editor-target)]
+     (let [edit-id (.-id edit-page)
+           {:keys [spread->pages spread-ids]} @state/current-nav
+           all-ids  (vec (mapcat (fn [si] (get spread->pages si)) (range (count spread-ids))))
+           page-idx (.indexOf all-ids edit-id)]
+       (when-let [source (page-source page-idx)]
+         (let [{:keys [panel container status prompt]} (create-editor-panel!)]
+           (.appendChild target panel)
+           (set! (.-textContent status) "Loading editor…")
+           (load-monaco!
+             (fn []
+               (.-offsetHeight container)
+               (let [ed       (create-monaco-editor! container source)
+                     listener (when ed
+                                (.onDidChangeModelContent ed (fn [_] (schedule-sync!))))]
+                 (reset! editor-state {:active?   true
+                                       :instance  ed
+                                       :panel     panel
+                                       :page-idx  page-idx
+                                       :target    target
+                                       :edit-page edit-page
+                                       :listener  listener})
+                 (set! (.-textContent status) (str "Editing page " (inc page-idx)))
+                 (when (and js/lucide (.-createIcons js/lucide))
+                   (.createIcons js/lucide #js {:attrs #js {:class "icon"}}))
+                 (.focus prompt))))))))))
 
 (defn dismiss! []
   (when-let [{:keys [instance panel active? listener]} @editor-state]
