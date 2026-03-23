@@ -8,6 +8,8 @@
            :slug        "diagnostico_seguridad_alimentaria"
            :title       "Diagnóstico Analítico para Seguridad Alimentaria — Romer Labs"
            :description "Tecnologías de diagnóstico para detección de contaminantes en la industria alimentaria."
+           :category    "Seguridad Alimentaria"
+           :tags        ["diagnóstico" "contaminantes" "laboratorio"]
            :lang        :es
            :i18n-overrides {}}
 

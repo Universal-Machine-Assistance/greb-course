@@ -7,36 +7,41 @@
 (def index-entries
   [{:id "portada"           :label "Portada"                      :page 1}
    {:id "contenido"         :label "Contenido"                    :page 2}
-   {:id "que-es"            :label "¿Qué es Greb Docs?"          :page 3}
-   {:id "modo-documento"    :label "Modo Documento"               :page 4}
-   {:id "modo-presentacion" :label "Modo Presentación"            :page 5}
-   {:id "zoom-navegacion"   :label "Zoom y Navegación"            :page 6}
-   {:id "texto-escala"      :label "Texto y Escala"               :page 7}
-   {:id "atajos"            :label "Atajos de Teclado"            :page 8}
-   {:id "omnibar"           :label "Omnibar / OmniREPL"           :page 9}
-   {:id "spacemouse"        :label "SpaceMouse"                   :page 10}
-   {:id "creacion"          :label "Creación de Documentos"       :page 11}
-   {:id "creditos"          :label "Créditos"                     :page 12}])
+   {:id "indice"            :label "Índice"                       :page 3}
+   {:id "introduccion"      :label "Introducción"                 :page 4  :icon "book-open"}
+   {:id "que-es"            :label "¿Qué es Greb Docs?"          :page 5  :icon "layers"}
+   {:id "modo-documento"    :label "Modo Documento"               :page 6  :icon "book-open"}
+   {:id "modo-presentacion" :label "Modo Presentación"            :page 7  :icon "presentation"}
+   {:id "img-doc-vs-pres"   :label "Vista: Doc vs Presentación"   :page 8  :icon "columns"}
+   {:id "overlay-mode"      :label "Overlay Mode"                 :page 9  :icon "layers"}
+   {:id "img-overlay"       :label "Vista: Overlay"               :page 10 :icon "eye"}
+   {:id "zoom-navegacion"   :label "Zoom y Navegación"            :page 11 :icon "zoom-in"}
+   {:id "texto-escala"      :label "Texto y Escala"               :page 12 :icon "type"}
+   {:id "atajos"            :label "Atajos de Teclado"            :page 13 :icon "keyboard"}
+   {:id "omnibar"           :label "Omnibar / OmniREPL"           :page 14 :icon "terminal"}
+   {:id "spacemouse"        :label "SpaceMouse"                   :page 15 :icon "gamepad-2"}
+   {:id "creacion"          :label "Creación de Documentos"       :page 16 :icon "folder-code"}
+   {:id "creditos"          :label "Créditos"                     :page 17 :icon "heart"}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Manual de Greb Docs")
 (def contenido-subtitle "Contenido")
 
 (def contenido-sections
-  [{:id "que-es" :title "Introducción"
+  [{:id "que-es" :title "Introducción" :img "que-es-lego.png"
     :items [{:label "¿Qué es Greb Docs?"    :ok true}
             {:label "El sistema GREB"        :ok true}
             {:label "Creación automatizada"  :ok true}]}
-   {:id "modo-documento" :title "Modos de Visualización"
+   {:id "modo-documento" :title "Modos de Visualización" :img "modo-documento-lego.png"
     :items [{:label "Modo Documento"     :ok true}
             {:label "Modo Presentación"  :ok true}
             {:label "Zoom y Navegación"  :ok true}
             {:label "Texto y Escala"     :ok true}]}
-   {:id "atajos" :title "Controles"
+   {:id "atajos" :title "Controles" :img "keyboard-lego.png"
     :items [{:label "Atajos de Teclado"   :ok true}
             {:label "Omnibar / OmniREPL"  :ok true}
             {:label "SpaceMouse"          :ok true}]}
-   {:id "creacion" :title "Desarrollo"
+   {:id "creacion" :title "Desarrollo" :img "code-lego.png"
     :items [{:label "Estructura de cursos"   :ok true}
             {:label "Templates y bloques"    :ok true}
             {:label "Flujo con Claude Code"  :ok true}]}])
@@ -62,6 +67,14 @@
    {:title "Reactivo"      :icon "zap"
     :text "Interfaz reactiva con Reagent (React). Cambios en datos = actualización inmediata de la vista."}])
 
+(def intro-dropcap
+  ["Los documentos técnicos tradicionales — PDFs estáticos, Google Docs, Notion — fueron diseñados para leer, no para presentar. Cada vez que un equipo necesita convertir su manual en una presentación, el contenido se duplica, se pierde la sincronización y se desperdician horas en formateo. Greb Docs nace de una pregunta simple: **¿y si el mismo documento pudiera ser ambas cosas?**"
+   "A diferencia de PowerPoint o Keynote, Greb Docs no separa el contenido de la estructura. Todo se define como **datos puros en ClojureScript** — mapas, vectores y strings — que el sistema renderiza automáticamente como páginas de libro o diapositivas fullscreen. Cambiás un texto en un solo lugar y se actualiza en ambos modos al instante."
+   "Frente a herramientas como Notion o Confluence, Greb Docs ofrece **control total sobre el diseño** sin sacrificar velocidad. Cada documento tiene su propia paleta de colores, tipografía y tema visual. Y gracias a la integración con **Claude Code**, crear un documento completo desde cero es tan rápido como describir lo que necesitás en lenguaje natural."])
+
+(def intro-text
+  "Greb Docs transforma la forma en que se crean documentos técnicos. En lugar de escribir HTML o usar editores WYSIWYG, **defines tu contenido como datos** en ClojureScript y el sistema genera automáticamente un documento paginado con diseño editorial profesional. Cada documento incluye dos modos de visualización (lectura y presentación), navegación con atajos de teclado estilo Vim, zoom con física inercial, y una paleta de comandos tipo VS Code.")
+
 ;; ── Modo Documento ──────────────────────────────────────────────
 (def modo-doc-title "Modo Documento")
 (def modo-doc-subtitle "Lectura con scroll paginado y doble página")
@@ -75,6 +88,9 @@
     :text "Flechas izquierda/derecha o H/L para avanzar y retroceder por spreads. Home/End para ir al inicio o final."}
    {:title "Barra de Secciones"  :icon "list"
     :text "Barra lateral con las secciones del documento. Clic en una sección para saltar directamente a esa página."}])
+
+(def modo-doc-text
+  "El modo documento es la vista principal. Al abrir un curso, verás las páginas en formato de **doble página** (como un libro abierto) en escritorio, o **página individual** en móvil. Navegá con las **flechas del teclado**, haciendo clic en los números de página, o con gestos de swipe en táctil. Cada página tiene un ancho fijo de 816px y alto de 1056px — optimizado para impresión A4.")
 
 ;; ── Modo Presentación ───────────────────────────────────────────
 (def modo-pres-title "Modo Presentación")

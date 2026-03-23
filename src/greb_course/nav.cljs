@@ -2,8 +2,10 @@
   "URL hash helpers, spread navigator, and TOC panel."
   (:require [greb-course.dom              :as d]
             [greb-course.i18n             :as i18n]
+            [greb-course.state            :as state]
             [greb-course.animation        :as anim]
-            [greb-course.nav-spread-dots  :as sdots]))
+            [greb-course.nav-spread-dots  :as sdots]
+            [clojure.string               :as cstr]))
 
 (defn current-hash []
   (let [h (.-hash js/location)]
@@ -12,8 +14,14 @@
 (defn set-hash! [hash]
   (.replaceState js/history nil "" (str "#" hash)))
 
-(defn build-navigator [spreads spread-ids dots indicator prev-btn next-btn initial-idx]
+(defn build-navigator [spreads spread-ids dots indicator prev-btn next-btn initial-idx
+                       & {:keys [total-pages mobile?]}]
   (let [n     (count spreads)
+        tp    (or total-pages n)
+        mob?  (boolean mobile?)
+        pg-label (fn [spread-idx]
+                   (let [first-pg (inc (if mob? spread-idx (* spread-idx 2)))]
+                     (str first-pg " / " tp)))
         state (atom (max 0 (min (dec n) (or initial-idx 0))))
         go!   (fn [i dir]
                 (let [ni (max 0 (min (dec n) i))
@@ -32,7 +40,7 @@
                       (if (= j ni)
                         (.add (.-classList dt) "active")
                         (.remove (.-classList dt) "active")))
-                    (set! (.-textContent indicator) (str (inc ni) " / " n))
+                    (set! (.-textContent indicator) (pg-label ni))
                     (set! (.-disabled prev-btn) (= ni 0))
                     (set! (.-disabled next-btn) (= ni (dec n)))
                     (set-hash! (nth spread-ids ni ""))
@@ -218,42 +226,136 @@
                   (d/el :kbd {:class "toc-shortcut-key"} key)
                   (d/el :span {:class "toc-shortcut-desc"} desc))))
         (.appendChild left sc-card)))
-    ;; ── API Key settings card (server .env vs browser localStorage) ──
-    (let [status-el (d/el :span {:class "toc-api-status"} "…")
-          api-card  (d/el :div {:class "toc-api-card"}
-                          (d/el :div {:class "toc-api-hdr"}
-                                (d/ic "key" "toc-api-icon")
-                                (d/el :span {} "Claude API Key")
-                                status-el)
-                          (doto (d/el :button {:class "toc-api-btn"}
-                                      (d/ic "settings" "") "Configure")
-                                (.addEventListener "click"
-                                  (fn []
-                                    (let [current (or (.getItem js/localStorage "greb-claude-api-key") "")
-                                          key     (js/prompt
-                                                   (str "Optional: browser-only key. If the server has GREB_ANTHROPIC_API_KEY in .env, leave empty.\n\n"
-                                                        "Anthropic API key:")
-                                                   current)]
-                                      (when (and key (not= key ""))
-                                        (.setItem js/localStorage "greb-claude-api-key" key)
-                                        (set! (.-textContent status-el) "Browser key set")))))))]
-      (.appendChild left api-card)
-      ;; Reflect /api/editor-config so “not set” isn’t shown when the proxy uses .env
-      (-> (js/fetch "/api/editor-config")
-          (.then (fn [r] (if (.-ok r) (.json r) (js/Promise.resolve nil))))
-          (.then (fn [j]
-                   (let [srv? (boolean (when j (aget j "usesServerKey")))
-                         loc? (some? (.getItem js/localStorage "greb-claude-api-key"))]
-                     (set! (.-textContent status-el)
-                           (cond
-                             srv? "Server key (.env)"
-                             loc? "Browser key set"
-                             :else "Not configured")))))
-          (.catch (fn [_]
-                    (set! (.-textContent status-el)
-                          (if (some? (.getItem js/localStorage "greb-claude-api-key"))
-                            "Browser key set"
-                            "Not configured"))))))
+    ;; Document Config card
+    (when-let [course @state/current-course]
+      (let [md (or (:meta course) {})
+            th (or (:theme course) {})
+            config-card
+            (d/el :div {:class "toc-api-card"}
+              (d/el :div {:class "toc-api-hdr"}
+                    (d/ic "file-text" "toc-api-icon")
+                    (d/el :span {} (or (:title md) "Document"))
+                    (d/el :span {:class "toc-api-status"}
+                          (str (count (:pages course)) " pages")))
+              (doto (d/el :button {:class "toc-api-btn"}
+                          (d/ic "info" "") "Details")
+                (.addEventListener "click"
+                  (fn []
+                    ;; Show floating modal in center
+                    (let [scrim (d/el :div {:class "doc-detail-scrim"})
+                          modal (d/el :div {:class "doc-detail-modal"})
+                          close-btn (doto (d/el :button {:class "doc-detail-close"} "\u2715")
+                                      (.addEventListener "click" #(when (.-parentNode scrim) (.remove scrim))))
+                          hdr (d/el :div {:class "doc-detail-hdr"}
+                                    (d/ic "file-text" "doc-detail-icon")
+                                    (d/el :h2 {:class "doc-detail-title"} (or (:title md) "Document"))
+                                    close-btn)
+                          body (d/el :div {:class "doc-detail-body"})
+                          make-row (fn [label value]
+                                    (let [row (d/el :div {:class "doc-detail-row"})
+                                          lbl (d/el :span {:class "doc-detail-label"} label)
+                                          val-el (d/el :span {:class "doc-detail-value"} (str (or value "")))]
+                                      (.addEventListener val-el "click"
+                                        (fn []
+                                          (let [inp (d/el :input {:class "doc-detail-input" :type "text"
+                                                                  :value (str (or value ""))})]
+                                            (set! (.-innerHTML row) "")
+                                            (.appendChild row lbl)
+                                            (.appendChild row inp)
+                                            (.focus inp)
+                                            (.addEventListener inp "blur"
+                                              (fn [] (set! (.-innerHTML row) "")
+                                                (.appendChild row lbl)
+                                                (let [new-val (.-value inp)]
+                                                  (.appendChild row (d/el :span {:class "doc-detail-value"} new-val))))))))
+                                      (.appendChild row lbl)
+                                      (.appendChild row val-el)
+                                      row))]
+                      ;; Metadata section
+                      (.appendChild body (d/el :h3 {:class "doc-detail-section"} "Metadata"))
+                      (doseq [[l v] [["ID" (:id md)] ["Org" (:org md)] ["Slug" (:slug md)]
+                                     ["Category" (:category md)]
+                                     ["Tags" (cstr/join ", " (or (:tags md) []))]
+                                     ["Lang" (name (or (:lang md) :en))]]]
+                        (.appendChild body (make-row l v)))
+                      ;; Theme section
+                      (.appendChild body (d/el :h3 {:class "doc-detail-section"} "Theme"))
+                      (doseq [[l v] [["Brand" (:brand-name th)]
+                                     ["Display Font" (get-in th [:fonts :display])]
+                                     ["Body Font" (get-in th [:fonts :body])]]]
+                        (.appendChild body (make-row l v)))
+                      ;; Color swatches
+                      (let [swatch-row (d/el :div {:class "doc-detail-swatches"})]
+                        (doseq [k [:primary :secondary :accent :ink :paper :page]]
+                          (when-let [c (get-in th [:colors k])]
+                            (let [sw (d/el :div {:class "doc-detail-swatch"})
+                                  lbl (d/el :span {:class "doc-detail-swatch-label"} (name k))]
+                              (.setProperty (.-style sw) "--swatch-color" c)
+                              (.appendChild sw lbl)
+                              (.appendChild swatch-row sw))))
+                        (.appendChild body swatch-row))
+                      ;; Image generation prompts
+                      (.appendChild body (d/el :h3 {:class "doc-detail-section"} "Image Prompts"))
+                      (let [course-id (or (:id md) "")
+                            ls-key (str "greb-style:" course-id)
+                            style-val (or @state/illustration-style
+                                          (.getItem js/localStorage ls-key)
+                                          (get-in md [:style :illustration])
+                                          "")
+                            style-input (d/el :textarea {:class "doc-detail-textarea"
+                                                         :placeholder "Illustration style (prepended to all image prompts)"
+                                                         :rows "3"})
+                            _ (set! (.-value style-input) style-val)
+                            _ (.addEventListener style-input "blur"
+                                (fn []
+                                  (let [v (.-value style-input)]
+                                    (reset! state/illustration-style v)
+                                    (.setItem js/localStorage ls-key v))))
+                            gen-input (d/el :input {:class "doc-detail-input" :type "text"
+                                                    :placeholder "Describe what to generate..."})
+                            gen-btn (doto (d/el :button {:class "doc-detail-gen-btn"}
+                                                (d/ic "image" "") "Generate")
+                                      (.addEventListener "click"
+                                        (fn []
+                                          (let [style (.-value style-input)
+                                                subject (.-value gen-input)
+                                                prompt (if (pos? (count style))
+                                                         (str style ", " subject)
+                                                         subject)]
+                                            (when (pos? (count subject))
+                                              (set! (.-textContent gen-btn) "Generating...")
+                                              (-> (js/fetch "/api/kie/generate"
+                                                    (clj->js {:method "POST"
+                                                              :headers {"Content-Type" "application/json"}
+                                                              :body (.stringify js/JSON (clj->js {:prompt prompt :size "3:2"}))}))
+                                                  (.then #(.json %))
+                                                  (.then (fn [r]
+                                                           (when-let [tid (some-> (aget r "data") (aget "taskId"))]
+                                                             (set! (.-textContent gen-btn) "Polling...")
+                                                             (let [poll (atom nil)]
+                                                               (reset! poll
+                                                                 (js/setInterval
+                                                                   (fn []
+                                                                     (-> (js/fetch (str "/api/kie/task?taskId=" tid))
+                                                                         (.then #(.json %))
+                                                                         (.then (fn [s]
+                                                                                  (when (= "SUCCESS" (some-> (aget s "data") (aget "status")))
+                                                                                    (js/clearInterval @poll)
+                                                                                    (let [url (some-> (aget s "data") (aget "response") (aget "resultUrls") (aget 0))
+                                                                                          preview (d/el :img {:class "doc-detail-preview" :src url})]
+                                                                                      (set! (.-textContent gen-btn) "Generate")
+                                                                                      (.appendChild body preview)))))))
+                                                                   3000))))))))))))]
+                        (.appendChild body (make-row "Style" nil))
+                        (.appendChild body style-input)
+                        (.appendChild body (d/el :div {:class "doc-detail-gen-row"} gen-input gen-btn)))
+                      (.appendChild modal hdr)
+                      (.appendChild modal body)
+                      (.appendChild scrim modal)
+                      (.addEventListener scrim "click"
+                        (fn [e] (when (= (.-target e) scrim) (.remove scrim))))
+                      (.appendChild (.-body js/document) scrim))))))]
+        (.appendChild left config-card)))
     ;; ── RIGHT COLUMN: Index entries card ──
     (let [body   (d/el :div {:class "toc-entries-card"})
           hdr    (d/el :div {:class "toc-entries-hdr"}

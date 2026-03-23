@@ -13,3 +13,11 @@ public/js/manifest.edn
 .env
 .env.local
 src/greb_course/.env
+
+# AgentOps session artifacts (auto-added)
+.agents/
+
+# Dev/debug screenshot artifacts
+dashboard-*.png
+prod-sample-*.png
+.playwright-mcp/

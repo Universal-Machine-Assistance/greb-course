@@ -8,6 +8,8 @@
            :slug        "guia_de_higiene_alimentaria"
            :title       "Guía de Higiene Alimentaria — Helados Valentino"
            :description "Manual de higiene y seguridad alimentaria para las tiendas de Helados Valentino."
+           :category    "Seguridad Alimentaria"
+           :tags        ["higiene" "helados" "HACCP"]
            :lang        :es
            :i18n-overrides {}}
 

@@ -36,5 +36,20 @@
 ;; Callback to enter presentation mode (set by presentation module to avoid circular deps)
 (defonce on-enter-presentation (atom nil))
 
+;; Late-bound callbacks set by core.cljs so core-boot can call them without circular deps
+(defonce ^:dynamic doc-apply-view!*       (atom nil))
+(defonce ^:dynamic save-doc-text-scale!*  (atom nil))
+(defonce ^:dynamic restore-doc-text-scale* (atom nil))
+(defonce ^:dynamic commit-canvas-zoom!*   (atom nil))
+(defonce ^:dynamic preflight-debounced!*  (atom nil))
+(defonce ^:dynamic reload!*               (atom nil))
+(defonce ^:dynamic course-path*           (atom nil))
+
+;; Selected edit side from bottom page dots (for editor)
+(defonce selected-edit-side (atom nil))
+
+;; Saved illustration style for current course (editable in doc detail modal)
+(defonce illustration-style (atom nil))
+
 (defn scale-resize-bound? [] @scale-resize-bound?*)
 (defn set-scale-resize-bound! [] (reset! scale-resize-bound?* true))

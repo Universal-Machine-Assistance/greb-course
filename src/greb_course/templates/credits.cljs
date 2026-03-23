@@ -14,7 +14,16 @@
                                                         (when dark? " credits-logo-wrap--dark"))}
                                      (d/src-img src alt "credits-logo")))
                              logos)))
-              (d/el :p {:class "credits-orgs"} orgs)
+              (if (string? orgs)
+                (d/el :p {:class "credits-orgs"} orgs)
+                (apply d/el :div {:class "credits-orgs"}
+                       (mapv (fn [o]
+                               (if (map? o)
+                                 (d/el :p {:class "credits-org"}
+                                       (d/el :strong {} (:name o))
+                                       (when (:role o) (str " — " (:role o))))
+                                 (d/el :p {:class "credits-org"} (str o))))
+                             (if (sequential? orgs) orgs [orgs]))))
               (d/el :div {:class "credits-legal-wrap"}
                     (d/el :p {:class "credits-legal"} legal)))
         (d/page-footer page-num)))

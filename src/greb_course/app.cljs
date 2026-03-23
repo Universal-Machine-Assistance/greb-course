@@ -4,14 +4,20 @@
             [valentino.course :as valentino]
             [romerlabs.course :as romerlabs]
             [grebdocs.course :as grebdocs]
-            [harmonia.course :as harmonia]))
+            [greb.course :as greb]
+            [harmonia.course :as harmonia]
+            [propuesta-web.course :as propuesta-web]
+            [rivia.course :as rivia]))
 
 ;; All available courses — add new ones here
 (def courses
   [valentino/course
    romerlabs/course
    grebdocs/course
-   harmonia/course])
+   greb/course
+   harmonia/course
+   propuesta-web/course
+   rivia/course])
 
 (defn init [] (core/init! courses))
 

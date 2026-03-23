@@ -72,19 +72,55 @@
                                  (fn [i group]
                                    [i (vec (keep #(when % (.-id %)) group))])
                                  groups))
-        dots       (mapv (fn [i]
-                           (let [pg-count (count (nth groups i))
-                                 first-pg (inc (if mobile? i (* i 2)))
-                                 label    (if (and (not mobile?) (= pg-count 2))
-                                            (str first-pg "·" (inc first-pg))
-                                            (str first-pg))]
-                             (d/el :button {:class "spread-dot" :data-page label} label)))
-                         (range n))
-        indicator  (d/el :span {:class "spread-indicator"} (str "1 / " n))
+        ;; One dot per individual page (not per spread)
+        page-dots  (vec
+                     (mapcat
+                       (fn [si group]
+                         (map-indexed
+                           (fn [pi pg]
+                             (when pg
+                               (let [page-num (inc (if mobile? si (+ (* si 2) pi)))
+                                     side     (if (zero? pi) :left :right)]
+                                 {:el    (d/el :button {:class "spread-dot"
+                                                        :data-page (str page-num)
+                                                        :data-spread (str si)
+                                                        :data-side (name side)}
+                                               (str page-num))
+                                  :spread si
+                                  :side   side})))
+                           group))
+                       (range) groups))
+        page-dots  (vec (remove nil? page-dots))
+        dots       (mapv :el page-dots)
+        total-pages (count all-pages)
+        indicator  (d/el :span {:class "spread-indicator"} (str "1 / " total-pages))
         prev-btn   (d/el :button {:class "nav-btn nav-prev"} (d/ic "chevron-left" ""))
         next-btn   (d/el :button {:class "nav-btn nav-next"} (d/ic "chevron-right" ""))
         init-idx   (or (get id->spread (nav/current-hash)) 0)
-        {:keys [go! nav-state]} (nav/build-navigator spreads spread-ids dots indicator prev-btn next-btn init-idx)
+        ;; Build navigator with empty dots (we handle dot clicks ourselves)
+        spread-dots (mapv (fn [_] (d/el :span {:class "spread-dot-hidden"})) (range n))
+        {:keys [go! nav-state]} (nav/build-navigator spreads spread-ids spread-dots indicator prev-btn next-btn init-idx
+                                                    :total-pages total-pages :mobile? mobile?)
+        ;; Update per-page dots — highlight only ONE page, not the whole spread
+        active-page (atom nil) ;; tracks the single active dot element
+        update-page-dots! (fn [spread-idx side]
+                            (let [target-side (or side :left)]
+                              (doseq [{:keys [el spread side]} page-dots]
+                                (if (and (= spread spread-idx) (= side target-side))
+                                  (do (.add (.-classList el) "active")
+                                      (reset! active-page el))
+                                  (.remove (.-classList el) "active")))))
+        _ (add-watch nav-state ::page-dots
+            (fn [_ _ old-si ni]
+              (let [dir-side (if (< ni old-si) :right :left)]
+                (update-page-dots! ni dir-side))))
+        ;; Click handler: navigate to spread + highlight clicked page
+        _ (doseq [{:keys [el spread side]} page-dots]
+            (.addEventListener el "click"
+              (fn []
+                (go! spread (when (< spread @nav-state) "going-back"))
+                (reset! state/selected-edit-side side)
+                (update-page-dots! spread side))))
         doc-navigate! (fn [page-id]
                         (when-let [idx (get id->spread page-id)]
                           (go! idx nil)))
@@ -94,10 +130,10 @@
                                         :toggle-toc! toggle!
                                         :spread->pages spread->pages})]
     (doseq [s spreads] (.remove (.-classList s) "active"))
-    (doseq [d dots] (.remove (.-classList d) "active"))
     (.add (.-classList (nth spreads init-idx)) "active")
-    (.add (.-classList (nth dots init-idx)) "active")
-    (set! (.-textContent indicator) (str (inc init-idx) " / " n))
+    (update-page-dots! init-idx :left)
+    (let [first-pg (inc (if mobile? init-idx (* init-idx 2)))]
+      (set! (.-textContent indicator) (str first-pg " / " total-pages)))
     (set! (.-disabled prev-btn) (= init-idx 0))
     (set! (.-disabled next-btn) (= init-idx (dec n)))
     (when-not (nav/current-hash) (nav/set-hash! (nth spread-ids init-idx "")))

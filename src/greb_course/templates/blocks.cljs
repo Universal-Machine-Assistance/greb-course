@@ -1,6 +1,7 @@
 (ns greb-course.templates.blocks
   "Blocks template — pages with content blocks but no hero."
   (:require [greb-course.dom :as d]
+            [greb-course.rich-text :as rich]
             [greb-course.templates.components :as comp]))
 
 (defn- render-block-content [{:keys [type icon title items] :as block}]
@@ -99,6 +100,37 @@
                              (d/el :code {:class "code-line"} (str line "\n"))))
                          lines))))
 
+    :text
+    (comp/text-block-el (:content block))
+
+    :text-block
+    (comp/text-block-el (:content block))
+
+    :pricing-table
+    (comp/pricing-table block)
+
+    :steps
+    (comp/steps-block items)
+
+    :two-col
+    (comp/two-col-block block)
+
+    :callout
+    (comp/callout-block block)
+
+    :feature-list
+    (comp/feature-list block)
+
+    :quote-table
+    (comp/quote-table block)
+
+    :image-block
+    (let [{:keys [src alt caption float]} block]
+      (d/el :div {:class (str "image-block" (when float (str " image-block--" (name float))))}
+            (d/src-img src (or alt "") "image-block-img")
+            (when caption
+              (d/el :p {:class "image-block-caption"} caption))))
+
     :risk-familias-bolas
     (comp/risk-familias-bolas-grid items {:hide-visuals? (:hide-visuals? block)})
 
@@ -106,8 +138,8 @@
     (apply d/el :div {:class "mini-info-grid"}
            (mapv comp/info-card items))))
 
-(defn- render-block [block]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block} (:type block))
+(defn render-block [block]
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :image-block} (:type block))
     (render-block-content block)
     (d/el :section {:class "hygiene-block"}
           (comp/section-bar (:icon block) (:title block))
@@ -119,23 +151,7 @@
           (d/el :div {:class "page-bg-img"}
                 (d/src-img bg-img "" "page-bg-photo")))
         (d/el :div {:class "page-body hygiene-body"}
-              (when intro
-                (if (vector? intro)
-                  (let [paras (vec (filter seq intro))]
-                    (when (seq paras)
-                      (apply d/el :div {:class "risk-familias-intro-block"}
-                             (map-indexed
-                              (fn [i s]
-                                (d/el :p {:class (str "risk-familias-page-intro"
-                                                      (when (zero? i)
-                                                        " risk-familias-page-intro--dropcap"))}
-                                        s))
-                              paras))))
-                  (when (seq intro)
-                    (d/el :div {:class "risk-familias-intro-block"}
-                          (d/el :p {:class "risk-familias-page-intro risk-familias-page-intro--dropcap"}
-                                intro)))))
-              ;; Limpieza-style header with optional pills
+              ;; Header first
               (when header
                 (let [{:keys [kicker title icon]} header]
                   (d/el :section {:class (or (:class header) "limpieza-header animate")}
@@ -154,6 +170,22 @@
                                                        (d/el :p {:class "def-verb"} verb))
                                                      (d/el :p {:class "def-text"} text))))
                                        pills))))))
+              ;; Intro paragraphs with drop cap (after header)
+              (when intro
+                (if (vector? intro)
+                  (let [paras (vec (filter seq intro))]
+                    (when (seq paras)
+                      (apply d/el :div {:class "intro-prose"}
+                             (map-indexed
+                              (fn [i s]
+                                (apply d/el :p {:class (str "intro-prose-p"
+                                                           (when (zero? i) " intro-prose-p--dropcap"))}
+                                       (rich/inline-children (str s))))
+                              paras))))
+                  (when (seq intro)
+                    (d/el :div {:class "intro-prose"}
+                          (apply d/el :p {:class "intro-prose-p intro-prose-p--dropcap"}
+                                 (rich/inline-children (str intro)))))))
               ;; Handwash-style head section (kicker + title, no hero meter)
               (when head-section
                 (d/el :section {:class "handwash-head animate"}

@@ -4,41 +4,48 @@
 
 ;; ── Index ───────────────────────────────────────────────────────
 (def index-entries
-  [{:id "portada"        :label "Portada"                       :page 1}
-   {:id "contenido"      :label "Contenido"                     :page 2}
-   {:id "que-es"         :label "¿Qué es Harmonia?"             :page 3}
-   {:id "arquitectura"   :label "Arquitectura del Sistema"      :page 4}
-   {:id "esquema-bd"     :label "Esquema de Base de Datos"      :page 5}
-   {:id "acceso"         :label "Acceso y Autenticación"        :page 6}
-   {:id "perfil"         :label "Perfil de Usuario"             :page 7}
-   {:id "img-dashboard"  :label "Vista: Dashboard"              :page 8}
-   {:id "api"            :label "API REST"                      :page 9}
-   {:id "sedes"          :label "Sedes y Salas"                 :page 10}
-   {:id "img-sedes"      :label "Vista: Sedes"                  :page 11}
-   {:id "catedras"       :label "Cátedras"                      :page 12}
-   {:id "cursos"         :label "Cursos y Asignaciones"         :page 13}
-   {:id "img-cursos"     :label "Vista: Cursos y Cátedras"      :page 14}
-   {:id "instructores"   :label "Instructores"                  :page 15}
-   {:id "miembros"       :label "Miembros"                      :page 16}
-   {:id "img-miembros"   :label "Vista: Miembros"               :page 17}
-   {:id "eventos"        :label "Eventos y Asistencia"          :page 18}
-   {:id "biblioteca"     :label "Biblioteca"                    :page 19}
-   {:id "img-biblioteca" :label "Vista: Biblioteca"             :page 20}
-   {:id "contribuciones" :label "Contribuciones"                :page 21}
-   {:id "personajes"     :label "Personajes"                    :page 22}
-   {:id "administracion" :label "Administración y Usuarios"     :page 23}
-   {:id "multi-pais"     :label "Operación Multi-País"          :page 24}
-   {:id "code-entidades" :label "Código — Entidades REPL"        :page 25}
-   {:id "code-biblioteca" :label "Código — Biblioteca y Libros"  :page 26}
-   {:id "code-sql"       :label "Código — SQL y Esquema"         :page 27}
-   {:id "code-api"       :label "Código — API REST (JSON)"       :page 28}
-   {:id "omnirepl"       :label "OmniREPL — Paleta de Comandos"  :page 29}
-   {:id "omnirepl-code"  :label "OmniREPL — Ejemplos de Código"  :page 30}
-   {:id "repl"           :label "REPL — Código en Vivo"          :page 31}
-   {:id "repl-code"      :label "REPL — Ejemplos de Código"      :page 32}
-   {:id "repl-backend"   :label "REPL Backend y CLI"             :page 33}
-   {:id "repl-backend-code" :label "Backend — Ejemplos de Código" :page 34}
-   {:id "creditos"       :label "Créditos"                       :page 35}])
+  [{:id "portada"          :label "Portada"                       :page 1}
+   {:id "contenido"        :label "Contenido"                     :page 2}
+   {:id "indice"           :label "Indice"                        :page 3  :icon "list"}
+   {:id "introduccion"     :label "Introduccion"                  :page 4  :icon "book-open"}
+   {:id "que-es"           :label "Que es Harmonia?"              :page 5  :icon "help-circle"}
+   {:id "arquitectura"     :label "Arquitectura del Sistema"      :page 6  :icon "cpu"}
+   {:id "esquema-bd"       :label "Esquema de Base de Datos"      :page 7  :icon "database"}
+   {:id "acceso"           :label "Acceso y Autenticacion"        :page 8  :icon "log-in"}
+   {:id "perfil"           :label "Perfil de Usuario"             :page 9  :icon "user"}
+   {:id "img-dashboard"    :label "Vista: Dashboard"              :page 10 :icon "monitor"}
+   {:id "api"              :label "API REST"                      :page 11 :icon "cloud"}
+   {:id "sedes"            :label "Sedes y Salas"                 :page 12 :icon "building"}
+   {:id "img-sedes"        :label "Vista: Sedes"                  :page 13 :icon "image"}
+   {:id "catedras"         :label "Catedras"                      :page 14 :icon "book-open"}
+   {:id "img-catedras"     :label "Vista: Catedras"               :page 15 :icon "image"}
+   {:id "cursos"           :label "Cursos y Asignaciones"         :page 16 :icon "calendar"}
+   {:id "img-cursos"       :label "Vista: Cursos"                 :page 17 :icon "image"}
+   {:id "img-asignaciones" :label "Vista: Asignaciones"           :page 18 :icon "image"}
+   {:id "instructores"     :label "Instructores"                  :page 19 :icon "graduation-cap"}
+   {:id "img-instructores" :label "Vista: Instructores"           :page 20 :icon "image"}
+   {:id "miembros"         :label "Miembros"                      :page 21 :icon "users"}
+   {:id "img-miembros"     :label "Vista: Miembros"               :page 22 :icon "image"}
+   {:id "eventos"          :label "Eventos y Asistencia"          :page 23 :icon "calendar"}
+   {:id "img-calendario"   :label "Vista: Calendario"             :page 24 :icon "image"}
+   {:id "img-encargados"   :label "Vista: Encargados"             :page 25 :icon "image"}
+   {:id "biblioteca"       :label "Biblioteca"                    :page 26 :icon "library"}
+   {:id "img-biblioteca"   :label "Vista: Biblioteca"             :page 27 :icon "image"}
+   {:id "contribuciones"   :label "Contribuciones"                :page 28 :icon "credit-card"}
+   {:id "personajes"       :label "Personajes"                    :page 29 :icon "star"}
+   {:id "administracion"   :label "Administracion y Usuarios"     :page 30 :icon "settings"}
+   {:id "multi-pais"       :label "Operacion Multi-Pais"          :page 31 :icon "globe"}
+   {:id "code-entidades"   :label "Codigo Entidades REPL"         :page 32 :icon "terminal"}
+   {:id "code-biblioteca"  :label "Codigo Biblioteca y Libros"    :page 33 :icon "terminal"}
+   {:id "code-sql"         :label "Codigo SQL y Esquema"          :page 34 :icon "database"}
+   {:id "code-api"         :label "Codigo API REST"               :page 35 :icon "cloud"}
+   {:id "omnirepl"         :label "OmniREPL Paleta de Comandos"   :page 36 :icon "terminal"}
+   {:id "omnirepl-code"    :label "OmniREPL Ejemplos de Codigo"   :page 37 :icon "code"}
+   {:id "repl"             :label "REPL Codigo en Vivo"           :page 38 :icon "terminal"}
+   {:id "repl-code"        :label "REPL Ejemplos de Codigo"       :page 39 :icon "code"}
+   {:id "repl-backend"     :label "REPL Backend y CLI"            :page 40 :icon "server"}
+   {:id "repl-backend-code" :label "Backend Ejemplos de Codigo"   :page 41 :icon "code"}
+   {:id "creditos"         :label "Creditos"                      :page 42 :icon "heart"}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Harmonia — Manual de Usuario")
@@ -70,6 +77,11 @@
             {:label "REPL Frontend"               :ok true}
             {:label "REPL Backend y CLI"          :ok true}]}])
 
+(def intro-dropcap
+  ["En las escuelas de filosofía de **Nueva Acrópolis**, la gestión académica solía dispersarse entre hojas de cálculo, chats grupales y cuadernos de asistencia. Cada sede manejaba sus datos de forma independiente, sin visibilidad entre países ni herramientas unificadas. Harmonia nace para resolver esto: un sistema donde **toda la vida académica** — desde la inscripción de un estudiante hasta el préstamo de un libro — vive en un solo lugar."
+   "El nombre no es casual. **Harmonia** evoca el principio pitagórico de la armonía universal: la idea de que el orden y la proporción subyacen a toda la realidad. Así como los pitagóricos buscaban la armonía en los números y la música, este sistema busca la armonía en la **organización del conocimiento** — conectando personas, espacios, materias y eventos en una estructura coherente."
+   "A diferencia de soluciones genéricas como Google Classroom o Moodle, Harmonia fue diseñado específicamente para la estructura de Nueva Acrópolis: **7 niveles de cátedras** filosóficas, **salas nombradas como filósofos**, un sistema de **contribuciones** voluntarias y una **biblioteca** que puede compartir libros entre países. Todo opera con aislamiento por país pero con visibilidad global cuando se necesita."])
+
 ;; ── Intro: ¿Qué es Harmonia? ─────────────────────────────────
 (def intro-title "¿Qué es Harmonia?")
 
@@ -90,6 +102,9 @@
     :text "Toda la UI deriva de un átomo Reagent. Un `swap!` actualiza la vista al instante. El estado se persiste en `localStorage` bajo la clave `nuevaAcropolisData` y se sincroniza con el servidor vía API REST."}
    {:title "Roles y Permisos"   :icon "shield-check"
     :text "Tres roles: **admin** (gestión completa, CRUD, sync), **instructor** (vista de cursos y miembros), **member** (consulta personal). JWT + bcrypt para autenticación."}])
+
+(def intro-text
+  "Harmonia centraliza toda la información académica en una sola plataforma. Al ingresar, el usuario selecciona su **país** y accede a un dashboard con estadísticas de sedes, cursos activos, miembros inscritos y próximos eventos. Desde el **menú lateral** se navega entre las secciones: Sedes, Grupos, Miembros, Instructores, Cátedras, Asignaciones, Calendario, Biblioteca y Contribuciones.")
 
 ;; ── Arquitectura ──────────────────────────────────────────────
 (def arq-title "Arquitectura del Sistema")
@@ -165,6 +180,12 @@
    {:title "member"      :icon "user"
     :text "Rol por defecto al registrarse. Consulta su perfil personal, curso inscrito, historial de asistencia y contribuciones. Lectura de datos del país pero sin escritura al servidor."}])
 
+(def acceso-text-registro
+  "Para crear un nuevo usuario, ingresá a la pantalla de **Registro** desde el enlace en la página de login. Completá los campos: **email** (será tu identificador único), **contraseña** (mínimo 6 caracteres), **nombre completo** y **país** (seleccioná del combobox). Al registrarte, el sistema te asigna el rol **member** automáticamente. Si tu email coincide con un miembro ya existente en el sistema, se vinculan automáticamente y heredás los datos de ese perfil.")
+
+(def acceso-text-admin
+  "Un administrador puede crear usuarios directamente desde **Menú → Administración → Usuarios**. Hacé clic en **+ Agregar Usuario** y completá: email, contraseña temporal, nombre, país y rol (admin, instructor o member). También puede cambiar roles de usuarios existentes o vincular manualmente un usuario a un registro de miembro o instructor si la vinculación automática no funcionó.")
+
 ;; ── Perfil de Usuario ─────────────────────────────────────────
 (def perfil-title "Perfil de Usuario")
 (def perfil-subtitle "Cada usuario tiene un perfil personal vinculado a su ficha de miembro")
@@ -228,6 +249,9 @@
    {:text ";; Navegar a /do/perfil" :hl true}
    "(db/get-miembro-for-user)  ;; → {:nombre \"Eva\" ...}"])
 
+(def perfil-text
+  "Al hacer login por primera vez, el sistema crea automáticamente tu **perfil de miembro** vinculado a tu cuenta. Desde **Menú → Perfil** (o haciendo clic en tu avatar en la barra superior) podés ver y editar: nombre, apellido, móvil, correo, biografía y foto de perfil. Los cambios se guardan automáticamente al salir de cada campo. Si sos instructor, también verás tus clases asignadas y tu título docente.")
+
 ;; ── API REST ──────────────────────────────────────────────────
 (def api-title "API REST")
 (def api-subtitle "Endpoints, autenticación y formatos")
@@ -284,6 +308,9 @@
    {:title "Encargados"        :icon "user-check"
     :text "Vista **Sedes y Encargados**: tabla con sede, ciudad, encargado y contacto (teléfono, email). Directorio de referencia para coordinación."}])
 
+(def sedes-text
+  "Para crear una nueva sede, andá a **Menú → Sedes** y hacé clic en **+ Nueva Sede**. Completá: **nombre** de la sede, **ciudad**, **dirección** física, y opcionalmente seleccioná un **encargado** (instructor responsable) del combobox. Podés agregar una **foto** de la sede. Dentro de cada sede podés crear **salas** — los espacios donde se imparten las clases. Cada sala necesita un **nombre** y opcionalmente una descripción e imagen.")
+
 ;; ── Cátedras ──────────────────────────────────────────────────
 (def catedras-title "Cátedras")
 (def catedras-subtitle "Materias académicas organizadas por nivel")
@@ -297,6 +324,9 @@
     :text "Referenciada por **Asignaciones** (vía `asignacion.catedraId`), por **Eventos** (vía `evento.catedraId` opcional), y listada en **Cursos** como array `catedras`. 38 cátedras en datos semilla."}
    {:title "REPL"           :icon "terminal"
     :text "Backend: `(->> (entities) :catedras (map :sigla) sort)` — todas las siglas. `(->> (entities) :catedras (group-by :nivel) (map (fn [[n cs]] [n (count cs)])))` — conteo por nivel. Frontend: `(db/get-catedras)`."}])
+
+(def catedras-text
+  "Las cátedras se gestionan desde **Menú → Cátedras**. Para crear una nueva, hacé clic en **+ Nueva Cátedra** y completá: **nombre** de la materia (ej: Ética), **sigla** (ej: ETIC-101) y **nivel** (Primer a Séptimo año). Las cátedras se asignan a los cursos a través de las **Asignaciones**, donde se define qué instructor enseña qué materia en qué sala.")
 
 ;; ── Cursos y Asignaciones ─────────────────────────────────────
 (def cursos-title "Cursos y Asignaciones")
@@ -320,6 +350,9 @@
    {:title "Vista Asignaciones"   :icon "clock"
     :text "Menú → **Asignaciones**. Estadísticas: total asignaciones, instructores activos, salas en uso, cátedras asignadas. Filtros por curso e instructor. Botón **+ Nueva Asignación** para crear enlace de 4 vías."}])
 
+(def cursos-text
+  "Para crear un nuevo grupo de estudio, andá a **Menú → Grupos** y hacé clic en **+ Nuevo Curso**. Completá: **nombre** del grupo (ej: Miembros Viernes), **sede** (seleccioná del combobox), **día** de la semana y **hora**. Las **asignaciones** se crean desde **Menú → Asignaciones → + Nueva Asignación** donde seleccionás: el **curso**, la **sala**, la **cátedra** y el **instructor**. Esto define quién enseña qué materia, dónde y para qué grupo.")
+
 ;; ── Instructores ──────────────────────────────────────────────
 (def instructores-title "Instructores")
 (def instructores-subtitle "Equipo docente de la escuela")
@@ -333,6 +366,9 @@
     :text "Menú → **Instructores**. Stats: total, con asignaciones, total asignaciones. Barra de búsqueda. Grilla de tarjetas con avatar (iniciales o foto), nombre, contacto y badge de asignaciones. Botón **+ Nuevo Instructor**."}
    {:title "REPL"             :icon "terminal"
     :text "Backend: `(->> (instructores) (map #(select-keys % [:nombre :apellido])))`. `(->> (instructores) (filter #(:miembroId %)))` — instructores vinculados a miembro. Frontend: `(db/get-instructores)`. Semilla: 14 instructores."}])
+
+(def instructores-text
+  "Para agregar un instructor, andá a **Menú → Instructores** y hacé clic en **+ Nuevo Instructor**. Completá: **nombre**, **apellido**, **móvil**, **correo** y opcionalmente un **título de instructor**. Si el instructor también es miembro, el sistema los vincula automáticamente por coincidencia de email. Desde la ficha del instructor podés ver sus **asignaciones** (qué cátedras enseña en qué cursos y salas).")
 
 ;; ── Miembros ──────────────────────────────────────────────────
 (def miembros-title "Miembros")
@@ -356,6 +392,9 @@
    {:title "Resolver Duplicados" :icon "copy"
     :text "Botón **Resolver Duplicados** en la vista de miembros. Detecta registros duplicados por nombre/correo y permite fusionarlos en uno solo. Herramienta admin."}])
 
+(def miembros-text
+  "Para inscribir un nuevo miembro, andá a **Menú → Miembros** y hacé clic en **+ Nuevo Miembro**. Completá: **nombre**, **apellido**, **correo**, **móvil**, **rol** (estudiante, coordinador, delegado, voluntario o instructor), **estado** (member o probacionismo) y seleccioná el **curso** al que se inscribe. Opcionalmente podés agregar **fecha de ingreso**, **biografía** y **foto de perfil**. El miembro aparecerá automáticamente en la lista de su curso y podrá registrarse para crear su propia cuenta vinculada.")
+
 ;; ── Eventos y Asistencia ──────────────────────────────────────
 (def eventos-title "Eventos y Asistencia")
 (def eventos-subtitle "Sesiones de clase y registro de participación")
@@ -369,6 +408,9 @@
     :text "Menú → **Calendario**. Mini-calendario mensual con días con actividad resaltados. Lista de próximos eventos y celebraciones (equinoccios, solsticios, aniversarios). Eventos recientes con curso y fecha."}
    {:title "REPL"                   :icon "terminal"
     :text "Backend: `(->> (entities) :eventos (filter #(= (:cursoId %) \"1\")))` — eventos del curso 1. `(->> (entities) :asistencias (filter #(= (:eventoId %) \"ev-1\")) (filter :presente) count)` — presentes en un evento. Frontend: `(db/get-eventos)`, `(db/get-asistencias)`."}])
+
+(def eventos-text
+  "Para crear un evento, andá a **Menú → Calendario** y hacé clic en **+ Nuevo Evento**. Completá: **título**, **descripción**, **fecha**, **hora**, **tipo** (clase, taller, examen, conferencia, ceremonia o actividad), seleccioná el **curso** asociado y opcionalmente la **cátedra** y el **encargado**. Para registrar asistencia, abrí el evento y marcá **presente/ausente** para cada miembro del curso. El historial de asistencia se guarda automáticamente.")
 
 ;; ── Biblioteca ────────────────────────────────────────────────
 (def biblioteca-title "Biblioteca")
@@ -393,6 +435,21 @@
     :text "Admin: botón **Importar JSON** acepta array de objetos libro. REPL: `(import-json! :libro \"DO\" \"data/catalogo_libros.json\")`. Útil para migración inicial o carga masiva de catálogos."}
    {:title "REPL"                    :icon "terminal"
     :text "`(->> (libros) count)` → total. `(->> (libros) (map :categoria) distinct sort)` → categorías. `(->> (libros) (map :biblioteca) frequencies)` → conteo por biblioteca. `(->> (libros) (filter #(= (:isbn %) \"9879191102\")) first)` → buscar por ISBN."}])
+
+(def biblioteca-text
+  "Para agregar un libro, andá a **Menú → Biblioteca** y hacé clic en **+ Nuevo Libro**. Completá: **título**, **autor**, **ISBN**, **editorial**, **categoría**, **año** y opcionalmente **signatura topográfica**, **sala** y **ubicación física** en la estantería. Podés agregar una **portada** (imagen) y **archivos adjuntos** (PDFs). Para importación masiva, usá el botón **Importar JSON** con un archivo que contenga un array de objetos libro.")
+
+(def biblioteca-campos-id
+  "**id** UUID · **countryCode** · **codigo** interno (ej: `NAC-100-BAC-001-01`) · **isbn** · **slug** auto-generado del título.")
+
+(def biblioteca-campos-biblio
+  "**titulo** · **autor** · **anio** · **editorial** · **categoria** · **categoriaCDD** Dewey · **areaTema** · **formato** · **etiquetas** · **palabrasClave**.")
+
+(def biblioteca-campos-ubicacion
+  "**signatura** topográfica · **biblioteca** (ej: `NAC`) · **sala** (ej: `Giordano Bruno`) · **ubicacionFisica** posición en estantería · **disponible** · **archivado**.")
+
+(def biblioteca-campos-archivos
+  "**imagenPortada** URL de Google Books · **imagen** alternativa · **archivos** adjuntos (PDFs). Subida vía `POST /api/upload-file`.")
 
 ;; ── Contribuciones ────────────────────────────────────────────
 (def contrib-title "Contribuciones")
@@ -421,6 +478,9 @@
     :text "Las **Salas** llevan nombres de estos personajes (Sala Hipatia, Sala Platón, etc.), conectando el espacio físico con la tradición filosófica. Referencia cultural para estudiantes y visitantes."}
    {:title "REPL"           :icon "terminal"
     :text "Backend: `(->> (entities) :personajes (map :nombre))` → lista de nombres. Frontend: `(db/get-personajes)`. `(db/set-personajes! (conj (db/get-personajes) {:id \"p6\" :nombre \"Sócrates\" :countryCode \"DO\"}))` → agregar personaje."}])
+
+(def contrib-text
+  "Las contribuciones se registran desde la **ficha del miembro** o desde **Menú → Contribuciones**. Hacé clic en **+ Nueva Contribución** y completá: seleccioná el **miembro**, el **tipo** (membresía, diplomado o donación), el **período** (mes/año) y opcionalmente el **monto**. Para pagos de diplomado, también seleccioná el **curso** asociado. El historial de contribuciones se muestra como timeline en el perfil del miembro.")
 
 ;; ── Administración ────────────────────────────────────────────
 (def admin-title "Administración y Usuarios")
