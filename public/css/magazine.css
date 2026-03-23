@@ -2872,17 +2872,7 @@
   line-height: 1.6;
   color: var(--ink-2, #555);
 }
-/* Alternate: even slides have video on right */
-.pres-slide--key-visual:nth-child(even) .wash-step {
-  grid-template-columns: 1fr 1.2fr;
-}
-.pres-slide--key-visual:nth-child(even) .wash-step-img-wrap {
-  order: 2;
-}
-.pres-slide--key-visual:nth-child(even) .wash-step-body {
-  order: 1;
-  text-align: right;
-}
+/* Always: video left, text right — no alternating */
 .wash-step-icon {
   width: 1.1rem;
   height: 1.1rem;
