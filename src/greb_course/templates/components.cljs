@@ -247,15 +247,38 @@
     (d/el :article {:class "wash-step animate"}
           (cond
             img
-            (d/el :div {:class "wash-step-img-wrap"}
-                  (d/el :video {:src (str @d/current-images-base mp4)
-                                :poster (str @d/current-images-base img)
-                                :autoplay true :loop true :muted true :playsinline true
-                                :class "wash-step-img"})
-                  ;; Hidden img fallback for print
-                  (d/el :img {:src (str @d/current-images-base img)
-                              :alt (or title "")
-                              :class "wash-step-img wash-step-img--print"}))
+            (let [wrap   (d/el :div {:class "wash-step-img-wrap"})
+                  vid    (d/el :video {:src (str @d/current-images-base mp4)
+                                       :poster (str @d/current-images-base img)
+                                       :loop true :muted true :playsinline true
+                                       :class "wash-step-img wash-step-vid"})
+                  poster (d/el :img {:src (str @d/current-images-base img)
+                                     :alt (or title "")
+                                     :class "wash-step-img wash-step-poster"})
+                  play-btn (d/el :div {:class "wash-step-play"} "▶")
+                  playing? (atom false)]
+              ;; Click toggles video play/pause in doc mode
+              (.addEventListener wrap "click"
+                (fn [_]
+                  (if @playing?
+                    (do (.pause vid)
+                        (reset! playing? false)
+                        (.remove (.-classList wrap) "wash-step--playing"))
+                    (do (.play vid)
+                        (reset! playing? true)
+                        (.add (.-classList wrap) "wash-step--playing")))))
+              ;; Auto-play in presentation mode (detected by .presenting class on html)
+              (js/setTimeout
+                (fn []
+                  (when (.contains (.-classList (.-documentElement js/document)) "presenting")
+                    (.play vid)
+                    (reset! playing? true)
+                    (.add (.-classList wrap) "wash-step--playing")))
+                200)
+              (.appendChild wrap poster)
+              (.appendChild wrap vid)
+              (.appendChild wrap play-btn)
+              wrap)
             :else
             (d/el :div {:class "wash-step-num"}
                   (if icon (d/ic icon "wash-step-icon") step)))

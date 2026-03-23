@@ -13,21 +13,23 @@
    {:id "lavado-tecnica"           :label "Lavado de Manos — Técnica"       :page 6}
    {:id "higiene-personal"         :label "Higiene Personal — Checklist"    :page 7}
    {:id "higiene-disciplina"       :label "Higiene Personal — Disciplina"   :page 8}
-   {:id "recepcion-almacenamiento" :label "Recepción — Inspección"          :page 9}
-   {:id "recepcion-controles"      :label "Recepción — Bodega y Controles"  :page 10}
-   {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 11}
-   {:id "limpieza-spread-intro"    :label "Limpieza — Desplegar sección"    :page 12}
-   {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 13}
-   {:id "limpieza-calendario"      :label "Limpieza — Calendario Operativo" :page 14}
-   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 15}
-   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 16}
-   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 17}
-   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 18}
-   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 19}
-   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 20}
-   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 21}
-   {:id "glosario"                  :label "Glosario de Términos"            :page 22}
-   {:id "creditos"                  :label "Créditos"                        :page 30}])
+   {:id "recepcion-almacenamiento"        :label "Recepción — Introducción"       :page 9}
+   {:id "recepcion-inspeccion"             :label "Recepción — Inspección"         :page 10}
+   {:id "recepcion-almacenamiento-detalle" :label "Almacenamiento — Reglas"        :page 11}
+   {:id "recepcion-controles"              :label "Recepción — Controles"          :page 12}
+   {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 13}
+   {:id "limpieza-spread-intro"    :label "Limpieza — Desplegar sección"    :page 14}
+   {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 15}
+   {:id "limpieza-calendario"      :label "Limpieza — Calendario Operativo" :page 16}
+   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 17}
+   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 18}
+   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 19}
+   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 20}
+   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 21}
+   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 22}
+   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 23}
+   {:id "glosario"                  :label "Glosario de Términos"            :page 24}
+   {:id "creditos"                  :label "Créditos"                        :page 32}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Guía de Higiene de los Alimentos para las Tiendas de Valentino")
@@ -339,8 +341,22 @@
 ;; ── Operations ──────────────────────────────────────────────────
 (def recepcion-title "Recepción y Almacenamiento")
 
+(def recepcion-intro
+  ["Recepción y Almacenamiento son etapas críticas en la cadena de frío que garantizan la calidad y seguridad del producto desde que llega a la tienda hasta que se sirve al consumidor. Un fallo en esta etapa puede comprometer toda la operación."
+   "El pedido de helados llega los **lunes y jueves** en camiones refrigerados. Al recibir cada entrega, se realiza un **inventario diario** del producto para asegurar que la cantidad y condición coinciden con la orden colocada."
+   "El producto se recibe en **bandejas** que llegan a una temperatura de **-18°C**. La persona que entrega el producto lo coloca sobre las neveras, y el encargado en tienda las va colocando en el **cuarto frío de almacenamiento**."
+   "El cuarto frío tiene **cuatro tramos**: el producto nuevo se coloca en los tramos de la **izquierda** y en los tramos de la **derecha** se coloca el producto más viejo — siguiendo el principio **PEPS** (Primero en Entrar, Primero en Salir)."
+   "Cuando se recibe el producto, debe **contarse** para asegurar que se recibió la cantidad correcta contra la orden colocada. Cualquier discrepancia debe reportarse inmediatamente."])
+
 (def recepcion-bandeja
   "El producto se recibe generalmente lunes y jueves en camiones refrigerados a -18°C. El conductor coloca el producto sobre las neveras; el encargado lo traslada al cuarto frío de almacenamiento. Al recibir, se cuenta el producto para verificar que coincide con la orden.")
+
+(def almacenamiento-intro
+  ["Los productos deben ser almacenados adecuadamente según su tipo: el producto **refrigerado y congelado** se coloca en cuartos fríos y neveras, mientras que el producto **seco o a temperatura ambiente** se guarda en armarios y tramos."
+   "**Nunca** debe colocarse producto para consumo directamente en el suelo. El producto debe colocarse en **recipientes plásticos** o sobre los **tramos** designados."
+   "Los productos y materiales secos (conos, envases, servilletas) se organizan en los tramos del **almacén seco** o en los tramos del **área de servicio**."
+   "Los productos refrigerados (toppings, salsas, frutas) se colocan en las **neveras del área de servicio** a la temperatura indicada por el fabricante."
+   "Las **bandejas de helado** se colocan en los cuartos fríos sobre los tramos, etiquetadas con **fecha de recepción** y **número de lote**."])
 
 (def recepcion-criteria
   [{:que "Temperatura del producto"

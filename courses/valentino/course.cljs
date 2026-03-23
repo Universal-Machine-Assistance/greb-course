@@ -31,17 +31,17 @@
          {:label "Higiene del Personal"
           :entries (subvec c/index-entries 4 8)}
          {:label "Recepción y Almacenamiento"
-          :entries (subvec c/index-entries 8 10)}
+          :entries (subvec c/index-entries 8 12)}
          {:label "Limpieza y Desinfección"
-          :entries (subvec c/index-entries 10 12)}
+          :entries (subvec c/index-entries 12 14)}
          {:label "Riesgos"
-          :entries (subvec c/index-entries 14 20)}
+          :entries (subvec c/index-entries 16 22)}
          {:label "Glosario"
-          :entries (into [(nth c/index-entries 20)]
-                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 22 i)})
+          :entries (into [(nth c/index-entries 22)]
+                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 24 i)})
                                       c/glosario-terms))}
          {:label "Créditos"
-          :entries [(nth c/index-entries 21)]}]
+          :entries [(nth c/index-entries 23)]}]
 
    :pages
    [;; 1. Cover
@@ -108,11 +108,15 @@
             :blocks [{:type :info-grid :icon "shield-plus" :title "Uso de guantes"
                       :items c/glove-rules}]}}
 
-    ;; 6. Handwash steps (carousel — one video at a time, alternating sides)
+    ;; 6. Handwash steps (grid in doc mode, carousel slides in pres mode)
     {:template :blocks
      :data {:id "lavado-tecnica"
-            :blocks [{:type :wash-carousel
-                      :items c/handwash-steps}]}}
+            :blocks [{:type :wash-grid :icon "waves" :title "Técnica de lavado — 6 pasos"
+                      :items c/handwash-steps}
+                     {:type :highlight
+                      :icon "lightbulb"
+                      :title "¿Sabías que…?"
+                      :items c/handwash-fun-facts}]}}
 
     ;; 7. Personal hygiene (hero-section)
     {:template :hero-section
@@ -149,7 +153,7 @@
                      {:type :info-grid :icon "heart-pulse" :title "Salud del personal"
                       :items c/hygiene-health-rules}]}}
 
-    ;; 9. Reception (hero-section)
+    ;; 9. Reception intro (with drop cap)
     {:template :hero-section
      :data {:id "recepcion-almacenamiento"
             :hero {:kicker "Operaciones"
@@ -157,17 +161,33 @@
                    :subtitle c/recepcion-bandeja
                    :meter-value "-18°"
                    :meter-caption "Temperatura de recepción"}
+            :blocks [{:type :text-block :content (nth c/recepcion-intro 0)}
+                     {:type :text-block :content (nth c/recepcion-intro 1)}
+                     {:type :text-block :content (nth c/recepcion-intro 2)}]}}
+
+    ;; 10. Reception — inspection criteria + storage intro
+    {:template :blocks
+     :data {:id "recepcion-inspeccion"
+            :intro [(nth c/recepcion-intro 3) (nth c/recepcion-intro 4)]
             :blocks [{:type :criteria-table :icon "clipboard-check"
                       :title "Criterios de inspección al recibir"
                       :headers ["¿Qué?" "¿Cómo?" "Criterio"]
                       :items c/recepcion-criteria}]}}
 
-    ;; 10. Storage & controls (blocks)
+    ;; 11. Storage rules (detailed)
+    {:template :blocks
+     :data {:id "recepcion-almacenamiento-detalle"
+            :header {:icon "archive"
+                     :kicker "Almacenamiento"
+                     :title "Reglas de Almacenamiento"}
+            :intro c/almacenamiento-intro
+            :blocks [{:type :info-grid :icon "archive" :title "Resumen de reglas"
+                      :items c/almacenamiento-rules}]}}
+
+    ;; 12. Temperature controls & alerts
     {:template :blocks
      :data {:id "recepcion-controles"
-            :blocks [{:type :info-grid :icon "archive" :title "Reglas de almacenamiento"
-                      :items c/almacenamiento-rules}
-                     {:type :info-grid :icon "thermometer" :title "Controles de temperatura y vencimiento"
+            :blocks [{:type :info-grid :icon "thermometer" :title "Controles de temperatura y vencimiento"
                       :items c/temp-control-rules}
                      {:type :image-grid
                       :featured? false
