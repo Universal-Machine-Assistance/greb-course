@@ -14,10 +14,11 @@
    {:id "cronograma"     :label "Cronograma"                  :page 9}
    {:id "inversion"      :label "Cotización"                   :page 10}
    {:id "condiciones"    :label "Condiciones"                 :page 11}
-   {:id "creditos"       :label "Contacto"                    :page 12}])
+   {:id "transferencia"  :label "Información de Transferencia" :page 12}
+   {:id "creditos"       :label "Contacto"                    :page 13}])
 
 ;; ── TOC ─────────────────────────────────────────────────────────
-(def contenido-title "Propuesta de Sitio Web")
+(def contenido-title "Propuesta — Sitio Web via Plantilla")
 (def contenido-subtitle "Índice")
 
 (def contenido-sections
@@ -32,7 +33,8 @@
             {:label "Cronograma"             :ok true}]}
    {:id "inversion" :title "Inversión"
     :items [{:label "Desglose de costos"     :ok true}
-            {:label "Condiciones comerciales":ok true}]}])
+            {:label "Condiciones comerciales":ok true}
+            {:label "Información de transferencia" :ok true}]}])
 
 ;; ── Resumen Ejecutivo ───────────────────────────────────────────
 (def resumen-title "Resumen Ejecutivo")
@@ -196,9 +198,37 @@
     :text "Si el proyecto se cancela antes de iniciar la fase de desarrollo, se reembolsa el 100% del anticipo. Durante desarrollo, se retiene el 50% proporcional al trabajo realizado."}])
 
 ;; ── Créditos ────────────────────────────────────────────────────
-(def credits-title "GREB")
-(def credits-by "Propuesta preparada por")
+(def credits-title nil)
+(def credits-by "Diseño y Desarrollo Web")
 (def credits-orgs
-  [{:name "GREB" :role "Diseño y Desarrollo Web"}])
+  [{:name "www.greb.app" :role "Sistemas para personas inteligentes"}])
 (def credits-legal
-  "© 2026 GREB. Esta propuesta es confidencial y está dirigida exclusivamente al destinatario. Precios en USD. Squarespace® es marca registrada de Squarespace, Inc.")
+  "© 2026 GREB · www.greb.app · Sistemas para personas inteligentes. Esta propuesta es confidencial y está dirigida exclusivamente al destinatario. Precios en USD. Squarespace® es marca registrada de Squarespace, Inc.")
+
+;; ── Transferencia Bancaria ────────────────────────────────────
+(def transferencia-title "Información de Transferencia")
+(def transferencia-subtitle "Datos bancarios para el pago por transferencia")
+
+(def transferencia-banco
+  [{:title "Banco"              :icon "landmark"
+    :text "**Banco Múltiple BHD, S. A.** — Entidad de intermediación financiera, RNC: 101136792."}
+   {:title "Titular"            :icon "building"
+    :text "**AGROBIOTEK LABORATORIOS, SRL** — RNC: 101867541"}
+   {:title "No. Producto"       :icon "hash"
+    :text "**11875990019**"}
+   {:title "Cuenta Regional"    :icon "credit-card"
+    :text "**DO21BCBH0000000011875990019**"}
+   {:title "Tipo de Producto"   :icon "wallet"
+    :text "Cuentas Corrientes"}
+   {:title "Moneda"             :icon "coins"
+    :text "**DOP** (Pesos Dominicanos)"}])
+
+(def transferencia-instrucciones
+  [{:title "Monto"          :icon "receipt"
+    :text "50% anticipo (**USD $600**) al aprobar la propuesta. 50% restante (**USD $600**) al entregar el sitio en producción. Use la tasa de cambio del día de la transferencia."}
+   {:title "Referencia"     :icon "file-text"
+    :text "Incluir en el concepto: **\"GREB — Sitio Web — LETS DRUNCH RD\"** y el número de cotización **2026-001**."}
+   {:title "Confirmación"   :icon "check-circle"
+    :text "Enviar comprobante de transferencia a **info@greb.dev** para confirmar la recepción y activar el inicio del proyecto."}
+   {:title "Alternativas"   :icon "arrow-right-left"
+    :text "También aceptamos **Zelle** y **PayPal**. Para pagos internacionales en USD consulte los datos de la cuenta corresponsal."}])

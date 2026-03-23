@@ -97,7 +97,7 @@
             :risk-families c/risk-families
             :closing (nth c/intro-blocks 2)}}
 
-    ;; 5. Handwash page (handwash-head + duo-grid)
+    ;; 5. Handwash page (handwash-head + duo-grid + gloves)
     {:template :blocks
      :data {:id "lavado-y-guantes"
             :head-section {:kicker "Protocolo crítico" :title "Lavado de manos"}
@@ -105,15 +105,14 @@
                         :items c/handwash-station}
                        {:type :frequency-list :icon "timer-reset" :title "Frecuencia"
                         :items c/handwash-frequency}]
-            :blocks []}}
+            :blocks [{:type :info-grid :icon "shield-plus" :title "Uso de guantes"
+                      :items c/glove-rules}]}}
 
-    ;; 6. Handwash steps page
+    ;; 6. Handwash steps (carousel — one video at a time, alternating sides)
     {:template :blocks
      :data {:id "lavado-tecnica"
-            :blocks [{:type :wash-grid :icon "waves" :title "Técnica de lavado — 6 pasos"
-                      :items c/handwash-steps}
-                     {:type :info-grid :icon "shield-plus" :title "Uso de guantes"
-                      :items c/glove-rules}]}}
+            :blocks [{:type :wash-carousel
+                      :items c/handwash-steps}]}}
 
     ;; 7. Personal hygiene (hero-section)
     {:template :hero-section
@@ -131,12 +130,22 @@
     ;; 8. Hygiene discipline (blocks, no hero)
     {:template :blocks
      :data {:id "higiene-disciplina"
-            :blocks [{:type :info-grid :icon "briefcase-business" :title "Disciplina del uniforme"
+            :intro c/hygiene-discipline-intro
+            :blocks [{:type :uniform-checklist :icon "clipboard-check" :title "Uniforme Reglamentario"
+                      :zones c/hygiene-uniform-zones
+                      :items c/hygiene-uniform-checklist}
+                     {:type :info-grid :icon "briefcase-business" :title "Disciplina del uniforme"
                       :items c/hygiene-uniform-rules}
+                     {:type :info-grid :icon "scan-face" :title "Apariencia personal"
+                      :items c/hygiene-avatar-rules}
                      {:type :info-grid :icon "lock-keyhole" :title "Lockers y cambio de ropa"
                       :items c/hygiene-locker-rules}
                      {:type :visitor-grid :icon "users-round" :title "Visitantes"
                       :items c/hygiene-visitor-rules}
+                     {:type :info-grid :icon "bath" :title "Baños del personal"
+                      :items c/hygiene-toilet-rules}
+                     {:type :info-grid :icon "coffee" :title "Sala de descanso"
+                      :items c/hygiene-break-room-rules}
                      {:type :info-grid :icon "heart-pulse" :title "Salud del personal"
                       :items c/hygiene-health-rules}]}}
 
@@ -196,11 +205,14 @@
                       :items c/limpieza-schedule}]}}
 
     {:template :blocks
-     :data {:id "limpieza-registro"
+     :data {:id "limpieza-calendario"
             :blocks [{:type :sched-grid :icon "calendar-days" :title "Calendario operativo de limpieza"
                       :items []
-                      :calendar c/limpieza-calendar}
-                     {:type :registro-sheet :icon "clipboard-pen-line" :title "Ejemplo de registro diario"
+                      :calendar c/limpieza-calendar}]}}
+
+    {:template :blocks
+     :data {:id "limpieza-registro"
+            :blocks [{:type :registro-sheet :icon "clipboard-pen-line" :title "Ejemplo de registro diario"
                       :modes c/limpieza-registro-modos
                       :default-mode "diario"
                       :meta c/limpieza-registro-meta
@@ -210,9 +222,11 @@
                      {:type :highlight
                       :icon "badge-check"
                       :title "Cómo completar el registro"
-                      :items c/limpieza-registro-tips}]}}
+                      :items c/limpieza-registro-tips}
+                     {:type :store-map :icon "map-pin" :title "Nuestras sucursales"
+                      :items c/valentino-sucursales}]}}
 
-    ;; 15. Section divider — Riesgos
+    ;; 16. Section divider — Riesgos
     {:template :full-image
      :data {:id "riesgos-divider"
             :img "cuatro-familias-riesgo.jpg"

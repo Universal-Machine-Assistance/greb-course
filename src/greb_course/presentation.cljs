@@ -325,6 +325,9 @@
           (set! (.-textContent ts-label) (str "A " (js/Math.round (* ts 100)) "%")))
         ;; Compute scale
         (pres-apply-view!)
+        ;; Disable canvas zoom in presentation mode
+        (reset! state/canvas-zoom-active? false)
+        (reset! state/canvas-zoom 1.0)
         ;; Add presenting class
         (.add (.-classList (.-documentElement js/document)) "presenting")
         ;; Register listeners
@@ -381,6 +384,8 @@
       (when active-slide (slides/tag-vt! active-slide))
       ;; Remove ui-hidden if toggled
       (.remove (.-classList (.-documentElement js/document)) "ui-hidden")
+      ;; Re-enable canvas zoom in document mode
+      (reset! state/canvas-zoom-active? true)
       ;; Clear session & state
       (session/clear-session!)
       (reset! state/pres-state nil)

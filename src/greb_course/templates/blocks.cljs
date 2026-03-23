@@ -30,6 +30,9 @@
     (apply d/el :div {:class "wash-grid"}
            (mapv comp/wash-step items))
 
+    :wash-carousel
+    (comp/wash-carousel items)
+
     :criteria-table
     (comp/criteria-table (:headers block) items)
 
@@ -84,6 +87,12 @@
     :highlight
     (comp/highlight-bar block)
 
+    :uniform-checklist
+    (comp/uniform-checklist {:zones (:zones block) :rows items})
+
+    :store-map
+    (comp/store-map {:locations items})
+
     :omni-embed
     (comp/omnibar-embed-block block)
 
@@ -124,6 +133,9 @@
     :quote-table
     (comp/quote-table block)
 
+    :bank-card
+    (comp/bank-card block)
+
     :image-block
     (let [{:keys [src alt caption float]} block]
       (d/el :div {:class (str "image-block" (when float (str " image-block--" (name float))))}
@@ -139,7 +151,7 @@
            (mapv comp/info-card items))))
 
 (defn render-block [block]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :image-block} (:type block))
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :bank-card :wash-carousel :image-block} (:type block))
     (render-block-content block)
     (d/el :section {:class "hygiene-block"}
           (comp/section-bar (:icon block) (:title block))

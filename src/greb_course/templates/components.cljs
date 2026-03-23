@@ -1,7 +1,8 @@
 (ns greb-course.templates.components
   "Shared sub-components used across templates."
   (:require [greb-course.dom :as d]
-            [greb-course.rich-text :as rich]))
+            [greb-course.rich-text :as rich]
+            [clojure.string :as str]))
 
 (defn mission-card [{:keys [label tone]}]
   (d/el :article {:class (str "mission-card animate tone-" tone)}
@@ -90,6 +91,107 @@
                                       (rich/inline-children (str item)))))
                            items)))))
 
+(defn store-map [{:keys [locations]}]
+  (let [map-el  (d/el :div {:id "valentino-map" :class "store-map-container"})
+        list-el (d/el :div {:class "store-map-list"})
+        wrapper (d/el :div {:class "store-map"} map-el list-el)]
+    ;; Build the sidebar list
+    (doseq [{:keys [name addr tel hours lat lng]} locations]
+      (let [card (d/el :div {:class "store-map-card" :data-lat (str lat) :data-lng (str lng) :data-name name}
+                       (d/el :div {:class "store-map-card-hdr"}
+                             (d/ic "ice-cream-cone" "store-map-card-logo")
+                             (d/el :strong {:class "store-map-card-name"} name))
+                       (d/el :p {:class "store-map-card-addr"} addr)
+                       (d/el :p {:class "store-map-card-detail"}
+                             (d/ic "phone" "store-map-card-icon") tel)
+                       (d/el :p {:class "store-map-card-detail"}
+                             (d/ic "clock" "store-map-card-icon") hours))]
+        (.appendChild list-el card)))
+    ;; Init Leaflet after mount
+    (js/setTimeout
+      (fn []
+        (when (and (.-L js/window) (.getElementById js/document "valentino-map"))
+          (let [L    (.-L js/window)
+                m    (.setView (.map L "valentino-map" #js {:attributionControl false})
+                               #js [18.47 -69.93] 9)
+                icon (.icon L #js {:iconUrl "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='8' fill='%238B4513' stroke='white' stroke-width='2'/%3E%3Ctext x='12' y='16' text-anchor='middle' fill='white' font-size='10' font-weight='bold'%3EV%3C/text%3E%3C/svg%3E"
+                                   :iconSize #js [24 24] :iconAnchor #js [12 12] :popupAnchor #js [0 -14]})
+                mkrs (atom [])]
+            (.addTo (.tileLayer L "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                                #js {:maxZoom 18}) m)
+            ;; Add markers
+            (doseq [{:keys [name addr tel hours lat lng]} locations]
+              (let [html   (str "<div style='font-size:12px;line-height:1.4'>"
+                                "<strong style='color:#8B4513'>" name "</strong><br>"
+                                addr "<br>📞 " tel "<br>🕐 " hours "</div>")
+                    marker (.addTo (.marker L #js [lat lng] #js {:icon icon}) m)]
+                (.bindPopup marker html #js {:maxWidth 220})
+                (swap! mkrs conj marker)))
+            ;; Wire clicks
+            (let [cards  (.querySelectorAll list-el ".store-map-card")
+                  select (fn [idx sname]
+                           (.setView m #js [(js/parseFloat (.getAttribute (.item cards idx) "data-lat"))
+                                            (js/parseFloat (.getAttribute (.item cards idx) "data-lng"))] 15)
+                           (.openPopup (nth @mkrs idx))
+                           (doseq [j (range (.-length cards))]
+                             (.remove (.-classList (.item cards j)) "is-active"))
+                           (.add (.-classList (.item cards idx)) "is-active")
+                           (.dispatchEvent js/document
+                             (js/CustomEvent. "valentino-branch-select"
+                               #js {:detail #js {:name sname}})))]
+              (doseq [i (range (.-length cards))]
+                (let [card  (.item cards i)
+                      sname (.getAttribute card "data-name")]
+                  (.addEventListener card "click" (fn [_] (select i sname)))
+                  (.on (nth @mkrs i) "click" (fn [_] (select i sname)))))))))
+      300)
+    wrapper))
+
+(defn uniform-checklist [{:keys [zones rows]}]
+  (let [has-qty? (some :qty rows)
+        tpl   (str "2.8fr " (when has-qty? ".6fr ") (apply str (repeat (count zones) "1fr ")))]
+    (d/el :div {:class "uniform-ck"}
+          ;; header row
+          (apply d/el :div {:class "uniform-ck-hdr" :style (str "grid-template-columns:" tpl)}
+                 (into [(d/el :span {:class "uniform-ck-hdr-cell"} "")]
+                       (concat
+                        (when has-qty? [(d/el :span {:class "uniform-ck-hdr-cell"} "Cant.")])
+                        (mapv (fn [z] (d/el :span {:class "uniform-ck-hdr-cell"} z)) zones))))
+          ;; data rows
+          (apply d/el :div {:class "uniform-ck-body"}
+                 (mapv (fn [{:keys [item zones note] :as row}]
+                         (let [row-id (str "uck-" (hash item))
+                               cells (into [(d/el :span {:class "uniform-ck-item"}
+                                                       (when-let [ic (:icon row)]
+                                                         (d/ic ic "uniform-ck-item-icon"))
+                                                       item)]
+                                                (concat
+                                                 (when has-qty?
+                                                   [(d/el :span {:class "uniform-ck-cell uniform-ck-cell--qty"}
+                                                          (or (:qty row) "—"))])
+                                                 (map-indexed
+                                                  (fn [i v]
+                                                    (cond
+                                                      (= v :prohibido)
+                                                      (d/el :span {:class "uniform-ck-cell uniform-ck-cell--prohibido"} "PROHIBIDO")
+                                                      v
+                                                      (let [cb-id (str row-id "-" i)
+                                                            cb  (d/el :input {:type "checkbox" :class "uniform-ck-cb" :id cb-id})
+                                                            lbl (d/el :label {:for cb-id :class "uniform-ck-check"} "")]
+                                                        (d/el :span {:class "uniform-ck-cell"} cb lbl))
+                                                      :else
+                                                      (d/el :span {:class "uniform-ck-cell uniform-ck-cell--na"} "—")))
+                                                  zones)))
+                               row-el (apply d/el :div {:class "uniform-ck-row"
+                                                        :style (str "grid-template-columns:" tpl)}
+                                             cells)]
+                           (if note
+                             (d/el :div {:class "uniform-ck-row-wrap"}
+                                   row-el
+                                   (d/el :p {:class "uniform-ck-note"} note))
+                             row-el)))
+                       rows)))))
+
 (defn product-showcase [{:keys [img alt features]}]
   (d/el :div {:class "product-showcase"}
         (when img
@@ -140,15 +242,116 @@
   (apply d/el :span {:class "mission-chip animate"}
          (rich/inline-children (str label))))
 
-(defn wash-step [{:keys [step title text icon]}]
-  (d/el :article {:class "wash-step animate"}
-        (d/el :div {:class "wash-step-num"}
-              (if icon (d/ic icon "wash-step-icon") step))
-        (d/el :div {:class "wash-step-body"}
-              (apply d/el :h3 {:class "wash-step-title"}
-                     (rich/inline-children (str title)))
-              (apply d/el :p {:class "wash-step-text"}
-                     (rich/inline-children (str text))))))
+(defn wash-step [{:keys [step title text icon img]}]
+  (let [mp4 (when img (str/replace img #"\.png$" ".mp4"))]
+    (d/el :article {:class "wash-step animate"}
+          (cond
+            img
+            (d/el :div {:class "wash-step-img-wrap"}
+                  (d/el :video {:src (str @d/current-images-base mp4)
+                                :poster (str @d/current-images-base img)
+                                :autoplay true :loop true :muted true :playsinline true
+                                :class "wash-step-img"})
+                  ;; Hidden img fallback for print
+                  (d/el :img {:src (str @d/current-images-base img)
+                              :alt (or title "")
+                              :class "wash-step-img wash-step-img--print"}))
+            :else
+            (d/el :div {:class "wash-step-num"}
+                  (if icon (d/ic icon "wash-step-icon") step)))
+          (d/el :div {:class "wash-step-body"}
+                (apply d/el :h3 {:class "wash-step-title"}
+                       (rich/inline-children (str title)))
+                (apply d/el :p {:class "wash-step-text"}
+                       (rich/inline-children (str text)))))))
+
+(defn wash-carousel
+  "Carousel showing one handwash step at a time with video + description alternating sides."
+  [items]
+  (let [n         (count items)
+        container (d/el :div {:class "wash-carousel"})
+        slides    (atom [])
+        current   (atom 0)
+        show!     (fn [idx]
+                    (let [idx (mod idx n)]
+                      (reset! current idx)
+                      (doseq [[i sl] (map-indexed vector @slides)]
+                        (if (= i idx)
+                          (do (.remove (.-classList sl) "wc-slide--hidden")
+                              (.add (.-classList sl) "wc-slide--active")
+                              ;; Play the video
+                              (when-let [vid (.querySelector sl "video")]
+                                (.play vid)))
+                          (do (.remove (.-classList sl) "wc-slide--active")
+                              (.add (.-classList sl) "wc-slide--hidden")
+                              ;; Pause other videos
+                              (when-let [vid (.querySelector sl "video")]
+                                (.pause vid)
+                                (set! (.-currentTime vid) 0)))))))]
+    ;; Build slides
+    (doseq [[i {:keys [step title text icon img]}] (map-indexed vector items)]
+      (let [mp4   (when img (str/replace img #"\.png$" ".mp4"))
+            even? (even? i)
+            slide (d/el :div {:class (str "wc-slide" (if even? " wc-slide--video-left" " wc-slide--video-right")
+                                         (when (pos? i) " wc-slide--hidden"))})]
+        ;; Video panel
+        (let [video-panel (d/el :div {:class "wc-video-panel"})
+              vid-el      (if img
+                            (d/el :video {:src (str @d/current-images-base mp4)
+                                          :poster (str @d/current-images-base img)
+                                          :loop true :muted true :playsinline true
+                                          :class "wc-video"})
+                            (d/el :div {:class "wc-video-placeholder"}
+                                  (d/el :div {:class "wash-step-num"}
+                                        (if icon (d/ic icon "wash-step-icon") (str step)))))
+              ;; Print fallback
+              print-img   (when img
+                            (d/el :img {:src (str @d/current-images-base img)
+                                        :alt (or title "") :class "wc-video wc-video--print"}))]
+          (.appendChild video-panel vid-el)
+          (when print-img (.appendChild video-panel print-img))
+          ;; Text panel
+          (let [text-panel (d/el :div {:class "wc-text-panel"})
+                step-num   (d/el :span {:class "wc-step-num"} (str "Paso " (inc i)))
+                title-el   (apply d/el :h3 {:class "wc-title"} (rich/inline-children (str title)))
+                desc-el    (apply d/el :p {:class "wc-desc"} (rich/inline-children (str text)))]
+            (.appendChild text-panel step-num)
+            (.appendChild text-panel title-el)
+            (.appendChild text-panel desc-el)
+            ;; Assemble slide — order depends on even/odd
+            (if even?
+              (do (.appendChild slide video-panel) (.appendChild slide text-panel))
+              (do (.appendChild slide text-panel) (.appendChild slide video-panel)))))
+        (.appendChild container slide)
+        (swap! slides conj slide)))
+    ;; Navigation dots
+    (let [nav-bar (d/el :div {:class "wc-nav"})]
+      (doseq [i (range n)]
+        (let [dot (d/el :button {:class (str "wc-dot" (when (zero? i) " wc-dot--active"))
+                                 :title (str "Paso " (inc i))}
+                        (str (inc i)))]
+          (.addEventListener dot "click" (fn [_] (show! i)))
+          (.appendChild nav-bar dot)))
+      ;; Prev/Next arrows
+      (let [prev-btn (d/el :button {:class "wc-arrow wc-arrow--prev" :title "Anterior"} "‹")
+            next-btn (d/el :button {:class "wc-arrow wc-arrow--next" :title "Siguiente"} "›")]
+        (.addEventListener prev-btn "click" (fn [_] (show! (dec @current))))
+        (.addEventListener next-btn "click" (fn [_] (show! (inc @current))))
+        (.appendChild container prev-btn)
+        (.appendChild container next-btn))
+      (.appendChild container nav-bar)
+      ;; Update dots on slide change
+      (add-watch current ::dots
+        (fn [_ _ _ new-idx]
+          (let [dots (.querySelectorAll nav-bar ".wc-dot")]
+            (doseq [j (range (.-length dots))]
+              (let [d (.item dots j)]
+                (if (= j new-idx)
+                  (.add (.-classList d) "wc-dot--active")
+                  (.remove (.-classList d) "wc-dot--active")))))))
+      ;; Auto-play first video
+      (js/setTimeout #(show! 0) 100))
+    container))
 
 (defn section-bar [icon-name title]
   (d/el :div {:class "section-bar mission-bar"}
@@ -254,14 +457,16 @@
                      (d/el :span {:class "registro-col registro-col-check"} "Check")
                      (d/el :span {:class "registro-col registro-col-time"} "Hora")
                      (d/el :span {:class "registro-col registro-col-control"} "Control realizado")
-                     (d/el :span {:class "registro-col registro-col-action"} "Registro / acción"))
-        row-nodes  (mapv (fn [{:keys [freq hora control accion]}]
+                     (d/el :span {:class "registro-col registro-col-action"} "Registro / acción")
+                     (d/el :span {:class "registro-col registro-col-colab"} "Colaborador"))
+        row-nodes  (mapv (fn [{:keys [freq hora control accion colaborador]}]
                            (let [check-btn (d/el :button {:class "registro-check-btn" :type "button"} "☐")
                                  node      (d/el :div {:class "registro-row" :data-freq freq}
                                                   check-btn
                                                   (d/el :span {:class "registro-col registro-col-time"} hora)
                                                   (d/el :span {:class "registro-col registro-col-control"} control)
-                                                  (d/el :span {:class "registro-col registro-col-action"} accion))]
+                                                  (d/el :span {:class "registro-col registro-col-action"} accion)
+                                                  (d/el :span {:class "registro-col registro-col-colab"} (or colaborador "")))]
                              (.addEventListener check-btn "click"
                                (fn []
                                  (let [checked? (= (.-textContent check-btn) "☑")]
@@ -326,6 +531,17 @@
     (.appendChild root mode-wrap)
     (.appendChild root rows-wrap)
     (update!)
+    ;; Listen for map branch selection
+    (when (seq branches)
+      (.addEventListener js/document "valentino-branch-select"
+        (fn [e]
+          (let [sel-name (some-> (.-detail e) (.-name))
+                match (first (filter #(= (:name %) sel-name) branches))]
+            (when match
+              (reset! branch* (:id match))
+              (update!)
+              ;; Scroll registro into view
+              (js/setTimeout #(.scrollIntoView root #js {:behavior "smooth" :block "nearest"}) 100))))))
     root))
 
 (defn product-card [{:keys [nombre uso tipo icon]}]
@@ -410,6 +626,7 @@
 (defn cleaning-calendar [{:keys [title modes days activities note default-mode default-day month-label date-cells month year]}]
   (let [mode*      (atom (or default-mode (some-> modes first :id) "diario"))
         day*       (atom (or default-day (some-> days first :id) "l"))
+        sel-date*  (atom nil)
         now        (js/Date.)
         cur-month  (inc (.getMonth now))
         cur-year   (.getFullYear now)
@@ -461,11 +678,11 @@
                       date-grid)
         rows-wrap  (d/el :div {:class "clean-cal-rows"})
         row-nodes  (mapv (fn [{:keys [mode days time task icon]}]
-                           (let [node (d/el :div {:class "clean-cal-row"}
-                                            (d/el :span {:class "clean-cal-time"} time)
-                                            (d/el :div {:class "clean-cal-task-wrap"}
+                           (let [node (d/el :div {:class (str "clean-cal-row clean-cal-row--" mode)}
+                                            (d/el :div {:class "clean-cal-label"}
                                                   (when icon (d/ic icon "clean-cal-task-icon"))
-                                                  (d/el :span {:class "clean-cal-task"} task)))]
+                                                  (d/el :span {:class "clean-cal-time"} time))
+                                            (d/el :span {:class "clean-cal-task"} task))]
                              {:mode mode :day-set (set days) :node node}))
                          activities)
         empty-node (d/el :div {:class "clean-cal-empty"} "Sin tareas para este dia en el modo seleccionado.")
@@ -496,7 +713,7 @@
                          (.remove (.-classList node) "is-active")))
                      (doseq [{:keys [day date node dots]} date-btns]
                        (when day
-                         (if (= day @day*)
+                         (if (= date @sel-date*)
                            (.add (.-classList node) "is-active")
                            (.remove (.-classList node) "is-active"))
                          (if (#{ "s" "d"} day)
@@ -524,12 +741,13 @@
           (pulse! node)
           (reset! mode* id)
           (update!))))
-    (doseq [{:keys [day node]} date-btns]
+    (doseq [{:keys [day date node]} date-btns]
       (when day
         (.addEventListener node "click"
           (fn []
             (pulse! node)
             (reset! day* day)
+            (reset! sel-date* date)
             (update!)))))
     (.appendChild root hdr)
     (.appendChild root body)
@@ -594,7 +812,8 @@
 
 (defn quote-table
   "Professional quotation table with line items, subtotal, taxes, total."
-  [{:keys [title number date client items subtotal discount tax total notes terms]}]
+  [{:keys [title number date client client-rnc client-email logos
+           items subtotal discount tax total notes terms]}]
   (let [hdr-row (fn [cols]
                   (apply d/el :div {:class "qt-hdr-row"}
                          (mapv (fn [{:keys [label flex]}]
@@ -617,14 +836,21 @@
                             (d/el :span {:class "qt-summary-label"} label)
                             (d/el :span {:class "qt-summary-value"} value)))]
     (d/el :div {:class "quote-table animate"}
-          ;; Header with quote info
+          ;; Header with logos + quote info
           (d/el :div {:class "qt-header"}
                 (d/el :div {:class "qt-header-left"}
+                      (when (seq logos)
+                        (apply d/el :div {:class "qt-logos"}
+                               (mapv (fn [{:keys [src alt]}]
+                                       (d/src-img src (or alt "") "qt-logo"))
+                                     logos)))
                       (when title (d/el :h3 {:class "qt-title"} title))
                       (when number (d/el :span {:class "qt-number"} (str "N° " number))))
                 (d/el :div {:class "qt-header-right"}
                       (when date (d/el :span {:class "qt-date"} (str "Fecha: " date)))
-                      (when client (d/el :span {:class "qt-client"} (str "Cliente: " client)))))
+                      (when client (d/el :span {:class "qt-client"} (str "Cliente: " client)))
+                      (when client-rnc (d/el :span {:class "qt-client-detail"} client-rnc))
+                      (when client-email (d/el :span {:class "qt-client-detail"} client-email))))
           ;; Column headers
           (hdr-row [{:label "Descripción" :flex 4}
                     {:label "Cant." :flex 1}
@@ -647,6 +873,23 @@
             (d/el :div {:class "qt-terms"}
                   (d/el :strong {} "Condiciones: ")
                   (apply d/el :span {} (rich/inline-children (str terms))))))))
+
+(defn bank-card
+  "Compact bank account card with logo and labeled fields."
+  [{:keys [logo bank ref fields]}]
+  (d/el :div {:class "bank-card animate"}
+        (d/el :div {:class "bank-card-header"}
+              (when logo (d/src-img (:src logo) (or (:alt logo) "") "bank-card-logo"))
+              (d/el :div {:class "bank-card-header-text"}
+                    (d/el :strong {:class "bank-card-bank"} (or bank ""))
+                    (when ref (d/el :span {:class "bank-card-ref"} ref))))
+        (apply d/el :div {:class "bank-card-fields"}
+               (mapv (fn [{:keys [icon label value]}]
+                       (d/el :div {:class "bank-card-field"}
+                             (d/ic (or icon "info") "bank-card-icon")
+                             (d/el :span {:class "bank-card-label"} (str label ":"))
+                             (d/el :span {:class "bank-card-value"} value)))
+                     fields))))
 
 (defn text-block-el
   "Render a text-block with inline markdown (**bold**, etc.)."

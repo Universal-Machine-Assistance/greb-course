@@ -6,7 +6,7 @@
   {:meta  {:id          "propuesta-web"
            :org         "propuesta_web"
            :slug        "propuesta_sitio_web"
-           :title       "Propuesta — Sitio Web Profesional"
+           :title       "Propuesta — Sitio Web via Plantilla"
            :description "Propuesta comercial para diseño y desarrollo de sitio web en Squarespace. Incluye diseño, SEO, capacitación y soporte."
            :category    "Propuestas"
            :tags        ["Squarespace" "diseño web" "propuesta comercial"]
@@ -32,14 +32,14 @@
          {:label "Ejecución"
           :entries (subvec c/index-entries 6 9)}
          {:label "Inversión"
-          :entries (subvec c/index-entries 9 12)}]
+          :entries (subvec c/index-entries 9 13)}]
 
    :pages
    [;; 1. Portada
     {:template :cover
      :data {:hero-img "cover.png"
             :title    "Propuesta"
-            :subtitle "Sitio Web Profesional · Squarespace · GREB"}}
+            :subtitle "Sitio Web via Plantilla · Squarespace"}}
 
     ;; 2. Contenido
     {:template :toc-card-grid
@@ -171,10 +171,13 @@
                      :kicker "Cotización"
                      :title  "Cotización de Servicios"}
             :blocks [{:type :quote-table
-                      :title "Cotización — Sitio Web Profesional"
+                      :title "Cotización — Sitio Web via Plantilla"
                       :number "2026-001"
-                      :date "21 de marzo, 2026"
-                      :client "[Nombre del Cliente]"
+                      :date "23 de marzo, 2026"
+                      :client "LETS DRUNCH RD, SRL"
+                      :client-rnc "RNC: 132453093"
+                      :client-email "info@letsdrunch.com · events@letsdrunch.com"
+                      :logos [{:src "logo-greb.png" :alt "GREB"} {:src "logo-abt.png" :alt "ABT Internacional"}]
                       :items [{:desc {:title "Diseño y Desarrollo Web"
                                       :detail "Diseño personalizado sobre Squarespace. Hasta 7 páginas: Inicio, Nosotros, Servicios, Galería, Blog, Contacto + 1 adicional."}
                                :qty "1" :unit-price "$1,200.00" :amount "$1,200.00" :highlight? true}
@@ -195,7 +198,7 @@
                       :tax {:label "ITBIS (0%)" :amount "$0.00"}
                       :total "$1,200.00"
                       :notes "Precios en USD. No incluye suscripción de Squarespace ($27/mes anual) ni registro de dominio. El cliente paga estos servicios directamente a Squarespace."
-                      :terms "**50% anticipo** al aprobar ($600) + **50% al lanzar** ($600). Transferencia, Zelle o PayPal. Propuesta válida por 30 días."}]}}
+                      :terms "**50% anticipo** al aprobar ($600) + **50% al lanzar** ($600). Pago por **transferencia bancaria** (ver página siguiente). También Zelle o PayPal. Propuesta válida por 30 días."}]}}
 
     ;; 11. Condiciones — callouts + info grid
     {:template :blocks
@@ -210,10 +213,29 @@
                      {:type :info-grid :icon "scale" :title "Términos Adicionales"
                       :items c/condiciones-items}]}}
 
-    ;; 12. Contacto / Créditos
+    ;; 12. Información de Transferencia
+    {:template :blocks
+     :data {:id "transferencia"
+            :header {:icon "landmark"
+                     :kicker "Pago"
+                     :title  c/transferencia-title}
+            :blocks [{:type :bank-card
+                      :logo {:src "logo-abt.png" :alt "Agrobiotek Internacional"}
+                      :bank "Banco Múltiple BHD, S.A."
+                      :ref "Carta Consular S-10459473 · 19/sep/2025"
+                      :fields [{:icon "building" :label "Titular" :value "AGROBIOTEK LABORATORIOS, SRL"}
+                               {:icon "hash" :label "RNC" :value "101867541"}
+                               {:icon "credit-card" :label "Cuenta" :value "DO21BCBH0000000011875990019"}
+                               {:icon "wallet" :label "Producto" :value "11875990019 · Cuentas Corrientes"}
+                               {:icon "coins" :label "Moneda" :value "DOP (Pesos Dominicanos)"}]}
+                     {:type :info-grid :icon "send" :title "Instrucciones de Pago"
+                      :items c/transferencia-instrucciones}]}}
+
+    ;; 13. Contacto / Créditos
     {:template :credits
-     :data {:title c/credits-title
+     :data {:title nil
             :by    c/credits-by
             :orgs  c/credits-orgs
-            :logos [{:src "logo-greb.png" :alt "GREB"}]
+            :logos [{:src "logo-greb.png" :alt "GREB"}
+                    {:src "logo-abt.png" :alt "ABT Internacional"}]
             :legal c/credits-legal}}]})

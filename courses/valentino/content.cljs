@@ -18,15 +18,16 @@
    {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 11}
    {:id "limpieza-spread-intro"    :label "Limpieza — Desplegar sección"    :page 12}
    {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 13}
-   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 14}
-   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 15}
-   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 16}
-   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 17}
-   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 18}
-   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 19}
-   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 20}
-   {:id "glosario"                  :label "Glosario de Términos"            :page 21}
-   {:id "creditos"                  :label "Créditos"                        :page 29}])
+   {:id "limpieza-calendario"      :label "Limpieza — Calendario Operativo" :page 14}
+   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 15}
+   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 16}
+   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 17}
+   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 18}
+   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 19}
+   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 20}
+   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 21}
+   {:id "glosario"                  :label "Glosario de Términos"            :page 22}
+   {:id "creditos"                  :label "Créditos"                        :page 30}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Guía de Higiene de los Alimentos para las Tiendas de Valentino")
@@ -76,37 +77,71 @@
 
 (def hygiene-avatar-rules
   [{:title "Cabello controlado"
-    :text "El pelo largo debe ir totalmente recogido dentro del gorro marrón."}
+    :text "El pelo largo debe ir totalmente recogido dentro del gorro marrón tipo chef."}
    {:title "Uñas seguras"
-    :text "Se prohíben uñas postizas, esmalte y uñas largas para evitar contaminación física."}
-   {:title "Joyas fuera"
-    :text "No se permiten joyas visibles, relojes ni piercings. Solo se acepta anillo de boda sin engarzar."}
+    :text "Se prohíben uñas postizas, esmalte y uñas largas: pueden desprenderse y convertirse en fuente de contaminación física."}
+   {:title "Joyería prohibida"
+    :text "Se prohíbe el uso de joyas visibles por motivos de salud y seguridad, así como por el riesgo de objetos extraños. Esto incluye relojes y piercings. Solo se permiten anillos de boda sin engarzar. Se aceptan joyas ocultas."}
    {:title "Maquillaje discreto"
     :text "El personal femenino puede usar maquillaje ligero."}])
 
+(def hygiene-discipline-intro
+  "El personal de las tiendas Valentino debe proyectar una imagen profesional e higiénica en todo momento. El cumplimiento de estas normas de vestimenta y conducta es obligatorio para garantizar la seguridad alimentaria y la confianza del cliente.")
+
 (def hygiene-uniform-rules
   [{:title "Antes de entrar"
-    :text "El uniforme no debe usarse en la calle. Debe transportarse en un bulto y colocarse dentro de la tienda."}
-   {:title "Durante el turno"
-    :text "La ropa de trabajo debe mantenerse limpia e impecable. Sustituir piezas con manchas o roturas."}
+    :text "El uniforme no debe usarse en la calle. Llevarlo en un bulto y ponérselo dentro de la tienda para evitar importar contaminación."}
+   {:title "Estado del uniforme"
+    :text "La ropa de trabajo debe estar impecable. Sustituir inmediatamente piezas con manchas o roturas."}
+   {:title "Calzado"
+    :text "Zapatos cerrados y limpios en todo momento. No se permite calzado abierto ni sucio."}
    {:title "Responsabilidad diaria"
     :text "Cada colaborador es responsable de mantener sus uniformes limpios para cada jornada."}])
 
+(def hygiene-uniform-zones
+  ["Área trasera" "Área de venta" "Cuarto frío"])
+
+(def hygiene-uniform-checklist
+  [{:item "Gorro higiénico desechable"       :icon "hard-hat"     :qty "—"  :zones [true  true  true]}
+   {:item "Redecilla para el cabello"         :icon "scan-face"    :qty "—"  :zones [true  true  true]}
+   {:item "Gorra Valentino (marrón con logo)" :icon "crown"        :qty "2"  :zones [false true  false]}
+   {:item "Poloshirt blanco con logo"         :icon "shirt"        :qty "2"  :zones [true  true  true]}
+   {:item "Pantalón caqui"                    :icon "columns-2"    :qty "1"  :zones [true  true  true]}
+   {:item "Delantal marrón con logo"          :icon "chef-hat"     :qty "2"  :zones [true  true  false]}
+   {:item "Guantes desechables"               :icon "hand"         :qty "—"  :zones [true true true]
+    :note "Pinzas de acero inoxidable para servicio al cliente"}
+   {:item "Zapatos cerrados y limpios"        :icon "footprints"   :qty "1"  :zones [true  true  true]}
+   {:item "Uñas cortas, sin postizas ni esmalte" :icon "scissors"  :qty "—"  :zones [true true true]}
+   {:item "Joyas y reloj"                     :icon "gem"          :qty "—"  :zones [:prohibido :prohibido :prohibido]}])
+
 (def hygiene-locker-rules
-  [{:title "Locker individual"
+  [{:title "Llegada y delantal"
+    :text "El personal llega con ropa de calle y se coloca el delantal."}
+   {:title "Locker individual"
     :text "Las pertenencias personales se guardan en un locker individual que el personal mantiene limpio."}
-   {:title "Nada sobre producto"
-    :text "Nunca colocar bultos, carteras ni objetos personales sobre recipientes o superficies con producto para consumo."}
-   {:title "Cambio de ropa"
-    :text "La ropa limpia no debe tocar ropa o zapatos sucios, y estos no deben permanecer en el suelo."}
-   {:title "Orden del vestidor"
-    :text "Todo el personal es responsable de mantener su área de cambio limpia y sin objetos en el piso."}])
+   {:title "Separación de ropa"
+    :text "La ropa limpia no debe entrar en contacto con la ropa ni los zapatos sucios. Estos no deben dejarse en el suelo (guardaropa exclusiva)."}
+   {:title "Orden del vestuario"
+    :text "Todo el personal es responsable de mantener limpios sus vestuarios (sin objetos en el suelo)."}])
 
 (def hygiene-visitor-rules
   [{:zone "Zona de preparación trasera"
-    :items ["Blusa desechable" "Gorro higiénico" "Cubrezapatos" "Efectos personales fuera del área"]}
+    :items ["Blusa desechable" "Gorro higiénico" "Cubrezapatos"
+            "Los efectos personales deben permanecer fuera de la zona de preparación"]}
    {:zone "Zona de ventas"
     :items ["Blusa desechable" "Gorro higiénico"]}])
+
+(def hygiene-toilet-rules
+  [{:title "Limpieza de baños"
+    :text "Baños del personal limpios (incorporados al programa de limpieza)."}
+   {:title "Instalaciones de lavado"
+    :text "Presencia de instalaciones para el lavado de manos."}])
+
+(def hygiene-break-room-rules
+  [{:title "Limpieza de sala de descanso"
+    :text "Sala de descanso limpia, incluyendo equipos y utensilios como refrigerador, cafetera, horno (área incorporada al programa de limpieza)."}
+   {:title "Almacenamiento seguro"
+    :text "No almacenar productos que causen contaminación (alimentos vencidos, químicos, etc.)."}])
 
 (def handwash-station
   ["Accesible"
@@ -128,12 +163,20 @@
    "Y al menos cada 30 minutos"])
 
 (def handwash-steps
-  [{:step "01" :title "Mojar" :text "Mojar manos y muñecas con agua corriente."}
-   {:step "02" :title "Enjabonar" :text "Aplicar jabón antibacterial suficiente."}
-   {:step "03" :title "Frotar" :text "Frotar palmas, dorsos, entre dedos, pulgares, uñas y muñecas por al menos 20 segundos."}
-   {:step "04" :title "Enjuagar" :text "Retirar completamente el jabón con agua."}
-   {:step "05" :title "Secar" :text "Secar con toalla desechable o secador de manos."}
-   {:step "06" :title "Cerrar sin contaminar" :text "Usar la toalla para cerrar el grifo si no es manos libres y desecharla."}])
+  [{:step "01" :title "Mojar" :text "Mojar manos y muñecas con agua corriente." :img "handwash-01-mojar.png"}
+   {:step "02" :title "Enjabonar" :text "Aplicar jabón antibacterial suficiente." :img "handwash-02-enjabonar.png"}
+   {:step "03" :title "Frotar" :text "Frotar palmas, dorsos, entre dedos, pulgares, uñas y muñecas por al menos 20 segundos." :img "handwash-03-frotar.png"}
+   {:step "04" :title "Enjuagar" :text "Retirar completamente el jabón con agua." :img "handwash-04-enjuagar.png"}
+   {:step "05" :title "Secar" :text "Secar con toalla desechable o secador de manos." :img "handwash-05-secar.png"}
+   {:step "06" :title "Cerrar sin contaminar" :text "Usar la toalla para cerrar el grifo si no es manos libres y desecharla." :img "handwash-06-cerrar.png"}])
+
+(def handwash-fun-facts
+  [{:icon "percent" :text "El 80 % de las enfermedades transmitidas por alimentos se previenen con un correcto lavado de manos (*OMS — Organización Mundial de la Salud*)."}
+   {:icon "timer" :text "Lavarse al menos 20 segundos reduce las bacterias en un 99 %. Regla: canta «Cumpleaños feliz» dos veces."}
+   {:icon "hand" :text "Debajo de las uñas se acumula el 95 % de las bacterias. Clave: frotar las uñas con la palma."}
+   {:icon "thermometer" :text "La temperatura del agua no elimina más gérmenes; lo que importa es la *fricción con jabón*."}
+   {:icon "droplets" :text "Las manos mojadas transmiten 1 000× más bacterias que las secas. *Secar bien es tan importante como lavar*."}
+   {:icon "clock" :text "En la industria alimentaria: lavarse las manos *al menos cada 30 minutos* de manipulación continua."}])
 
 (def glove-rules
   [{:title "Tipo correcto"
@@ -150,6 +193,8 @@
   ["El operador de las tiendas de Heladerías Valentino debe garantizar el cumplimiento de una serie de normas de salud, seguridad e higiene. Debe garantizar que el consumidor final disfrute del máximo nivel de seguridad en cuanto a la calidad del producto y la ausencia de cualquier riesgo para la salud. Debe cumplir con las normativas del país y con las normas de la empresa. Las tiendas estarán sujetas a inspecciones regulares de la franquicia."
    "Para limitar los riesgos para la salud, se debe aplicar el sentido común y métodos específicos de análisis de riesgos y control de peligros."
    "Con esto en mente, hemos desarrollado esta herramienta: «Guía de Higiene Alimentaria para Tiendas de helados Valentino». Los métodos de trabajo descritos en esta guía cumplen con la legislación y su único objetivo es proteger al consumidor."])
+
+(def intro-dropcap "E")
 
 (def risk-families-title "Cuatro familias de Riesgos")
 
@@ -516,9 +561,14 @@
    {:label "Fecha" :value "____ / ____ / ______"}])
 
 (def limpieza-registro-sucursales
-  [{:id "suc-centro" :name "Sucursal Centro" :icon "store" :address "Av. Principal 123, Centro" :manager "Ana Gomez"}
-   {:id "suc-norte" :name "Sucursal Norte" :icon "building-2" :address "Calle Norte 45, Plaza Norte" :manager "Luis Perez"}
-   {:id "suc-sur" :name "Sucursal Sur" :icon "map-pin" :address "Bulevar Sur 88, Local 7" :manager "Marta Ruiz"}])
+  [{:id "suc-cataluna"   :name "Plaza Cataluña"       :icon "store"      :address "Av. Gustavo Mejia Ricart, Piantini"               :manager "Ana Gómez"    :tel "(809) 540-0998"}
+   {:id "suc-galeria"    :name "Galería 360"           :icon "store"      :address "Av. JFK Esq. Bienvenido Garcia Gautier"            :manager "Carlos López" :tel "(809) 788-2122"}
+   {:id "suc-agora"      :name "Ágora Mall"            :icon "store"      :address "Av. JFK Esq. Abraham Lincoln"                      :manager "María Torres" :tel "(809) 227-5379"}
+   {:id "suc-sambil"     :name "Sambil"                :icon "store"      :address "Av. JFK, Sambil (Primer nivel feria)"              :manager "Luis Pérez"   :tel "(809) 547-4449"}
+   {:id "suc-bluemall"   :name "BlueMall"              :icon "store"      :address "Av. Winston Churchill, BlueMall (4to nivel)"       :manager "Rosa Díaz"    :tel "(809) 955-3293"}
+   {:id "suc-colonial"   :name "Zona Colonial"         :icon "store"      :address "Calle Isabel La Católica No. 157"                  :manager "Pedro Reyes"  :tel "(809) 692-7512"}
+   {:id "suc-santiago"   :name "Plaza Paseo, Santiago"  :icon "store"      :address "Av. Juan Pablo Duarte, Santiago"                   :manager "Juana Marte"  :tel "(809) 233-1385"}
+   {:id "suc-puntacana"  :name "Blue Mall Punta Cana"  :icon "store"      :address "Blvd. Turístico del Este, Punta Cana"              :manager "Frank Núñez"  :tel "(809) 784-7044"}])
 
 (def limpieza-registro-timeframes
   [{:id "apertura" :label "Apertura 06:30-10:00" :icon "sunrise"}
@@ -535,30 +585,37 @@
   [{:freq "diario"
     :hora "07:30"
     :control "Temperatura vitrina y estado general"
-    :accion "T: -18°C. Vitrina limpia, seca y operativa. Firma: Operador A."}
+    :colaborador "Ana Gómez"
+    :accion "T: -18°C. Vitrina limpia, seca y operativa."}
    {:freq "diario"
     :hora "08:10"
     :control "Limpieza de vidrio y cortina"
-    :accion "Interior/exterior sin residuos. Producto visible. Firma: Operador A."}
+    :colaborador "Carlos López"
+    :accion "Interior/exterior sin residuos. Producto visible."}
    {:freq "diario"
     :hora "14:20"
     :control "Piso general y zona de tránsito"
+    :colaborador "María Torres"
     :accion "Barrido y trapeado parcial de mantenimiento. Sin obstrucciones."}
    {:freq "semanal"
     :hora "SAB 10:00"
     :control "Armarios — limpieza básica"
+    :colaborador "Luis Pérez"
     :accion "Revisión de tramos, limpieza visible y reorganización por rotación."}
    {:freq "semanal"
     :hora "SAB 18:30"
     :control "Verificación de checklist semanal"
+    :colaborador "Ana Gómez"
     :accion "Checklist semanal firmada y archivada por encargado de turno."}
    {:freq "mensual"
     :hora "SEM 1"
     :control "Armarios — limpieza profunda"
+    :colaborador "Carlos López"
     :accion "Retiro total de material, desinfección profunda, secado y reordenamiento."}
    {:freq "mensual"
     :hora "SEM 1"
     :control "Consolidado y resguardo de registros"
+    :colaborador "Ana Gómez"
     :accion "Compilar registros diario/semanal y archivar para auditoría."}])
 
 (def limpieza-registro-tips
@@ -718,3 +775,33 @@
                      "riesgo-quimico-elementos_0001_Layer-3.png"
                      "riesgo-quimico-elementos_0002_Layer-4.png"
                      "riesgo-quimico-elementos_0003_Layer-5.png"]})
+
+;; ── Sucursales / Map ──────────────────────────────────────────
+(def valentino-sucursales
+  [{:name "Plaza Cataluña"       :addr "Av. Gustavo Mejia Ricart Esq. Freddy Prestol Castillo, Piantini" :tel "(809) 540-0998" :hours "L-S 10AM-11PM | D 10AM-9PM"           :lat 18.4715 :lng -69.9370}
+   {:name "Jumbo Luperón"        :addr "Av. Luperón Esq. Gustavo Mejia Ricart"                           :tel "(809) 378-0414" :hours "L-S 10AM-11PM | D 10AM-9PM"           :lat 18.4870 :lng -69.9700}
+   {:name "Megacentro"           :addr "Av. San Vicente de Paul, Jumbo Megacentro"                       :tel "(809) 788-2478" :hours "L-S 11AM-10PM | D 11AM-8PM"           :lat 18.5050 :lng -69.8770}
+   {:name "Occidental Mall"      :addr "Occidental Mall, Prolongación 27 de Febrero"                     :tel "(809) 692-3758" :hours "L-V 10AM-9PM | S-D 11AM-10PM"          :lat 18.4580 :lng -69.9780}
+   {:name "Plaza Paseo, Santiago" :addr "Av. Juan Pablo Duarte, Supermercado Nacional, Santiago"          :tel "(809) 233-1385" :hours "L-S 11AM-10PM | D 11AM-8PM"           :lat 19.4500 :lng -70.6900}
+   {:name "Casa España"          :addr "Av. Independencia, Club Casa España, Santo Domingo"              :tel "(809) 537-1802" :hours "L-S 11AM-10PM | D 11AM-8PM"           :lat 18.4690 :lng -69.9090}
+   {:name "Plaza Central"        :addr "Av. 27 de Febrero Esq. Winston Churchill, Piantini"              :tel "(809) 735-9322" :hours "L-V 11AM-8PM | S-D 10AM-8PM"          :lat 18.4650 :lng -69.9450}
+   {:name "Plaza Duarte"         :addr "Av. John F. Kennedy, Plaza Duarte (Carrefour)"                   :tel "(829) 893-3529" :hours "L-V 10AM-10PM | S-D 9AM-10PM"         :lat 18.4820 :lng -69.9520}
+   {:name "Nacional Arroyo Hondo":addr "Calle Camino Chiquito, Supermercado Nacional"                    :tel "(809) 563-9491" :hours "L-V 10AM-9PM | S-D 1PM-9PM"           :lat 18.4950 :lng -69.9400}
+   {:name "Galería 360"          :addr "Av. John F. Kennedy Esq. Bienvenido Garcia Gautier"              :tel "(809) 788-2122" :hours "L-V 11AM-10PM | S-D 11AM-11PM"         :lat 18.4790 :lng -69.9300}
+   {:name "Nacional Tiradentes"  :addr "Av. Tiradentes Esq. Octavio del Pozo"                            :tel "(809) 732-7679" :hours "L-V 11AM-10PM | S-D 10AM-10PM"         :lat 18.4730 :lng -69.9250}
+   {:name "Almacenes Unidos"     :addr "Av. Sarasota Esq. Pedro Ant. Bobea"                              :tel "(809) 286-0811" :hours "L-S 10AM-8PM | D 9AM-3PM"             :lat 18.4570 :lng -69.9430}
+   {:name "Blue Mall Punta Cana" :addr "Blvd. Turístico del Este, Punta Cana"                            :tel "(809) 784-7044" :hours "L-S 10AM-9PM | D 10AM-8PM"            :lat 18.5800 :lng -68.3700}
+   {:name "Plaza Estrella, Santiago" :addr "Av. Estrella Sadhalá, Supermercado Nacional, Santiago"        :tel "(809) 233-2618" :hours "L-S 11AM-10PM | D 11AM-8PM"           :lat 19.4550 :lng -70.6800}
+   {:name "Florida Suites"       :addr "Av. Simón Bolívar Esq. Armando Rodríguez, La Esperilla"          :tel "(829) 824-0639" :hours "D-J 11AM-11PM | V-S 11AM-12AM"        :lat 18.4660 :lng -69.9320}
+   {:name "Bella Vista Mall"     :addr "Av. Sarasota No. 62, Bella Vista"                                :tel "(829) 240-3442" :hours "L-D 10AM-10PM"                        :lat 18.4600 :lng -69.9390}
+   {:name "Baní"                 :addr "Calle Presidente Billini No. 35, Mangos Food Park, Baní"         :tel "(809) 810-3087" :hours "L-M 12PM-10PM | J-D 12PM-11PM"        :lat 18.2850 :lng -70.3310}
+   {:name "San Cristóbal"        :addr "Avenida Constitución No. 111, San Cristóbal"                     :tel "(809) 384-2474" :hours "L-J 10AM-9PM | V-D 10AM-10PM"         :lat 18.4170 :lng -70.1070}
+   {:name "Sambil"               :addr "Av. John F. Kennedy, Sambil (Primer nivel feria)"                :tel "(809) 547-4449" :hours "L-V 11AM-10PM | S-D 11AM-11PM"         :lat 18.4800 :lng -69.9380}
+   {:name "Zona Colonial"        :addr "Calle Isabel La Católica No. 157, Zona Colonial"                 :tel "(809) 692-7512" :hours "L-V 11AM-10PM | S-D 10AM-10PM"         :lat 18.4730 :lng -69.8840}
+   {:name "Ágora Mall"           :addr "Av. John F. Kennedy Esq. Abraham Lincoln"                        :tel "(809) 227-5379" :hours "L-V 10AM-9PM | S-D 9AM-9PM"           :lat 18.4770 :lng -69.9420}
+   {:name "Api Beach Punta Cana" :addr "La Marina, Cap Cana, Punta Cana"                                 :tel "(809) 469-7070" :hours "L-V 10AM-8PM | S-D 10AM-5PM"          :lat 18.5100 :lng -68.3700}
+   {:name "Jumbo Bávaro"         :addr "Av. Barceló, DownTown Mall, Punta Cana"                          :tel "(809) 362-7505" :hours "L-V 10AM-9PM | S-D 11AM-10PM"          :lat 18.6800 :lng -68.4000}
+   {:name "Evaristo Morales"     :addr "Calle Paseo de los Locutores No. 49, Local 103"                  :tel "(829) 546-1423" :hours "L-M 11:30AM-8PM | J-S 11:30AM-9PM | D 12PM-8PM" :lat 18.4730 :lng -69.9350}
+   {:name "Acrópolis Center"     :addr "Acrópolis Center, Av. Winston Churchill"                         :tel "(829) 245-0909" :hours "L-S 11AM-10PM | D 11AM-8PM"           :lat 18.4660 :lng -69.9480}
+   {:name "BlueMall"             :addr "Av. Winston Churchill, BlueMall (4to nivel)"                     :tel "(809) 955-3293" :hours "L-J 11AM-9PM | V-D 10AM-10PM"          :lat 18.4670 :lng -69.9520}
+   {:name "Downtown Center"      :addr "Av. Rómulo Betancourt Esq. Núñez de Cáceres"                    :tel "(809) 487-6478" :hours "L-D 10AM-10PM"                         :lat 18.4580 :lng -69.9510}])
