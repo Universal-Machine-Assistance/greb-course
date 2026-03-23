@@ -47,8 +47,11 @@
 
 (defn- make-slide [content-el full? theme-classes page-bg bg-img-src]
   (when (not full?) (add-block-animations! content-el))
-  (let [inner (d/el :div {:class "pres-slide-inner"})
-        slide (d/el :div {:class (str "pres-slide" (when full? " pres-slide--full"))})]
+  (let [is-kv? (key-visual? content-el)
+        inner (d/el :div {:class "pres-slide-inner"})
+        slide (d/el :div {:class (str "pres-slide"
+                                      (when full? " pres-slide--full")
+                                      (when is-kv? " pres-slide--key-visual"))})]
     (when bg-img-src
       (.add (.-classList slide) "pres-slide--has-bg")
       (.setProperty (.-style slide) "--slide-bg-img" (str "url(" bg-img-src ")")))
@@ -93,8 +96,13 @@
       (.querySelector page ".risk-page-body")
       (.querySelector page ".portada-body")))
 
+(defn- key-visual? [el]
+  (and (.-classList el)
+       (.contains (.-classList el) "key-visual")))
+
 (defn- small-el? [el]
-  (< (.-offsetHeight el) 350))
+  (and (not (key-visual? el))
+       (< (.-offsetHeight el) 350)))
 
 (defn- group-small-children [children]
   (loop [remaining children

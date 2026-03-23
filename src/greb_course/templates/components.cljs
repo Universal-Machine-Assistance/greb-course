@@ -243,8 +243,9 @@
          (rich/inline-children (str label))))
 
 (defn wash-step [{:keys [step title text icon img]}]
-  (let [mp4 (when img (str/replace img #"\.png$" ".mp4"))]
-    (d/el :article {:class "wash-step animate"}
+  (let [mp4      (when img (str/replace img #"\.png$" ".mp4"))
+        has-vid? (boolean mp4)]
+    (d/el :article {:class (str "wash-step animate" (when has-vid? " key-visual"))}
           (cond
             img
             (let [wrap   (d/el :div {:class "wash-step-img-wrap"})
@@ -267,14 +268,6 @@
                     (do (.play vid)
                         (reset! playing? true)
                         (.add (.-classList wrap) "wash-step--playing")))))
-              ;; Auto-play in presentation mode (detected by .presenting class on html)
-              (js/setTimeout
-                (fn []
-                  (when (.contains (.-classList (.-documentElement js/document)) "presenting")
-                    (.play vid)
-                    (reset! playing? true)
-                    (.add (.-classList wrap) "wash-step--playing")))
-                200)
               (.appendChild wrap poster)
               (.appendChild wrap vid)
               (.appendChild wrap play-btn)

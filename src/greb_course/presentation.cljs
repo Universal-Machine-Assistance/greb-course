@@ -136,17 +136,19 @@
           old-idx (:current @state/pres-state)]
       (when (not= idx old-idx)
         (hints/dismiss-hints!)
-        ;; Animate old slide out
+        ;; Animate old slide out — pause videos
         (when-let [old-slide (nth slides old-idx nil)]
           (.remove (.-classList old-slide) "pres-active")
           (.add (.-classList old-slide) "pres-exiting")
           (when (= direction :back)
             (.add (.-classList old-slide) "pres-going-back"))
+          (doseq [vid (array-seq (.querySelectorAll old-slide "video"))]
+            (.pause vid))
           (js/setTimeout
             (fn []
               (.remove (.-classList old-slide) "pres-exiting" "pres-going-back"))
             450))
-        ;; Animate new slide in
+        ;; Animate new slide in — autoplay videos
         (let [new-slide (nth slides idx)]
           (when (= direction :back)
             (.add (.-classList new-slide) "pres-going-back"))
@@ -160,7 +162,11 @@
           (js/setTimeout
             (fn []
               (doseq [node (array-seq (.querySelectorAll new-slide ".animate"))]
-                (.add (.-classList node) "visible")))
+                (.add (.-classList node) "visible"))
+              ;; Auto-play videos in new slide
+              (doseq [vid (array-seq (.querySelectorAll new-slide "video"))]
+                (set! (.-currentTime vid) 0)
+                (.play vid)))
             180))
         ;; Reset zoom/pan on slide change
         (let [cur-z (or (:zoom @state/pres-state) 1.0)
