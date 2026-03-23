@@ -203,13 +203,9 @@
                      {:type :registro-sheet :icon "clipboard-pen-line" :title "Ejemplo de registro diario"
                       :modes c/limpieza-registro-modos
                       :default-mode "diario"
-                      :meta-hint c/limpieza-registro-meta-hint
                       :meta c/limpieza-registro-meta
                       :branches c/limpieza-registro-sucursales
                       :default-branch "suc-centro"
-                      :timeframes c/limpieza-registro-timeframes
-                      :default-timeframe "apertura"
-                      :stats c/limpieza-registro-stats
                       :items c/limpieza-registro-ejemplo}
                      {:type :highlight
                       :icon "badge-check"
@@ -223,7 +219,11 @@
             :alt "Cuatro familias de riesgo: microbiológico, físico, alérgenos y químico"
             :kicker "Seguridad Alimentaria"
             :title "Cuatro Familias de Riesgo"
-            :subtitle "Microbiológico · Físico · Alérgenos · Químico — Los riesgos que todo operador debe conocer y prevenir."}}
+            :subtitle "Todo operador debe identificar y prevenir los peligros que pueden comprometer la seguridad del producto y la salud del consumidor."
+            :bullets ["Microbiológico — bacterias y toxinas cuando falla el frío, la higiene o se supera la caducidad."
+                      "Físico — cuerpos extraños (vidrio, metal, plástico, pelo) por equipos defectuosos o malas prácticas."
+                      "Alérgenos — leche, frutos secos, gluten: contaminación cruzada entre sabores, cucharones y superficies."
+                      "Químico — desinfectantes o detergentes mal guardados, sin etiqueta o almacenados junto al producto."]}}
 
     ;; 16. Guía visual — cada bola = una familia
     {:template :blocks
