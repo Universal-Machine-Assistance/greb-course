@@ -3,12 +3,16 @@
   (:require [greb-course.dom :as d]))
 
 (def ^:private block-container-selectors
-  ".page-body, .toc-grid, .pres-grouped, .mission-grid, .wash-grid, .mini-info-grid, .stat-grid, .product-grid, .rq-causes, .gd-cols, .duo-grid, .intro-layout")
+  ".page-body, .toc-grid, .pres-grouped, .mission-grid, .wash-grid, .mini-info-grid, .stat-grid, .product-grid, .rq-causes, .gd-cols, .duo-grid, .intro-layout, .gn-pills, .gn-steps-list, .gn-toc")
 
 (defn- full-page? [page]
   (let [cl (.-classList page)]
     (or (.contains cl "portada-page")
-        (.contains cl "full-image-page"))))
+        (.contains cl "full-image-page")
+        (.contains cl "gn-cover-page")
+        (.contains cl "gn-backcover-page")
+        (.contains cl "gn-divider-page")
+        (.contains cl "gn-quote-page"))))
 
 (defn- page-theme-classes [page]
   (let [all-classes (array-seq (.-classList page))]
@@ -211,11 +215,11 @@
 
 ;; ── View Transition helpers ──────────────────────────────────
 (def ^:private vt-selectors
-  [["h1, .hygiene-main-title, .risk-hero-title, .portada-title, .gd-title, .contenido-title"
+  [["h1, .hygiene-main-title, .risk-hero-title, .portada-title, .gd-title, .contenido-title, .gn-divider-title, .gn-title-bar"
     "vt-title"]
-   [".hero-kicker, .gd-kicker, .rq-hero-sub, .portada-sub, .contenido-eyebrow"
+   [".hero-kicker, .gd-kicker, .rq-hero-sub, .portada-sub, .contenido-eyebrow, .gn-quote-author, .gn-divider-number"
     "vt-kicker"]
-   ["img.hero-product-photo, img.rq-hero-img, img.portada-hero-img, img.gd-hero-diagram-img, .intro-img-stack img, .risk-hero-bola-wrap img, .full-image-bg img"
+   ["img.hero-product-photo, img.rq-hero-img, img.portada-hero-img, img.gd-hero-diagram-img, .intro-img-stack img, .risk-hero-bola-wrap img, .full-image-bg img, .gn-divider-bg img, .gn-quote-bg img"
     "vt-hero-img"]])
 
 (defn tag-vt! [root]

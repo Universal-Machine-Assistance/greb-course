@@ -36,6 +36,9 @@
     :criteria-table
     (comp/criteria-table (:headers block) items)
 
+    :ref-table
+    (comp/ref-table items)
+
     :registro-sheet
     (comp/registro-sheet {:modes (:modes block)
                           :default-mode (:default-mode block)
@@ -151,7 +154,7 @@
            (mapv comp/info-card items))))
 
 (defn render-block [block]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :bank-card :wash-carousel :image-block} (:type block))
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :bank-card :wash-carousel :image-block :ref-table} (:type block))
     (render-block-content block)
     (d/el :section {:class "hygiene-block"}
           (comp/section-bar (:icon block) (:title block))

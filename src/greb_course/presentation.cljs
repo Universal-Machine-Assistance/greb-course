@@ -249,7 +249,14 @@
           hl-cursor   (d/el :div {:class "pres-highlight-cursor"})
           on-mouse    (fn [e]
                         (.setProperty (.-style hl-cursor) "--hl-x" (str (.-clientX e) "px"))
-                        (.setProperty (.-style hl-cursor) "--hl-y" (str (.-clientY e) "px")))
+                        (.setProperty (.-style hl-cursor) "--hl-y" (str (.-clientY e) "px"))
+                        ;; Show toolbar when mouse is near top
+                        (let [y (.-clientY e)
+                              h (.-innerHeight js/window)
+                              cl (.-classList overlay)]
+                          (if (< y (* h 0.12))
+                            (.add cl "pres-near-top")
+                            (.remove cl "pres-near-top"))))
           ;; Build zoom/text-scale controls first (physics needs zoom-label)
           zoom-ctrl   (controls/make-zoom-controls pres-apply-view!)
           ts-ctrl     (controls/make-text-scale-controls pres-apply-view!)

@@ -178,6 +178,7 @@ html.presenting .toc-wrapper  { z-index: 10006; }
   position: fixed; inset: 0;
   z-index: 201;
   display: flex;
+  align-items: center;
   pointer-events: none;
   /* children animate individually */
 }
@@ -189,7 +190,7 @@ html.presenting .toc-wrapper  { z-index: 10006; }
   flex-direction: column;
   gap: .6rem;
   padding: .8rem;
-  height: 100dvh;
+  max-height: 70vh;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,.12) transparent;
@@ -403,8 +404,9 @@ html.presenting .toc-wrapper  { z-index: 10006; }
 /* ── HJKL nav widget: fixed bottom-center dock ───────────── */
 .toc-hjkl-dock {
   position: fixed;
-  left: 50%;
-  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  left: calc(50% + 4vw);
+  top: 50%;
+  bottom: auto;
   z-index: 202;
   transform: translateX(-50%) translateY(120%);
   opacity: 0;

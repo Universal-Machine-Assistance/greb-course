@@ -14,7 +14,7 @@
     (d/el :article {:class "page portada-page" :id "portada"}
           (d/el :div {:class "portada-hero"}
                 (when hero-img
-                  (d/src-img hero-img title "portada-hero-img portada-hero-img--float"))
+                  (d/src-img hero-img title "portada-hero-img"))
                 (d/el :div {:class "portada-overlay"}))
           (d/el :div {:class "portada-body"}
                 (d/el :div {:class "portada-logos animate d1"}

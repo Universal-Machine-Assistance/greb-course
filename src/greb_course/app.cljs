@@ -7,7 +7,8 @@
             [greb.course :as greb]
             [harmonia.course :as harmonia]
             [propuesta-web.course :as propuesta-web]
-            [rivia.course :as rivia]))
+            [rivia.course :as rivia]
+            [grebnue.course :as grebnue]))
 
 ;; All available courses — add new ones here
 (def courses
@@ -17,7 +18,8 @@
    greb/course
    harmonia/course
    propuesta-web/course
-   rivia/course])
+   rivia/course
+   grebnue/course])
 
 (defn init [] (core/init! courses))
 

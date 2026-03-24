@@ -45,11 +45,46 @@
     (when-let [idx (get id->spread page-id)]
       (go! idx nil))))
 
+(defn navigate-to-page-number! [n]
+  (when-let [entries (build-entries)]
+    (when-let [entry (first (filter #(= (:page %) n) entries))]
+      (navigate-to-spread! (:spread-idx entry)))))
+
 (defn open-course! [{:keys [org slug]}]
   (set! (.-location js/window) (str "/" org "/" slug "/")))
 
 (defn go-home! []
   (set! (.-location js/window) "/"))
+
+(defn download-pdf! []
+  (if-let [{:keys [org slug]} (:meta @state/current-course)]
+    (-> (js/fetch (str "/api/export-pdf?org=" (js/encodeURIComponent org)
+                       "&slug=" (js/encodeURIComponent slug)))
+        (.then (fn [resp]
+                 (if-not (.-ok resp)
+                   (.reject js/Promise (js/Error. (str "HTTP " (.-status resp))))
+                   (let [ctype (or (.get (.-headers resp) "content-type") "")]
+                     (-> (.blob resp)
+                         (.then (fn [blob]
+                                  (if (and (.includes (.toLowerCase ctype) "application/pdf")
+                                           (> (.-size blob) 10000))
+                                    blob
+                                    (.reject js/Promise
+                                      (js/Error.
+                                        (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)")))))))))))
+        (.then (fn [blob]
+                 (let [dl-url (.createObjectURL js/URL blob)
+                       a      (.createElement js/document "a")
+                       name   (str org "-" slug ".pdf")]
+                   (set! (.-href a) dl-url)
+                   (set! (.-download a) name)
+                   (.appendChild (.-body js/document) a)
+                   (.click a)
+                   (.remove a)
+                   (js/setTimeout #(.revokeObjectURL js/URL dl-url) 1200)
+                   (ui/show-toast! (str "Downloaded: " name) 2200))))
+        (.catch #(ui/show-toast! "PDF export failed. Restart server and try again." 5000)))
+    (ui/show-toast! "No active course" 2200)))
 
 ;; ── Command entries ─────────────────────────────────────────
 
@@ -60,6 +95,8 @@
    {:id "reset"  :label "reset"       :desc "Reset zoom and pan"    :type :command}
    {:id "zoom"   :label "zoom <n>"    :desc "Set zoom level"        :type :command}
    {:id "pages"  :label "pages"       :desc "Show page count"       :type :command}
+   {:id "print-dialog" :label "print-dialog" :desc "Open browser print dialog" :type :command}
+   {:id "pdf-download" :label "pdf-download" :desc "Open print dialog for Save as PDF" :type :command}
    {:id "edit"   :label "edit <prompt>" :desc "Edit page (open editor, or with LLM prompt)" :type :command}
    {:id "vim"    :label "vim"         :desc "Enable Vim keybindings in editor"  :type :command}
    {:id "novim"  :label "novim"       :desc "Disable Vim keybindings in editor" :type :command}
@@ -100,8 +137,9 @@
           (do (ui/show-toast! (str "Unknown document: " id) 2000) true)))
 
       (re-matches #"\(go\s+(\d+)\)" s)
-      (let [[_ n] (re-matches #"\(go\s+(\d+)\)" s)]
-        (navigate-to-spread! (dec (js/parseInt n 10)))
+      (let [[_ n] (re-matches #"\(go\s+(\d+)\)" s)
+            page-num (js/parseInt n 10)]
+        (navigate-to-page-number! page-num)
         (ui/show-toast! (str "Page " n)) true)
 
       (re-matches #"\(go\s+\"?([a-zA-Z0-9_-]+)\"?\)" s)
@@ -121,6 +159,14 @@
       (let [n (count (or (:spread-ids @state/current-nav) []))]
         (ui/show-toast! (str n " pages") 2000) true)
 
+      (re-matches #"(?i)\(print-dialog\)" s)
+      (do (js/requestAnimationFrame (fn [] (.print js/window))) true)
+
+      (re-matches #"(?i)\((pdf-download|pdf-downlaod)\)" s)
+      (do (ui/show-toast! "Exporting PDF..." 1800)
+          (download-pdf!)
+          true)
+
       (re-matches #"\(edit\)" s)   (do (editor/edit!) true)
 
       ;; :edit <prompt> or edit <prompt> — open editor + send LLM request
@@ -139,9 +185,10 @@
           (editor/goto-page! arg))
         true)
 
-      ;; imagine <prompt> — generate image
+      ;; imagine <prompt> — generate image and auto-save
       (re-matches #"(?i):?imagine\s+(.+)" s)
-      (let [[_ prompt] (re-matches #"(?i):?imagine\s+(.+)" s)]
+      (let [[_ prompt] (re-matches #"(?i):?imagine\s+(.+)" s)
+            org (get-in @state/current-course [:meta :org] "default")]
         (ui/show-toast! (str "Generating: " prompt) 3000)
         (-> (js/fetch "/api/kie/generate"
               #js {:method "POST" :headers #js {"Content-Type" "application/json"}
@@ -149,18 +196,36 @@
             (.then #(.json %))
             (.then (fn [r]
                      (let [task-id (some-> (aget r "data") (aget "taskId"))]
-                       (when task-id
+                       (if-not task-id
+                         (ui/show-toast! "Error: no taskId returned" 5000)
                          (let [poll (atom nil)]
+                           (ui/show-toast! (str "Task " task-id " — polling…") 3000)
                            (reset! poll
                              (js/setInterval
                                (fn []
                                  (-> (js/fetch (str "/api/kie/task?taskId=" task-id))
                                      (.then #(.json %))
-                                     (.then (fn [s]
-                                              (when (= "SUCCESS" (some-> (aget s "data") (aget "status")))
-                                                (js/clearInterval @poll)
-                                                (let [url (some-> (aget s "data") (aget "response") (aget "resultUrls") (aget 0))]
-                                                  (ui/show-toast! (str "Image ready! " url) 15000)))))))
+                                     (.then (fn [resp]
+                                              (let [status (some-> (aget resp "data") (aget "status"))]
+                                                (when (= "SUCCESS" status)
+                                                  (js/clearInterval @poll)
+                                                  (let [url (some-> (aget resp "data") (aget "response") (aget "resultUrls") (aget 0))
+                                                        fname (str "gen-" (.now js/Date) ".png")]
+                                                    (ui/show-toast! (str "Saving " fname "…") 3000)
+                                                    (-> (js/fetch "/api/kie/save"
+                                                          #js {:method "POST"
+                                                               :headers #js {"Content-Type" "application/edn"}
+                                                               :body (pr-str {:url url :org org :filename fname})})
+                                                        (.then #(.text %))
+                                                        (.then (fn [body]
+                                                                 (ui/show-toast! (str "Saved: " fname) 8000)))
+                                                        (.catch #(ui/show-toast! (str "Save error: " (.-message %)) 5000)))))
+                                                (when (= "FAILED" status)
+                                                  (js/clearInterval @poll)
+                                                  (ui/show-toast! "Generation failed" 5000)))))
+                                     (.catch (fn [e]
+                                               (js/clearInterval @poll)
+                                               (ui/show-toast! (str "Poll error: " (.-message e)) 5000)))))
                                3000)))))))
             (.catch #(ui/show-toast! (str "Error: " (.-message %)) 5000)))
         true)
@@ -199,7 +264,7 @@
       (re-matches #"(?i)go\s+(\S+)" s)
       (let [[_ arg] (re-matches #"(?i)go\s+(\S+)" s)]
         (if (re-matches #"\d+" arg)
-          (do (navigate-to-spread! (dec (js/parseInt arg 10)))
+          (do (navigate-to-page-number! (js/parseInt arg 10))
               (ui/show-toast! (str "Page " arg)) true)
           (do (navigate-to-page-id! arg)
               (ui/show-toast! (str "\u2192 " arg)) true)))
@@ -211,6 +276,14 @@
       (re-matches #"(?i)pages" s)
       (let [n (count (or (:spread-ids @state/current-nav) []))]
         (ui/show-toast! (str n " pages") 2000) true)
+
+      (re-matches #"(?i)print-dialog" s)
+      (do (js/requestAnimationFrame (fn [] (.print js/window))) true)
+
+      (re-matches #"(?i)(pdf-download|pdf-downlaod)" s)
+      (do (ui/show-toast! "Exporting PDF..." 1800)
+          (download-pdf!)
+          true)
 
       (re-matches #"(?i)zoom\s+([\d.]+)" s)
       (let [[_ n] (re-matches #"(?i)zoom\s+([\d.]+)" s)]

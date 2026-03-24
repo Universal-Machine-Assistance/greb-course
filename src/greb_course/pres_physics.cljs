@@ -189,7 +189,12 @@
                                             raw-target
                                             (.-parentElement raw-target))
                                    on-ui? (when target
-                                            (.closest target ".pres-toolbar, .pres-toolbar-btn, .pres-index, .pres-index-scrim, .toc-wrapper, .toc-overlay, .pres-section-bar, .pres-indicator, button, a"))]
+                                            (.closest target (str ".pres-toolbar, .pres-toolbar-btn, .pres-index, .pres-index-scrim,"
+                                                                   ".toc-wrapper, .toc-overlay, .pres-section-bar, .pres-indicator,"
+                                                                   "button, a,"
+                                                                   ".store-map-card, .store-map-list, .store-map-container,"
+                                                                   ".registro-check-btn, .registro-mode-btn, .registro-branch-btn, .registro-time-btn,"
+                                                                   ".product-card, .clean-cal-date-btn, .clean-cal-mode-btn")))]
                                (when-not on-ui?
                                  (let [mid (/ (.-innerWidth js/window) 2)
                                        x   (:x0 p)]

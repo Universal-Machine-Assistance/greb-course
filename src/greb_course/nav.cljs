@@ -192,7 +192,9 @@
         wrapper (d/el :div {:class "toc-wrapper"})
         left    (d/el :div {:class "toc-col toc-col-left"})
         right   (d/el :div {:class "toc-col toc-col-right"})
-        close!  #(do (reset! open? false)
+        close!  #(do (when-let [m @state/current-nav]
+                       (when-let [f (:clear-dot-preview! m)] (f)))
+                     (reset! open? false)
                      (.remove (.-classList wrapper) "open")
                      (.remove (.-classList overlay) "open"))
         open!   #(do (reset! open? true)

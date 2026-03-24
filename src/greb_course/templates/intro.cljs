@@ -15,20 +15,23 @@
                     (d/el :span {:class "stat-num"} stat-num)
                     (d/el :span {:class "stat-label"} stat-label)))
         (d/el :div {:class "page-body"}
-              (d/el :div {:class "intro-layout"}
-                    (apply d/el :div {:class "intro-img-stack animate d1"}
-                           (mapv #(d/src-img % "" nil) images))
-                    (d/el :div {:class "intro-text-col animate d2"}
-                          (d/el :p {:class "intro-lead"} lead)
-                          (d/el :p {:class "intro-para2"} para2)))
-              (d/el :div {:class "risk-families-callout animate d3"}
-                    (d/ic "shield-alert" "callout-icon")
-                    (d/el :p {:class "callout-text"} risk-families-title)
-                    (apply d/el :div {:class "risk-family-tags"}
+              (d/el :div {:class "risk-families-callout animate d1 risk-families-callout--top"}
+                    (d/el :div {:class "risk-families-callout-head"}
+                          (d/ic "shield-alert" "callout-icon")
+                          (d/el :p {:class "callout-text"} risk-families-title))
+                    (apply d/el :div {:class "risk-families-callout-grid"}
                            (mapv (fn [{:keys [icon title color]}]
-                                   (d/el :span {:class (str "risk-tag risk-tag-" color)}
-                                         (d/ic icon "risk-tag-icon") title))
-                                 risk-families)))
+                                   (d/el :div {:class (str "risk-family-cell risk-family-cell--" color)}
+                                         (d/el :div {:class (str "risk-callout-picto risk-callout-picto-" color)}
+                                               (d/ic icon "risk-callout-picto-icon"))
+                                         (d/el :span {:class "risk-family-cell-label"} title)))
+                                 (take 4 risk-families))))
+              (d/el :div {:class "intro-layout"}
+                    (apply d/el :div {:class "intro-img-stack animate d2"}
+                           (mapv #(d/src-img % "" nil) images))
+                    (d/el :div {:class "intro-text-col animate d3"}
+                          (d/el :p {:class "intro-lead intro-dropcap"} lead)
+                          (d/el :p {:class "intro-para2"} para2)))
               (d/el :div {:class "intro-closing animate d4"}
                     (d/ic "quote" "intro-closing-icon")
                     (d/el :p {:class "intro-closing-text"} closing)))

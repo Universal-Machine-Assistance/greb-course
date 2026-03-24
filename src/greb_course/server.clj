@@ -9,6 +9,7 @@
             [compojure.core :refer [GET POST DELETE defroutes]]
             [compojure.route :as route]
             [greb-course.server-proxy :as proxy]
+            [greb-course.server-pdf :as pdf]
             [greb-course.server-images :as images])
   (:import [java.io File]))
 
@@ -63,6 +64,10 @@
 
   ;; OpenRouter proxy (API key only from server env)
   (POST "/api/openrouter/chat" req (proxy/openrouter-proxy-handler req))
+
+  ;; Export course as PDF (server-side, direct download)
+  (GET "/api/export-pdf" req (pdf/export-pdf-handler req))
+  (GET "/api/export-pdf/" req (pdf/export-pdf-handler req))
 
   ;; Save page patch (persist editor changes to disk)
   (POST "/api/save-page" req

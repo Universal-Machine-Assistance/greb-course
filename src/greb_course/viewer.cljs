@@ -5,12 +5,57 @@
             [greb-course.state              :as state]
             [greb-course.ui                 :as ui]
             [greb-course.nav                :as nav]
+            [greb-course.omnirepl           :as omni]
             [greb-course.animation          :as anim]
             [greb-course.spacemouse         :as sm]
             [greb-course.templates.registry :as reg]
             [greb-course.sounds             :as sfx]))
 
 ;; ── Toolbar ──────────────────────────────────────────────────────
+(defn- trigger-print! []
+  (omni/dismiss!)
+  (js/requestAnimationFrame
+    (fn [] (.print js/window))))
+
+(defn- export-pdf-url [org slug]
+  (str "/api/export-pdf?org=" (js/encodeURIComponent org)
+       "&slug=" (js/encodeURIComponent slug)))
+
+(defn- ensure-pdf-blob [resp]
+  (if-not (.-ok resp)
+    (.reject js/Promise (js/Error. (str "HTTP " (.-status resp))))
+    (let [ctype (or (.get (.-headers resp) "content-type") "")]
+      (-> (.blob resp)
+          (.then (fn [blob]
+                   (if (and (.includes (.toLowerCase ctype) "application/pdf")
+                            (> (.-size blob) 10000))
+                     blob
+                     (.reject js/Promise
+                       (js/Error.
+                         (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)"))))))))))
+
+(defn- trigger-pdf-download! []
+  (omni/dismiss!)
+  (if-let [{:keys [org slug]} (:meta @state/current-course)]
+    (do
+      (ui/show-toast! (str (i18n/t :pdf-download) "...") 1800)
+      (-> (js/fetch (export-pdf-url org slug))
+          (.then ensure-pdf-blob)
+          (.then (fn [blob]
+                   (let [dl-url (.createObjectURL js/URL blob)
+                         a      (.createElement js/document "a")]
+                     (set! (.-href a) dl-url)
+                     (set! (.-download a) (str org "-" slug ".pdf"))
+                     (.appendChild (.-body js/document) a)
+                     (.click a)
+                     (.remove a)
+                     (js/setTimeout #(.revokeObjectURL js/URL dl-url) 1200)
+                     (ui/show-toast! (i18n/t :pdf-download) 1400))))
+          (.catch (fn [e]
+                    (ui/show-toast! "PDF export failed. Restart server and try again." 4600)
+                    (js/console.error "PDF export failed" e)))))
+    (ui/show-toast! "No active course" 2200)))
+
 (defn toolbar [indicator toggle-toc! theme]
   (let [logo      (get theme :logo)
         brand     (get theme :brand-name "")
@@ -22,10 +67,14 @@
                             (.preventDefault e)
                             (set! (.-location js/window) "/"))))
         mobile?   (.-matches (js/matchMedia "(max-width: 840px)"))
-        print-btn (doto (d/el :button {:class (str "toolbar-btn" (when mobile? " toolbar-desktop-only"))}
+        pdf-btn   (doto (d/el :button {:class (str "toolbar-btn" (when mobile? " toolbar-desktop-only"))}
+                              (d/ic "download" "") (i18n/t :pdf-download))
+                        (.addEventListener "mouseenter" sfx/row-enter-handler)
+                        (.addEventListener "click" trigger-pdf-download!))
+        print-btn (doto (d/el :button {:class (str "toolbar-ghost-btn" (when mobile? " toolbar-desktop-only"))}
                               (d/ic "printer" "") (i18n/t :print))
                         (.addEventListener "mouseenter" sfx/row-enter-handler)
-                        (.addEventListener "click" #(.print js/window)))
+                        (.addEventListener "click" trigger-print!))
         idx-btn   (doto (d/el :button {:class "toolbar-ghost-btn"}
                               (d/ic "list" "") (i18n/t :index))
                         (.addEventListener "mouseenter" sfx/row-enter-handler)
@@ -46,7 +95,7 @@
             [(doto (d/el :a {:href "#portada" :class "toolbar-logo"}
                     (when logo (d/src-img logo brand nil)))
                (.addEventListener "mouseenter" sfx/row-enter-handler))
-             indicator idx-btn pres-btn sm-btn print-btn back-btn]))))
+             indicator idx-btn pres-btn sm-btn pdf-btn print-btn back-btn]))))
 
 ;; ── Build course viewer ──────────────────────────────────────────
 (defn build-viewer [course]
@@ -114,21 +163,62 @@
             (fn [_ _ old-si ni]
               (let [dir-side (if (< ni old-si) :right :left)]
                 (update-page-dots! ni dir-side))))
+        clear-dot-preview!
+        (fn []
+          (doseq [s spreads]
+            (.remove (.-classList s) "spread-preview-hover" "spread-preview-dim"))
+          (when-let [r (.querySelector js/document ".reader")]
+            (doseq [p (array-seq (.querySelectorAll r ".page"))]
+              (.remove (.-classList p) "page-preview-highlight" "page-preview-dim-peer"))))
+        apply-dot-preview!
+        (fn [target-spread target-side]
+          (clear-dot-preview!)
+          (let [cur   @nav-state
+                sp    (nth spreads target-spread)
+                pages (vec (array-seq (.querySelectorAll sp ".page")))
+                pi    (if (= 1 (count pages))
+                        0
+                        (if (= target-side :left) 0 1))
+                page-el (nth pages pi nil)]
+            (when page-el
+              (if (= target-spread cur)
+                (do
+                  (.add (.-classList page-el) "page-preview-highlight")
+                  (doseq [[i p] (map-indexed vector pages)]
+                    (when (and (> (count pages) 1) (not= i pi))
+                      (.add (.-classList p) "page-preview-dim-peer"))))
+                (do
+                  (.add (.-classList (nth spreads cur)) "spread-preview-dim")
+                  (.add (.-classList sp) "spread-preview-hover")
+                  (.add (.-classList page-el) "page-preview-highlight"))))))
         ;; Click handler: navigate to spread + highlight clicked page
         _ (doseq [{:keys [el spread side]} page-dots]
             (.addEventListener el "click"
               (fn []
                 (go! spread (when (< spread @nav-state) "going-back"))
                 (reset! state/selected-edit-side side)
-                (update-page-dots! spread side))))
+                (update-page-dots! spread side)))
+            (.addEventListener el "mouseenter"
+              (fn [] (apply-dot-preview! spread side)))
+            (.addEventListener el "mouseleave"
+              (fn [e]
+                (let [rel (.-relatedTarget e)
+                      still-in-dots? (when (instance? js/Element rel)
+                                       (.closest rel ".spread-dots"))]
+                  (when-not still-in-dots?
+                    (clear-dot-preview!))))))
         doc-navigate! (fn [page-id]
                         (when-let [idx (get id->spread page-id)]
                           (go! idx nil)))
         {:keys [overlay panel toggle!]} (nav/build-toc-panel doc-navigate! toc-groups ui/doc-shortcuts)
+        ;; Append spread dots as full-width bottom bar in the TOC panel
+        dots-bar   (apply d/el :div {:class "spread-dots toc-spread-dots"} dots)
+        _          (.appendChild panel dots-bar)
         _          (reset! state/current-nav {:go! go! :nav-state nav-state :id->spread id->spread :spread-ids spread-ids
                                         :toc-groups toc-groups
                                         :toggle-toc! toggle!
-                                        :spread->pages spread->pages})]
+                                        :spread->pages spread->pages
+                                        :clear-dot-preview! clear-dot-preview!})]
     (doseq [s spreads] (.remove (.-classList s) "active"))
     (.add (.-classList (nth spreads init-idx)) "active")
     (update-page-dots! init-idx :left)
@@ -142,16 +232,46 @@
       (fn []
         (when-let [idx (get id->spread (nav/current-hash))]
           (go! idx nil))))
+    ;; 'i' key handled by core_boot.cljs keydown handler via state/current-nav :toggle-toc!
     ;; Highlight cursor for doc mode (same as pres mode spotlight)
     (let [doc-hl (d/el :div {:class "pres-highlight-cursor doc-highlight-cursor"})
           _      (.addEventListener js/document "mousemove"
                    (fn [e]
                      (.setProperty (.-style doc-hl) "--hl-x" (str (.-clientX e) "px"))
                      (.setProperty (.-style doc-hl) "--hl-y" (str (.-clientY e) "px"))))
+          ;; Hide top bar + prev/next after mouse stops (desktop reader only)
+          _      (when-not mobile?
+                   (let [root    (.-documentElement js/document)
+                         idle-ms 2800
+                         tref    (atom nil)
+                         toc-open? (fn []
+                                     (when-let [tw (.querySelector js/document ".toc-wrapper")]
+                                       (.contains (.-classList tw) "open")))
+                         typing? (fn []
+                                   (let [t (.-activeElement js/document)]
+                                     (when t
+                                       (or (#{"INPUT" "TEXTAREA" "SELECT"} (.-tagName t))
+                                           (let [ce (.getAttribute t "contenteditable")]
+                                             (and ce (not= ce "false")))))))
+                         hide-chrome!
+                         (fn []
+                           (when (and (not @state/pres-state)
+                                      (not (.contains (.-classList root) "ui-hidden"))
+                                      (not (toc-open?))
+                                      (not (typing?)))
+                             (.add (.-classList root) "doc-chrome-idle")))
+                         bump-chrome!
+                         (fn []
+                           (when-let [id @tref] (js/clearTimeout id))
+                           (when-not (.contains (.-classList root) "ui-hidden")
+                             (.remove (.-classList root) "doc-chrome-idle")
+                             (reset! tref (js/setTimeout hide-chrome! idle-ms))))]
+                     (.addEventListener js/window "mousemove" bump-chrome!)
+                     (.addEventListener js/window "mousedown" bump-chrome!)
+                     (bump-chrome!)))
           ;; Intercept in-page anchor clicks (e.g. index page links) so they navigate via go!
           reader-el (apply d/el :div {:class (str "reader" (when mobile? " reader--mobile"))}
-                          (concat spreads [prev-btn next-btn
-                                           (apply d/el :div {:class "spread-dots"} dots)]))]
+                          (concat spreads [prev-btn next-btn]))]
       (.addEventListener reader-el "click"
         (fn [e]
           (when-let [a (.closest (.-target e) "a[href^='#']")]

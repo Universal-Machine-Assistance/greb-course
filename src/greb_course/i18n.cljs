@@ -2,7 +2,8 @@
   "Lightweight i18n layer for UI labels.")
 
 (def base-strings
-  {:es {:print "Imprimir / PDF" :index "Índice" :close "Cerrar"
+  {:es {:print "Imprimir" :pdf-download "Descargar PDF" :pdf-hint "En el diálogo, elige Guardar como PDF"
+        :index "Índice" :close "Cerrar"
         :page-of "{current} / {total}" :toc-title "Índice"
         :prev "Anterior" :next "Siguiente" :glossary "Glosario"
         :ready "Listo para abrir" :present "Presentar"
@@ -14,7 +15,8 @@
         :toc-tagline "Visor interactivo de documentos"
         :toc-mode-doc "Modo documento" :toc-mode-pres "Modo presentación"
         :toc-shortcuts-title "Atajos"}
-   :en {:print "Print / PDF" :index "Index" :close "Close"
+   :en {:print "Print" :pdf-download "Download PDF" :pdf-hint "In the dialog, choose Save as PDF"
+        :index "Index" :close "Close"
         :page-of "{current} / {total}" :toc-title "Index"
         :prev "Previous" :next "Next" :glossary "Glossary"
         :ready "Ready to open" :present "Present"

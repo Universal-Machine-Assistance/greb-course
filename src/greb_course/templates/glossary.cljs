@@ -119,15 +119,5 @@
                                     (d/el :p {:class "gd-tip-text"} tip)
                                     (when tip-img
                                       (d/src-img tip-img "" "gd-tip-img")))))))
-          (d/el :div {:class "gd-nav"}
-                (if prev-t
-                  (d/el :a {:href (str "#" (:id prev-t)) :class "gd-nav-btn"}
-                        (d/ic "arrow-left" "") (i18n/t :prev))
-                  (d/el :span {}))
-                (d/el :a {:href "#glosario" :class "gd-nav-center"}
-                      (i18n/t :glossary) (d/ic "layout-grid" ""))
-                (if next-t
-                  (d/el :a {:href (str "#" (:id next-t)) :class "gd-nav-btn gd-nav-next"}
-                        (i18n/t :next) (d/ic "arrow-right" ""))
-                  (d/el :span {})))
+          ;; Navigation bar removed per user request
           (d/page-footer page-num))))

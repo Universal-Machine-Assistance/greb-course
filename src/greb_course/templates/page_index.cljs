@@ -27,11 +27,12 @@
           (apply d/el :ul {:class "toc-subitems"}
                  (mapv toc-subrow items)))))
 
-(defn render [{:keys [title entries sections groups]} page-num _theme]
+(defn render [{:keys [id title entries groups hide-title?]} page-num _theme]
   (let [pm (into {} (map (juxt :id :page) entries))]
-    (d/el :article {:class "page" :id "indice"}
+    (d/el :article {:class "page" :id (or id "indice")}
           (d/el :div {:class "page-body"}
-                (d/el :h1 {} title)
+                (when (and (not hide-title?) (seq (str title)))
+                  (d/el :h1 {} title))
                 (apply d/el :div {}
                        (mapv (fn [{:keys [label items type icon-default]}]
                                (d/el :div {}

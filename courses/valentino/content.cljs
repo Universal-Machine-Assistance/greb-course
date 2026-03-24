@@ -5,52 +5,87 @@
 (def index-title "Índice")
 
 (def index-entries
-  [{:id "portada"                  :label "Portada"                         :page 1}
+  [;; 1–5 Presentación
+   {:id "portada"                  :label "Portada"                         :page 1}
    {:id "contenido"                :label "Contenido"                       :page 2}
    {:id "indice"                   :label "Índice"                          :page 3}
-   {:id "introduccion"             :label "Introducción"                    :page 4}
-   {:id "lavado-y-guantes"         :label "Lavado de Manos — Protocolo"     :page 5}
-   {:id "lavado-tecnica"           :label "Lavado de Manos — Técnica"       :page 6}
-   {:id "higiene-personal"         :label "Higiene Personal — Checklist"    :page 7}
-   {:id "higiene-disciplina"       :label "Higiene Personal — Disciplina"   :page 8}
-   {:id "recepcion-almacenamiento"        :label "Recepción — Introducción"       :page 9}
-   {:id "recepcion-inspeccion"             :label "Recepción — Inspección"         :page 10}
-   {:id "recepcion-almacenamiento-detalle" :label "Almacenamiento — Reglas"        :page 11}
-   {:id "recepcion-controles"              :label "Recepción — Controles"          :page 12}
-   {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 13}
-   {:id "limpieza-spread-intro"    :label "Limpieza — Desplegar sección"    :page 14}
-   {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 15}
-   {:id "limpieza-calendario"      :label "Limpieza — Calendario Operativo" :page 16}
-   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 17}
-   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 18}
-   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 19}
-   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 20}
-   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 21}
-   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 22}
-   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 23}
-   {:id "glosario"                  :label "Glosario de Términos"            :page 24}
-   {:id "creditos"                  :label "Créditos"                        :page 32}])
+   {:id "indice-2"                 :label "Índice (cont.)"                  :page 4}
+   {:id "introduccion"             :label "Introducción"                    :page 5}
+   ;; 6–10 Higiene del Personal
+   {:id "lavado-y-guantes"         :label "Lavado de Manos — Protocolo"     :page 6}
+   {:id "lavado-tecnica"           :label "Lavado de Manos — Técnica"       :page 7}
+   {:id "higiene-personal"         :label "Higiene Personal — Checklist"    :page 8}
+   {:id "higiene-disciplina"       :label "Higiene Personal — Disciplina"   :page 9}
+   {:id "higiene-instalaciones"    :label "Instalaciones y Salud"           :page 10}
+   ;; 11–14 Recepción y Almacenamiento
+   {:id "recepcion-almacenamiento"        :label "Recepción — Introducción"       :page 11}
+   {:id "recepcion-inspeccion"             :label "Recepción — Inspección"         :page 12}
+   {:id "recepcion-almacenamiento-detalle" :label "Almacenamiento — Reglas"        :page 13}
+   {:id "recepcion-controles"              :label "Recepción — Controles"          :page 14}
+   ;; 15–28 Limpieza y Desinfección
+   {:id "limpieza-desinfeccion"    :label "Limpieza — Protocolo"            :page 15}
+   {:id "limpieza-spread-intro"    :label "Limpieza — Portada sección"      :page 16}
+   {:id "limpieza-vitrina"         :label "Limpieza — Vitrina de Helados"   :page 17}
+   {:id "limpieza-camara-fria"     :label "Limpieza — Cámara Fría"          :page 18}
+   {:id "limpieza-profunda"        :label "Limpieza — Profunda del Local"   :page 19}
+   {:id "limpieza-areas"           :label "Limpieza — Pisos, Mesas, Armarios" :page 20}
+   {:id "limpieza-equipos"         :label "Limpieza — Equipos y Scooper"    :page 21}
+   {:id "limpieza-utensilios"      :label "Limpieza — Utensilios"           :page 22}
+   {:id "limpieza-manejo-utensilios" :label "Limpieza — Manejo Utensilios"  :page 23}
+   {:id "limpieza-operativa"       :label "Limpieza — Operativa"            :page 24}
+   {:id "limpieza-calendario"      :label "Limpieza — Calendario Operativo" :page 25}
+   {:id "limpieza-registro"        :label "Limpieza — Ejemplo de Registro"  :page 26}
+   {:id "limpieza-basurero"        :label "Basurero e Inventario"           :page 27}
+   {:id "limpieza-desinfectantes"  :label "Desinfectantes"                  :page 28}
+   ;; 29–30 Mantenimiento
+   {:id "mantenimiento"            :label "Mantenimiento — Equipos"         :page 29}
+   {:id "mantenimiento-plan"       :label "Mantenimiento — Plan Preventivo" :page 30}
+   ;; 31–35 Servicio al Cliente
+   {:id "servicio-cliente"         :label "Servicio al Cliente"             :page 31}
+   {:id "servicio-preparacion"     :label "Servicio — Helados y Bebidas"    :page 32}
+   {:id "servicio-postres"         :label "Servicio — Postres"              :page 33}
+   {:id "servicio-postres-2"       :label "Servicio — Banana Split y Brownie" :page 34}
+   {:id "quejas"                   :label "Manejo de Quejas"                :page 35}
+   ;; 36+ Riesgos
+   {:id "riesgos-divider"           :label "Familias de Riesgo"              :page 36}
+   {:id "riesgos-familias-intro"    :label "Riesgos — Las cuatro familias"   :page 37}
+   {:id "riesgo-microbiologico"     :label "Riesgo microbiológico"           :page 38}
+   {:id "riesgo-fisico"             :label "Riesgo físico"                   :page 39}
+   {:id "riesgo-alergenos"          :label "Riesgo de alérgenos"             :page 40}
+   {:id "riesgo-quimico"            :label "Riesgo químico"                  :page 41}
+   {:id "glosario"                  :label "Glosario de Términos"            :page 42}
+   {:id "creditos"                  :label "Créditos"                        :page 50}])
 
 ;; ── TOC sections ────────────────────────────────────────────────
 (def contenido-title "Guía de Higiene de los Alimentos para las Tiendas de Valentino")
 (def contenido-subtitle "Contenido")
 
 (def contenido-sections
-  [{:id "higiene-personal" :img "Avatarconcajita-r8e3rxsx02z4c4hyb4rmlyenivr1o0bkifvg19u0ho.png" :title "Higiene del Personal"
+  [{:id "higiene-personal" :img "toc-higiene-personal.png" :title "Higiene del Personal"
     :items [{:label "Uniforme"           :ok true}
             {:label "Lavado de Manos"    :ok true}
             {:label "Guantes"            :ok true}
             {:label "Salud del personal" :ok true}]}
-   {:id "recepcion-almacenamiento" :img "cadena_de_frio__0007_nevera_helados.png" :title "Recepción y Almacenamiento"
+   {:id "recepcion-almacenamiento" :img "toc-recepcion.png" :title "Recepción y Almacenamiento"
     :items [{:label "Recepción del producto"    :ok true}
             {:label "Mantenimiento"             :ok true}
             {:label "Vencimiento"               :ok true}
             {:label "Controles de Temperatura"  :ok true}]}
-   {:id "limpieza-desinfeccion" :img "6Cajitaportada-r8e2ojegj31fojq9dlnllec34fy60qwm3ffquq93b0.png" :title "Limpieza y Desinfección"
+   {:id "limpieza-desinfeccion" :img "toc-limpieza.png" :title "Limpieza y Desinfección"
     :items [{:label "Protocolo de superficies"  :ok true}
-            {:label "Limpieza operativa"        :ok true}
-            {:label "Utensilios de limpieza"    :ok true}]}
-   {:id "riesgo-microbiologico" :img "3-CajitaNuestrosSaboresMenu-r8e46cntsmpecvka5d1oubh3fkpnoxjehrzgy0gp30.png" :title "Riesgos Alimentarios"
+            {:label "Vitrina y cámara fría"     :ok true}
+            {:label "Áreas y equipos"           :ok true}
+            {:label "Utensilios y paños"        :ok true}
+            {:label "Basurero y desinfectantes" :ok true}]}
+   {:id "mantenimiento" :img "ref-mantenimiento.png" :title "Mantenimiento"
+    :items [{:label "Equipos críticos"     :ok true}
+            {:label "Plan preventivo"      :ok true}]}
+   {:id "servicio-cliente" :img "ref-servicio-cliente.png" :title "Servicio al Cliente"
+    :items [{:label "Normas de servicio"   :ok true}
+            {:label "Preparación helados"  :ok true}
+            {:label "Postres y bebidas"    :ok true}
+            {:label "Manejo de quejas"     :ok true}]}
+   {:id "riesgo-microbiologico" :img "toc-riesgos.png" :title "Riesgos Alimentarios"
     :items [{:label "Microbiológico"  :ok true}
             {:label "Físico"          :ok true}
             {:label "Alérgenos"       :ok true}
@@ -192,9 +227,9 @@
 (def intro-title "Introducción")
 
 (def intro-blocks
-  ["El operador de las tiendas de Heladerías Valentino debe garantizar el cumplimiento de una serie de normas de salud, seguridad e higiene. Debe garantizar que el consumidor final disfrute del máximo nivel de seguridad en cuanto a la calidad del producto y la ausencia de cualquier riesgo para la salud. Debe cumplir con las normativas del país y con las normas de la empresa. Las tiendas estarán sujetas a inspecciones regulares de la franquicia."
+  ["Esta guía es el manual de consulta del equipo en tienda: condensa la normativa aplicable, el estándar de la franquicia Valentino y las buenas prácticas para manipular helados e ingredientes con higiene alimentaria. Sirve para formar al personal, resolver dudas durante el servicio y preparar las visitas de auditoría. El operador de las tiendas de Heladerías Valentino debe garantizar el cumplimiento de una serie de normas de salud, seguridad e higiene. Debe garantizar que el consumidor final disfrute del máximo nivel de seguridad en cuanto a la calidad del producto y la ausencia de cualquier riesgo para la salud. Debe cumplir con las normativas del país y con las normas de la empresa. Las tiendas estarán sujetas a inspecciones regulares de la franquicia."
    "Para limitar los riesgos para la salud, se debe aplicar el sentido común y métodos específicos de análisis de riesgos y control de peligros."
-   "Con esto en mente, hemos desarrollado esta herramienta: «Guía de Higiene Alimentaria para Tiendas de helados Valentino». Los métodos de trabajo descritos en esta guía cumplen con la legislación y su único objetivo es proteger al consumidor."])
+   "Con esto en mente, la franquicia entrega la «Guía de Higiene Alimentaria para Tiendas de helados Valentino». Los métodos de trabajo descritos en estas páginas cumplen con la legislación y su único objetivo es proteger al consumidor."])
 
 (def intro-dropcap "E")
 
@@ -380,6 +415,40 @@
     :como "Formulario"
     :criterio "Completar: fecha, temperatura, condición, vehículo, lote. Marcar aceptado o rechazado."}])
 
+(def recepcion-mantenimiento-vencimiento-controles
+  [{:title "Mantenimiento de cámaras frías"
+    :icon  "wrench"
+    :text "Regularmente debe darse mantenimiento a las cámaras frías con una frecuencia programada (definir frecuencia según proveedor). Registrar cada intervención de mantenimiento."}
+   {:title "Vencimiento del producto"
+    :icon  "calendar-x"
+    :text "El producto tiene una vida media definida por el fabricante. Los productos se reciben con una etiqueta que indica la fecha de vencimiento. Si algún producto llega a la fecha de vencimiento debe ser descartado de inmediato."}
+   {:title "Control matutino de temperatura"
+    :icon  "sunrise"
+    :text "Diariamente, cuando el personal llega a la tienda, antes de abrir el cuarto frío, debe registrar la temperatura en el formulario de control."}
+   {:title "Control vespertino de temperatura"
+    :icon  "sunset"
+    :text "En la tarde, en momentos de poca actividad en el almacén, se cierra el cuarto frío durante 15 a 20 minutos hasta que se estabilice la temperatura y se anota la lectura en el formulario de control."}])
+
+(def almacenamiento-protocolo-limpieza
+  [{:img "ref-protocolo-limpieza.png"
+    :title "Protocolo de limpieza de superficies"
+    :text "Para una eficiencia óptima = **EL PRODUCTO ADECUADO**, en el lugar adecuado, en la **dosis adecuada**, con la **técnica adecuada**, con la **frecuencia adecuada**."
+    :bullets ["Temperatura > Acción > Concentración (dosis) > Tiempo."
+              "Cumpla con los procedimientos operativos recomendados."
+              "NO olvide enjuagar cuando sea necesario."
+              "Se recomienda el uso de una aspiradora de agua."]}
+   {:img "ref-normas-almacenamiento-utensilios.png"
+    :title "Normas de almacenamiento de equipos y utensilios pequeños"
+    :text ""
+    :bullets ["Después de limpiarlos, guarde los utensilios en un área de almacenamiento limpia colgados."
+              "Coloque los utensilios limpios boca abajo para que el agua residual se escurra y evitar la contaminación por polvo."]}
+   {:img "ref-seguridad-productos-limpieza.png"
+    :title "Instrucciones de seguridad para productos de limpieza"
+    :text ""
+    :bullets ["Guarde los equipos y productos de mantenimiento en un armario o área de almacenamiento independiente, y no en un lugar donde se almacenen productos."
+              "Los productos de limpieza diluidos se dosifican en pulverizadores adecuados y debidamente identificados mediante etiquetas."
+              "Tenga cuidado de no almacenar los artículos en el suelo."]}])
+
 (def almacenamiento-rules
   [{:title "Nunca en el suelo"
     :icon  "ban"
@@ -507,6 +576,302 @@
    {:freq "Mensual" :icon "clipboard-check" :days-label "Semana 1" :month-count "1" :area "Armarios — profundo"
     :text "Retirar todo el material, limpiar/desinfectar a fondo, secar y reordenar con control visual."}])
 
+;; ── Vitrina de helados — limpieza detallada ────────────────────
+(def limpieza-vitrina-interior-steps
+  [{:step "01" :icon "beaker" :title "Preparar solución"
+    :text "Se prepara un recipiente con jabón y cloro en dilución indicada. La nevera ha quedado vacía del turno de la noche."}
+   {:step "02" :icon "spray-can" :title "Limpiar paredes y superficies"
+    :text "Limpiar con un paño con detergente y desinfectante todas las paredes y superficie de la nevera eliminando toda suciedad."}
+   {:step "03" :icon "grip" :title "Soportes y separadores"
+    :text "Se limpian los bordes de los soportes de las bandejas por debajo y los separadores del área frontal."}
+   {:step "04" :icon "droplets" :title "Enjuagar residuos"
+    :text "Después de pasar el paño con detergente y desinfectante, pasar un paño con agua clara para eliminar los residuos de químicos."}
+   {:step "05" :icon "blinds" :title "Cortina de protección"
+    :text "Se limpia la cortina de protección de la nevera de helados por dentro y por fuera."}
+   {:step "06" :icon "scan-eye" :title "Vidrio interior"
+    :text "Se limpia el vidrio de la nevera por dentro, verificando que quede completamente transparente."}
+   {:step "07" :icon "power" :title "Encender nevera"
+    :text "Se enciende la nevera y las luces. Esperar a que alcance temperatura estable."}])
+
+(def limpieza-vitrina-exterior-steps
+  [{:step "08" :icon "sparkles" :title "Vidrio exterior"
+    :text "Con un paño y limpiacristales se limpia el vidrio de la nevera por fuera hasta dejarlo impecable."}
+   {:step "09" :icon "ice-cream-cone" :title "Colocar bandejas"
+    :text "Una vez limpia la nevera, se colocan las bandejas de helados que se van retirando del cuarto frío cuidando de colocar las etiquetas debidamente."}])
+
+;; ── Cámara fría — limpieza ────────────────────────────────────
+(def limpieza-camara-fria-steps
+  [{:step "01" :icon "clipboard-list" :title "Preparación"
+    :text "Planificar la limpieza en horas de baja venta. Trasladar los helados a otro congelador que esté a ≤ −18 °C para evitar ruptura de cadena de frío."}
+   {:step "02" :icon "hard-hat" :title "Equipos de protección"
+    :text "Usar EPP: guantes térmicos, guantes de limpieza y botas antideslizantes. Desconectar ventiladores o evaporadores si el diseño lo permite."}
+   {:step "03" :icon "trash-2" :title "Retiro de residuos"
+    :text "Retirar residuos de producto. Barrer o aspirar fragmentos de hielo. Nunca usar agua caliente directamente sobre el piso congelado porque genera hielo inmediato."}
+   {:step "04" :icon "spray-can" :title "Lavado de superficies"
+    :text "Preparar detergente neutro o alcalino suave apto para alimentos. Limpiar con paño o cepillo plástico: estanterías, paredes, piso, puertas y empaques. En cámaras de congelación se recomienda mínima agua (paños húmedos)."}
+   {:step "05" :icon "droplets" :title "Enjuague"
+    :text "Retirar el detergente con paños húmedos o mop ligeramente húmedo. Evitar exceso de agua para prevenir formación de hielo."}
+   {:step "06" :icon "shield-check" :title "Desinfección"
+    :text "Aplicar un desinfectante aprobado para contacto con superficies de alimentos."}
+   {:step "07" :icon "wind" :title "Secado"
+    :text "Secar con paños o permitir evaporación natural. Verificar que no quede agua que pueda congelarse."}
+   {:step "08" :icon "power" :title "Reorganización y encendido"
+    :text "Encender el equipo. Esperar que la cámara alcance ≤ −18 °C. Colocar nuevamente los helados respetando FIFO/FEFO, separación del piso y circulación de aire."}])
+
+(def limpieza-camara-fria-frecuencia
+  [{:freq "Inmediata" :icon "alert-triangle" :days-label "Cuando ocurra" :month-count "—" :area "Derrames"
+    :text "Limpieza ligera inmediata por cualquier derrame de producto dentro de la cámara fría."}
+   {:freq "Semanal" :icon "calendar-check" :days-label "Sábado" :month-count "4" :area "Estantería"
+    :text "Limpieza de estanterías, organización y verificación de etiquetas y rotación FIFO/FEFO."}
+   {:freq "Mensual" :icon "calendar" :days-label "Semana 1" :month-count "1" :area "Limpieza completa"
+    :text "Limpieza completa de la cámara: paredes, piso, puertas, empaques y estanterías. Registro obligatorio."}
+   {:freq "Según\nacumulación" :icon "snowflake" :days-label "Variable" :month-count "—" :area "Deshielo de evaporadores"
+    :text "Deshielo de evaporadores según acumulación de hielo. Verificar funcionamiento después del deshielo."}])
+
+;; ── Limpieza profunda del local ───────────────────────────────
+(def limpieza-profunda-intro
+  "La limpieza profunda mensual garantiza que paredes, pisos, mobiliario y vidrios queden libres de residuos acumulados durante el servicio diario. Planifícala en franja de baja afluencia, con el local despejado y los productos sensibles resguardados en frío.")
+
+(def limpieza-profunda-steps
+  [{:step "01" :icon "calendar" :title "Programar mensualmente"
+    :text "Mensualmente se realiza una limpieza profunda del local. Planificar en horario de baja actividad."}
+   {:step "02" :icon "package-x" :title "Despejar el área"
+    :text "Se quitan todos los insumos de la meseta y los helados se guardan en la cámara fría."}
+   {:step "03" :icon "spray-can" :title "Limpieza de superficies"
+    :text "Se realiza una limpieza profunda de paredes, piso, sillas y mesas, zafacones, gabinetes y nevera."}
+   {:step "04" :icon "droplets" :title "Pisos con agua"
+    :text "El piso se limpia cuando es posible con agua, detergente y desinfectante. Mesas y sillas se lavan individualmente."}
+   {:step "05" :icon "panel-top" :title "Vidrios del local"
+    :text "Los vidrios del local se limpian lavándolos con agua y detergente, y pasando un escurridor de vidrio para un acabado impecable."}
+   {:step "06" :icon "check-circle" :title "Inspección final"
+    :text "Verificar que todas las áreas queden limpias y secas antes de reanudar operaciones. Registrar en el formulario de limpieza profunda."}])
+
+;; ── Pisos, Mesas y Sillas ─────────────────────────────────────
+(def limpieza-pisos-rules
+  [{:title "Piso interior y almacén"
+    :icon  "footprints"
+    :text "Barrer bien el área moviendo lo que sea necesario y por debajo de aparatos cuando sea posible. Preparar cubeta con agua y desinfectante y limpiar el piso del área interior, incluyendo área de almacén y cuarto frío."}])
+
+(def limpieza-mesas-sillas-rules
+  [{:title "Diario — inicio/final del turno"
+    :icon  "sunrise"
+    :text "Limpiar las mesas con un paño húmedo con cloro. Limpiar las sillas con un paño húmedo."}
+   {:title "Constantemente — después de cada cliente"
+    :icon  "users"
+    :text "Cada vez que un cliente usa una mesa, limpiar después del uso."}
+   {:title "Mensual — limpieza profunda"
+    :icon  "calendar"
+    :text "Con la limpieza profunda, limpiar sillas y mesas con agua y detergente."}])
+
+;; ── Armarios ──────────────────────────────────────────────────
+(def limpieza-armarios-rules
+  [{:title "Profunda — Mensual"
+    :icon  "calendar"
+    :text "Retirar todo el material de los armarios. Limpiar con un paño húmedo con desinfectante. Pasar un paño seco y volver a organizar los tramos."}
+   {:title "Básica — Semanal"
+    :icon  "calendar-check"
+    :text "Revisar los tramos y pasar paño húmedo si es necesario. Organizar los tramos."}])
+
+;; ── Neveras de tartas y producto ──────────────────────────────
+(def limpieza-nevera-tartas-rules
+  [{:title "Diario — exterior"
+    :icon  "sparkles"
+    :text "Se limpia diariamente la nevera en el exterior con un paño húmedo."}
+   {:title "Semanal — limpieza profunda"
+    :icon  "calendar-check"
+    :text "Semanalmente se sacan los helados y tartas y se colocan en la cámara fría. Se limpia profundamente con agua con cloro. Se reponen los helados."}])
+
+;; ── Recipiente de lavado de Scooper ───────────────────────────
+(def limpieza-scooper-steps
+  [{:step "01" :icon "droplets" :title "Vaciar el agua"
+    :text "Sacar toda el agua ayudado con una esponja."}
+   {:step "02" :icon "spray-can" :title "Lavar el recipiente"
+    :text "Lavar el recipiente con un estropajo limpio."}
+   {:step "03" :icon "waves" :title "Enjuagar"
+    :text "Abrir la llave y dejar correr el agua para enjuagar por dentro y por fuera."}
+   {:step "04" :icon "check-circle" :title "Agua limpia"
+    :text "Dejar correr el agua hasta asegurar que solo haya agua limpia."}])
+
+;; ── Utensilios diversos ───────────────────────────────────────
+(def limpieza-utensilios-rules
+  [{:title "Frascos de toppings"
+    :icon  "flask-round"
+    :text "Lavar bien una vez que se vacían, secarlos con una servilleta de papel y rellenar."}
+   {:title "Dispensador de servilletas"
+    :icon  "scroll"
+    :text "Limpiar bien por fuera con un paño húmedo limpio y desinfectante. Rellenar cuantas veces sea necesario."}
+   {:title "Display y recipientes de conos"
+    :icon  "cone"
+    :text "Cuando se vacía se limpia con un paño húmedo y se repone."}
+   {:title "Recipientes de tapas"
+    :icon  "box"
+    :text "Cuando se vacía se limpia con un paño húmedo y se repone."}
+   {:title "Bandejas de frascos y tapas"
+    :icon  "layout-grid"
+    :text "Cuando se vacía se limpia con un paño húmedo y se repone."}
+   {:title "Pantalla y mesa de computadora"
+    :icon  "monitor"
+    :text "Se pasa un paño húmedo semanalmente."}
+   {:title "Lámparas de adornos"
+    :icon  "lamp"
+    :text "Quincenalmente se pasa un paño húmedo."}])
+
+;; ── Microondas ────────────────────────────────────────────────
+(def limpieza-microondas-rules
+  [{:title "Diario — cada uso"
+    :icon  "zap"
+    :text "Cada vez que se usa debe limpiarse con un paño húmedo."}
+   {:title "Semanal — profunda"
+    :icon  "calendar-check"
+    :text "Se saca la bandeja interior y se limpia a profundidad paredes. Se lava la bandeja con detergente y desinfectante."}])
+
+;; ── Mesetas, fregadero y bandejas ─────────────────────────────
+(def limpieza-mesetas-rules
+  [{:title "Mesetas y fregadero"
+    :icon  "layout-dashboard"
+    :text "Diariamente se limpian con agua y desinfectante."}
+   {:title "Bandejas de ingredientes"
+    :icon  "package"
+    :text "Según se van vaciando se elimina el exceso de helado con agua, se lavan con agua y detergente y se envían a las tiendas donde se realiza una limpieza profunda y se desinfecta."}
+   {:title "Batidora"
+    :icon  "blend"
+    :text "Cada vez que se usa debe lavarse con agua y detergente."}])
+
+;; ── Manejo de utensilios de limpieza ──────────────────────────
+(def limpieza-manejo-utensilios-intro
+  ["Los utensilios de limpieza son una pieza clave de la seguridad alimentaria: si no están en buen estado o se mezclan entre áreas, el riesgo de contaminación cruzada aumenta de inmediato."
+   "Cada turno debe comenzar con paños limpios, identificados por color según el mapa de la tienda, y con la certeza de que estropajos y mopas no se usan indistintamente entre cocina, piso de venta y baños. Ante la duda, cambiar el paño y avisar al encargado."])
+
+(def limpieza-utensilios-manejo-rules
+  [{:title "Estropajos"
+    :icon  "eraser"
+    :text "Los estropajos deben mantenerse en buenas condiciones y deben ser descartados cuando estén sucios, maltratados o rotos. No dejarlos húmedos en cubetas cerradas: escurrir y ventilar para evitar olores y proliferación microbiana."}
+   {:title "Paños — lavado diario"
+    :icon  "shirt"
+    :text "Diariamente los paños deben ser lavados al final del turno y dejados en una solución desinfectante hasta el otro día. Al comenzar el turno, usar paños limpios. Deben ser descartados cuando se maltratan, recomendable una vez al día."}
+   {:title "Paños — diferenciación por área"
+    :icon  "palette"
+    :text "Los paños de preparación y área de servicio deben ser diferentes a los usados en la limpieza general. Usar código de colores: **Azul** = Área de preparación y servicio, **Amarillo** = Espacio comercial, **Rosa** = Baños."}
+   {:title "Secado y almacenamiento"
+    :icon  "wind"
+    :text "Tras el lavado, los paños deben secarse por completo antes del siguiente uso o guardarse en el lugar señalado, separados por color. No apilar paños húmedos ni mezclar colores en la misma cesta."}
+   {:title "Revisión al abrir"
+    :icon  "eye"
+    :text "Al iniciar servicio, revisar olor, manchas persistentes y deshilachado. Si un paño no pasa la revisión, retirarlo del piso y reemplazarlo antes de manipular superficies en contacto con alimentos."}])
+
+(def limpieza-panos-colores
+  [{:area "Área de preparación y servicio" :color "Azul"    :css-color "#89CFF0" :icon "utensils"}
+   {:area "Espacio comercial"              :color "Amarillo" :css-color "#FFE44D" :icon "store"}
+   {:area "Baños"                          :color "Rosa"     :css-color "#E8A0BF" :icon "bath"}])
+
+;; ── Basurero e inventario ──────────────────────────────────────
+(def limpieza-basurero-recoleccion
+  [{:title "Recolección (área de preparación)"
+    :icon  "trash-2"
+    :text "**RECOJA LOS RESIDUOS** a medida que avanza en contenedores de basura de manos libres y en bolsas plásticas."}
+   {:title "Equipo de protección"
+    :icon  "hard-hat"
+    :text "**USE EPP ADECUADO** para el tratamiento de residuos: guantes desechables y delantal."}
+   {:title "Vaciar la basura"
+    :icon  "package-x"
+    :text "**VACÍE LA BASURA** al menos una vez después de cada ciclo de preparación. Si durante el día el basurero se rebosa, retire la basura del área."}
+   {:title "Limpiar y desinfectar"
+    :icon  "spray-can"
+    :text "**LIMPIE Y DESINFECTE** los contenedores de basura a diario. Lávese las manos después de manipular residuos."}])
+
+(def limpieza-basurero-retiro
+  [{:title "Almacenar lejos de clientes"
+    :icon  "map-pin-off"
+    :text "**ALMACENE LOS RESIDUOS** en el lugar designado, lejos de los clientes y de las estaciones de trabajo."}
+   {:title "Bolsas de basura"
+    :icon  "package"
+    :text "**ALMACENE LAS BOLSAS** en contenedores ubicados lejos del área de preparación de alimentos. Limpie y desinfecte el área y los contenedores al menos una vez por semana."}
+   {:title "Retiro de residuos"
+    :icon  "truck"
+    :text "**RETIRE LOS RESIDUOS** fuera de los períodos de entrega. Saque diariamente la basura al finalizar el día."}])
+
+(def limpieza-basurero-extra
+  [{:title "Fundas en basureros"
+    :icon  "shopping-bag"
+    :text "Coloque fundas en los basureros siempre. Semanalmente lave el basurero con agua y detergente y desinfectar con agua de cloro."}
+   {:title "Plagas"
+    :icon  "bug"
+    :text "Preste especial atención al tratamiento del espacio contra insectos y roedores."}])
+
+(def inventario-diario-rules
+  [{:title "Inventario diario"
+    :icon  "clipboard-list"
+    :text "Hacer inventario diario y reponer suministros de los tramos."}
+   {:title "Colocar pedidos"
+    :icon  "shopping-cart"
+    :text "Colocar el pedido los días que corresponda según el calendario establecido."}])
+
+;; ── Desinfectantes ────────────────────────────────────────────
+(def desinfectantes-intro
+  "Siga las instrucciones del fabricante. Se recomienda usar productos que sean aprobados para usarse en alimentos. **No comprar desinfectantes comerciales del supermercado.**")
+
+(def desinfectantes-tabla
+  [{:que "Amonio Cuaternario"  :icon "flask-conical" :como "200 – 400 ppm"  :criterio "No deja olor fuerte"}
+   {:que "Hipoclorito (Cloro)" :icon "droplets"      :como "50 – 100 ppm"   :criterio "Puede corroer metales"}
+   {:que "Alcohol 70%"         :icon "beaker"        :como "Superficies pequeñas" :criterio "Observación rápida"}])
+
+;; ── Mantenimiento ─────────────────────────────────────────────
+(def mantenimiento-intro
+  "Un programa de mantenimiento para una tienda de helados debe asegurar principalmente: **control de temperatura**, **higiene de equipos**, **seguridad eléctrica y mecánica**, y **continuidad de la cadena de frío**.")
+
+(def mantenimiento-equipos-criticos
+  [{:title "Cámaras o congeladores"    :icon "snowflake"     :text "Almacenamiento de producto a ≤ −18 °C."}
+   {:title "Vitrinas exhibidoras"      :icon "refrigerator"  :text "Exhibición y servicio de helados al público."}
+   {:title "Aire acondicionado"        :icon "wind"          :text "Confort y control de ambiente del local."}
+   {:title "Sistema eléctrico"         :icon "zap"           :text "Alimentación segura de todos los equipos."}
+   {:title "Termómetros y sensores"    :icon "thermometer"   :text "Monitoreo continuo de cadena de frío."}
+   {:title "Puertas y empaques"        :icon "door-open"     :text "Sellado hermético de cámaras."}
+   {:title "Extractores y ventilación" :icon "fan"           :text "Circulación de aire y eliminación de olores."}])
+
+(def mantenimiento-plan
+  [{:que "Vitrina de helados"       :icon "refrigerator"  :como "Verificar temperatura (≤ −18 °C)"           :criterio "Diaria"     :freq-icon "sun"}
+   {:que "Cámaras o congeladores"   :icon "snowflake"     :como "Verificar temperatura"                      :criterio "Diaria"     :freq-icon "sun"}
+   {:que "Puertas de cámara"        :icon "door-open"     :como "Revisar cierre y sellos"                    :criterio "Diaria"     :freq-icon "sun"}
+   {:que "Evaporadores visibles"    :icon "eye"           :como "Revisar acumulación de hielo"               :criterio "Diaria"     :freq-icon "sun"}
+   {:que "Vitrina de helados"       :icon "sparkles"      :como "Limpieza profunda interior"                 :criterio "Semanal"    :freq-icon "calendar-check"}
+   {:que "Cámaras o congeladores"   :icon "spray-can"     :como "Limpieza de estantes"                      :criterio "Semanal"    :freq-icon "calendar-check"}
+   {:que "Empaques de puertas"      :icon "scan-eye"      :como "Limpieza y revisión"                       :criterio "Semanal"    :freq-icon "calendar-check"}
+   {:que "Condensadores visibles"   :icon "wind"          :como "Eliminación de polvo"                      :criterio "Semanal"    :freq-icon "calendar-check"}
+   {:que "Termómetros"              :icon "thermometer"   :como "Verificación contra termómetro patrón"     :criterio "Semanal"    :freq-icon "calendar-check"}
+   {:que "Condensadores"            :icon "wrench"        :como "Limpieza técnica"                          :criterio "Mensual"    :freq-icon "calendar"}
+   {:que "Ventiladores"             :icon "fan"           :como "Revisión de funcionamiento"                :criterio "Mensual"    :freq-icon "calendar"}
+   {:que "Drenajes de cámaras"      :icon "droplets"      :como "Limpieza para evitar hielo"                :criterio "Mensual"    :freq-icon "calendar"}
+   {:que "Sistema eléctrico"        :icon "zap"           :como "Verificación visual de cables"             :criterio "Mensual"    :freq-icon "calendar"}
+   {:que "Puertas de cámara"        :icon "door-open"     :como "Ajuste de bisagras"                       :criterio "Mensual"    :freq-icon "calendar"}
+   {:que "Sist. de refrigeración"   :icon "thermometer"   :como "Revisión de presión de refrigerante"      :criterio "Trimestral" :freq-icon "calendar-range"}
+   {:que "Compresores"              :icon "cog"           :como "Inspección mecánica"                      :criterio "Trimestral" :freq-icon "calendar-range"}
+   {:que "Sensores de temperatura"  :icon "gauge"         :como "Calibración o verificación"               :criterio "Trimestral" :freq-icon "calendar-range"}
+   {:que "Aire acondicionado"       :icon "wind"          :como "Limpieza de filtros"                      :criterio "Trimestral" :freq-icon "calendar-range"}
+   {:que "Sist. de refrigeración"   :icon "wrench"        :como "Mantenimiento completo"                   :criterio "Anual"      :freq-icon "calendar-clock"}
+   {:que "Sistema eléctrico"        :icon "zap"           :como "Inspección técnica"                       :criterio "Anual"      :freq-icon "calendar-clock"}
+   {:que "Termómetros"              :icon "thermometer"   :como "Calibración certificada"                  :criterio "Anual"      :freq-icon "calendar-clock"}])
+
+;; ── Servicio al Cliente ───────────────────────────────────────
+(def servicio-cliente-intro
+  "HELADERÍA VALENTINO es una empresa comprometida con sus clientes, brindándoles productos de excelente calidad y servicio, por considerarlo el activo mayor de la Franquicia. El Franquiciatario debe velar por la entrega al cliente del producto de acuerdo a los lineamientos establecidos por la marca y en una presentación uniforme, atractiva e higiénica.")
+
+(def servicio-cliente-rules
+  [{:title "Recibimiento"
+    :icon  "smile"
+    :text "El recibimiento por parte del personal a los clientes es **«Bienvenido a Valentino»** amablemente."}
+   {:title "Elección libre de sabores"
+    :icon  "ice-cream-cone"
+    :text "Los clientes pueden elegir los sabores de los helados, siropes y toppings libremente. En caso necesario, el dependiente puede recomendar."}
+   {:title "Probar sabores"
+    :icon  "utensils"
+    :text "Al cliente se le debe permitir probar los sabores de los helados libremente."}
+   {:title "Forma de pago"
+    :icon  "credit-card"
+    :text "La norma es que el cliente pague antes de que se le sirva el helado, pero si solicita que sea al revés, se debe hacer a preferencia del cliente."}
+   {:title "Sabores nuevos"
+    :icon  "star"
+    :text "Si hay un sabor nuevo, el dependiente debe indicarlo y ofrecerlo al cliente para probar."}])
+
 (def limpieza-gantt
   {:title "Ciclo calendario de limpieza"
    :days ["L" "M" "X" "J" "V" "S" "D"]
@@ -563,9 +928,9 @@
 (def limpieza-spread-intro
   {:img "ValenAgostoA40of49-scaled.jpg"
    :alt "Helados Valentino — higiene y operación en tienda"
-   :kicker "Desplegar"
-   :title "Amplía esta sección"
-   :subtitle "A la izquierda, vitrina y frecuencias; a la derecha, calendario, registro de ejemplo y consejos."
+   :kicker "Limpieza y Desinfección"
+   :title "Una tienda limpia es una tienda segura"
+   :subtitle "El programa de limpieza de Valentino cubre cada superficie, equipo y utensilio — desde la vitrina de helados hasta la cámara fría, con frecuencias diarias, semanales y mensuales para garantizar la inocuidad del producto."
    :caption "Helados Valentino"})
 
 (def limpieza-registro-meta-hint
@@ -821,3 +1186,86 @@
    {:name "Acrópolis Center"     :addr "Acrópolis Center, Av. Winston Churchill"                         :tel "(829) 245-0909" :hours "L-S 11AM-10PM | D 11AM-8PM"           :lat 18.4660 :lng -69.9480}
    {:name "BlueMall"             :addr "Av. Winston Churchill, BlueMall (4to nivel)"                     :tel "(809) 955-3293" :hours "L-J 11AM-9PM | V-D 10AM-10PM"          :lat 18.4670 :lng -69.9520}
    {:name "Downtown Center"      :addr "Av. Rómulo Betancourt Esq. Núñez de Cáceres"                    :tel "(809) 487-6478" :hours "L-D 10AM-10PM"                         :lat 18.4580 :lng -69.9510}])
+
+;; ── Preparación de productos ──────────────────────────────────
+(def servicio-conos-vasos
+  [{:step "01" :icon "hand" :title "Colocar guante"
+    :text "El dependiente se coloca un guante plástico en la mano izquierda y con esta mano sostiene el cono o el vaso."}
+   {:step "02" :icon "ice-cream-cone" :title "Servir el helado"
+    :text "Con la mano derecha toma el scoop correspondiente al tamaño solicitado (75g, 100g o 130g) y sirve el helado."}])
+
+(def servicio-empaques-llevar
+  [{:step "01" :icon "hand" :title "Colocar guante"
+    :text "El dependiente se coloca un guante plástico en la mano izquierda y con esta mano sostiene el tarro."}
+   {:step "02" :icon "package" :title "Servir y empacar"
+    :text "Con la mano derecha toma la pala y sirve el helado hasta llenar el tarro. Tapa el tarro y lo coloca en la funda correspondiente: pinta en funda blanca pequeña, dos pintas en funda blanca grande."}])
+
+(def servicio-granizado-steps
+  [{:step "01" :icon "hand" :title "Vaso rojo 12 oz"
+    :text "Colocar guante en mano izquierda y sostener un vaso rojo plástico de 12 onzas."}
+   {:step "02" :icon "cup-soda" :title "Servir granizado"
+    :text "Con la mano derecha servir el granizado. Colocar el sorbete dejando un pedazo de papel como cubierta."}])
+
+(def servicio-malteada-steps
+  [{:step "01" :icon "hand" :title "Preparar vaso"
+    :text "Colocar guante en mano izquierda y sostener el vaso del drinkmixer."}
+   {:step "02" :icon "ice-cream-cone" :title "Agregar helado y leche"
+    :text "Servir dos scoops de 130g. Cubrir las dos bolas casi completas de leche entera Parmalat UHT."}
+   {:step "03" :icon "blend" :title "Batir"
+    :text "Colocar en drinkmixer, mover con cuchara para verificar que no quede helado sin batir, volver a batir."}
+   {:step "04" :icon "cup-soda" :title "Servir"
+    :text "Servir en vaso transparente de 12 oz con tapa redonda alta y sorbete, dejando papel como cubierta."}])
+
+(def servicio-fondant-steps
+  [{:step "01" :icon "package-x" :title "Retirar plástico"
+    :text "Retirar el plástico del fondant."}
+   {:step "02" :icon "microwave" :title "Calentar"
+    :text "Colocar en el microondas durante un minuto."}
+   {:step "03" :icon "ice-cream-cone" :title "Agregar helado"
+    :text "Retirar del microondas y colocar encima una bola de 130g de helado."}
+   {:step "04" :icon "sparkles" :title "Decorar"
+    :text "Colocar nata alrededor y un topping encima del helado. Puede prepararse para llevar en caja plástica transparente."}])
+
+(def servicio-crepe-steps
+  [{:step "01" :icon "power" :title "Encender crepera"
+    :text "Encender la crepera a 350 °F. Esperar hasta que encienda el botón «ready». Poner aceite de oliva con brocha."}
+   {:step "02" :icon "utensils" :title "Preparar crepe"
+    :text "Mover la mezcla con cuchara. Tomar una medida y colocarla lentamente en la crepera. Expandir con espátula. Voltear."}
+   {:step "03" :icon "sparkles" :title "Rellenar y decorar"
+    :text "Añadir Nutella o dulce de leche en zigzag. Doblar en cuatro. Transferir a plato. Decorar encima en zigzag."}
+   {:step "04" :icon "ice-cream-cone" :title "Completar"
+    :text "Colocar una bola de 130g de helado encima. Crema chantilly en dos extremos. Añadir topping."}])
+
+(def servicio-banana-split-steps
+  [{:step "01" :icon "banana" :title "Base"
+    :text "Colocar una banana pelada en plato tipo bote."}
+   {:step "02" :icon "ice-cream-cone" :title "Helado y sirope"
+    :text "Colocar tres bolas de 130g de helado encima. Sirope de chocolate, fresa o caramelo en zigzag."}
+   {:step "03" :icon "sparkles" :title "Decorar"
+    :text "Colocar topping encima y crema chantilly en ambos extremos. Puede prepararse para llevar en caja plástica."}])
+
+(def servicio-brownie-steps
+  [{:step "01" :icon "microwave" :title "Calentar brownie"
+    :text "Colocar sin plástico en plato cuadrado. Microondas por 45 segundos. Hacer corte en diagonal."}
+   {:step "02" :icon "ice-cream-cone" :title "Agregar helado"
+    :text "En el espacio del corte colocar dos bolas de helado. Sirope en zigzag."}
+   {:step "03" :icon "sparkles" :title "Decorar"
+    :text "Topping encima del helado. Crema chantilly en dos extremos del plato."}])
+
+;; ── Quejas ────────────────────────────────────────────────────
+(def quejas-intro
+  "En HELADERÍA VALENTINO **«el cliente siempre tiene la razón»**. Los Franquiciatarios y sus empleados deben esforzarse por crear relaciones en las que el cliente nunca se sienta que está equivocado. La capacidad de manejar las quejas es el signo de un gran servicio al cliente.")
+
+(def quejas-estrategia
+  [{:title "Escuchar"
+    :icon  "ear"
+    :text "Dar la ***máxima atención*** al cliente, manteniendo el ***contacto visual*** sin interrupción, hasta que toda su frustración sea ventilada."}
+   {:title "Disculparse"
+    :icon  "heart-handshake"
+    :text "Repetir lo que el cliente ha dicho de manera ***positiva, agradable, segura y tranquila***. Ofrecer una disculpa que transmita ***sinceridad***."}
+   {:title "Resolver"
+    :icon  "check-circle"
+    :text "Preguntar al cliente cómo le gustaría que el problema sea resuelto y tomar ***medidas correctivas inmediatas***."}
+   {:title "Dar gracias"
+    :icon  "thumbs-up"
+    :text "***Dar gracias*** al cliente por traer la queja y utilizar la información para ***mejorar el servicio***. Informar al Franquiciador de todas las quejas."}])

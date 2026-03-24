@@ -267,6 +267,67 @@
    Usage: (fullscreen!)"
   [] (pres/toggle-fullscreen!))
 
+(defn- schedule-print! [msg]
+  (omni/dismiss!)
+  (when msg
+    (println (str "  " msg))
+    (ui/show-toast! msg 2400))
+  (js/requestAnimationFrame
+    (fn [] (.print js/window)))
+  nil)
+
+(defn print-dialog
+  "Open browser print dialog.
+   Usage: (print-dialog)"
+  []
+  (schedule-print! "Opening print dialog..."))
+
+(defn- schedule-pdf-download! []
+  (omni/dismiss!)
+  (if-let [{:keys [org slug]} (:meta @state/current-course)]
+    (do
+      (println "  Exporting PDF...")
+      (ui/show-toast! "Exporting PDF..." 2200)
+      (-> (js/fetch (str "/api/export-pdf?org=" (js/encodeURIComponent org)
+                         "&slug=" (js/encodeURIComponent slug)))
+          (.then (fn [resp]
+                   (if-not (.-ok resp)
+                     (.reject js/Promise (js/Error. (str "HTTP " (.-status resp))))
+                     (let [ctype (or (.get (.-headers resp) "content-type") "")]
+                       (-> (.blob resp)
+                           (.then (fn [blob]
+                                    (if (and (.includes (.toLowerCase ctype) "application/pdf")
+                                             (> (.-size blob) 10000))
+                                      blob
+                                      (.reject js/Promise
+                                        (js/Error.
+                                          (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)")))))))))))
+          (.then (fn [blob]
+                   (let [dl-url (.createObjectURL js/URL blob)
+                         a      (.createElement js/document "a")
+                         name   (str org "-" slug ".pdf")]
+                     (set! (.-href a) dl-url)
+                     (set! (.-download a) name)
+                     (.appendChild (.-body js/document) a)
+                     (.click a)
+                     (.remove a)
+                     (js/setTimeout #(.revokeObjectURL js/URL dl-url) 1200)
+                     (println (str "  Downloaded: " name)))))
+          (.catch (fn [e]
+                    (println (str "  PDF export failed: " (.-message e)))
+                    (ui/show-toast! "PDF export failed. Restart server and try again." 4600)))))
+    (println "  Error: no active course for PDF export"))
+  nil)
+
+(defn pdf-download
+  "Download course PDF directly (no print dialog).
+   Usage: (pdf-download)"
+  []
+  (schedule-pdf-download!))
+
+;; Backward-compatible alias for common typo.
+(def pdf-downlaod pdf-download)
+
 ;; ── OmniREPL ──────────────────────────────────────────────────
 (defn omni!
   "Open the omnibar (Ctrl+G).
@@ -529,6 +590,8 @@
   (doc-mode!)          Exit to document mode
   (toggle-mode!)       Toggle doc ↔ presentation
   (fullscreen!)        Toggle fullscreen
+  (print-dialog)       Open browser print dialog
+  (pdf-download)       Open print dialog / save as PDF
   (omni!)              Open omnibar (Ctrl+G)
   (cmd! \"go 5\")        Run omnibar command
 

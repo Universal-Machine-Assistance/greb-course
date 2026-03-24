@@ -267,7 +267,9 @@
                             (ui/toggle-shortcuts! ui/pres-shortcuts))
                         "i"
                         (do (.preventDefault e) (.stopPropagation e)
-                            (toggle-idx!))
+                            (toggle-idx!)
+                            (when-let [ov (some-> @state/pres-state :overlay)]
+                              (.toggle (.-classList ov) "pres-bar-visible")))
                         "y"
                         (do (.preventDefault e) (.stopPropagation e)
                             (if @state/canvas-zoom-active?
