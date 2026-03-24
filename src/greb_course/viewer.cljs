@@ -56,6 +56,19 @@
                     (js/console.error "PDF export failed" e)))))
     (ui/show-toast! "No active course" 2200)))
 
+(defn- sync-toolbar-offset! [toolbar-el]
+  (let [root (.-documentElement js/document)
+        apply-h! (fn []
+                   (let [h (if toolbar-el (.-offsetHeight toolbar-el) 56)]
+                     (.setProperty (.-style root) "--toolbar-h" (str h "px"))))]
+    (apply-h!)
+    (js/requestAnimationFrame apply-h!)
+    (js/setTimeout apply-h! 80)
+    (js/setTimeout apply-h! 260)
+    (when (exists? js/ResizeObserver)
+      (let [ro (js/ResizeObserver. (fn [_] (apply-h!)))]
+        (.observe ro toolbar-el)))))
+
 (defn toolbar [indicator toggle-toc! theme]
   (let [logo      (get theme :logo)
         brand     (get theme :brand-name "")
@@ -110,7 +123,19 @@
         _          (reset! state/built-mobile? mobile?)
         groups     (if mobile?
                      (mapv vector all-pages)
-                     (partition 2 2 nil all-pages))
+                     (if (seq all-pages)
+                       (vec (concat [[(first all-pages)]]
+                                    (partition 2 2 nil (rest all-pages))))
+                       []))
+        spread-first-pages
+        (loop [gs groups
+               next-page 1
+               out []]
+          (if (seq gs)
+            (let [g (first gs)
+                  cnt (count (keep identity g))]
+              (recur (rest gs) (+ next-page cnt) (conj out next-page)))
+            out))
         spread-ids (mapv #(.-id (first %)) groups)
         id->spread (into {} (mapcat (fn [[i group]]
                                        (keep (fn [pg] (when pg [(.-id pg) i])) group))
@@ -128,7 +153,7 @@
                          (map-indexed
                            (fn [pi pg]
                              (when pg
-                               (let [page-num (inc (if mobile? si (+ (* si 2) pi)))
+                               (let [page-num (+ (nth spread-first-pages si 1) pi)
                                      side     (if (zero? pi) :left :right)]
                                  {:el    (d/el :button {:class "spread-dot"
                                                         :data-page (str page-num)
@@ -149,7 +174,9 @@
         ;; Build navigator with empty dots (we handle dot clicks ourselves)
         spread-dots (mapv (fn [_] (d/el :span {:class "spread-dot-hidden"})) (range n))
         {:keys [go! nav-state]} (nav/build-navigator spreads spread-ids spread-dots indicator prev-btn next-btn init-idx
-                                                    :total-pages total-pages :mobile? mobile?)
+                                                    :total-pages total-pages
+                                                    :mobile? mobile?
+                                                    :spread-first-pages spread-first-pages)
         ;; Update per-page dots — highlight only ONE page, not the whole spread
         active-page (atom nil) ;; tracks the single active dot element
         update-page-dots! (fn [spread-idx side]
@@ -222,7 +249,8 @@
     (doseq [s spreads] (.remove (.-classList s) "active"))
     (.add (.-classList (nth spreads init-idx)) "active")
     (update-page-dots! init-idx :left)
-    (let [first-pg (inc (if mobile? init-idx (* init-idx 2)))]
+    (let [first-pg (or (nth spread-first-pages init-idx nil)
+                       (inc (if mobile? init-idx (* init-idx 2))))]
       (set! (.-textContent indicator) (str first-pg " / " total-pages)))
     (set! (.-disabled prev-btn) (= init-idx 0))
     (set! (.-disabled next-btn) (= init-idx (dec n)))
@@ -280,8 +308,10 @@
                 (.preventDefault e)
                 (nav/set-hash! target-id)
                 (go! idx nil))))))
-      (d/el :div {}
-            overlay panel
-            (toolbar indicator toggle! theme)
-            reader-el
-            doc-hl))))
+      (let [tb (toolbar indicator toggle! theme)]
+        (sync-toolbar-offset! tb)
+        (d/el :div {}
+              overlay panel
+              tb
+              reader-el
+              doc-hl)))))

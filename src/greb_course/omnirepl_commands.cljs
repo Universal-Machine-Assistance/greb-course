@@ -10,11 +10,11 @@
 (defn build-entries []
   (when-let [{:keys [toc-groups id->spread]} @state/current-nav]
     (vec
-      (for [{:keys [label entries]} toc-groups
-            {:keys [id label page icon]} entries
+      (for [{group-label :label group-entries :entries} toc-groups
+            {:keys [id label page icon]} group-entries
             :when (get id->spread id)]
         {:id id :label label :page page :icon icon
-         :type :page :section label :spread-idx (get id->spread id)}))))
+         :type :page :section group-label :spread-idx (get id->spread id)}))))
 
 (defn build-course-entries []
   (vec
@@ -56,35 +56,39 @@
 (defn go-home! []
   (set! (.-location js/window) "/"))
 
-(defn download-pdf! []
-  (if-let [{:keys [org slug]} (:meta @state/current-course)]
-    (-> (js/fetch (str "/api/export-pdf?org=" (js/encodeURIComponent org)
-                       "&slug=" (js/encodeURIComponent slug)))
-        (.then (fn [resp]
-                 (if-not (.-ok resp)
-                   (.reject js/Promise (js/Error. (str "HTTP " (.-status resp))))
-                   (let [ctype (or (.get (.-headers resp) "content-type") "")]
-                     (-> (.blob resp)
-                         (.then (fn [blob]
-                                  (if (and (.includes (.toLowerCase ctype) "application/pdf")
-                                           (> (.-size blob) 10000))
-                                    blob
-                                    (.reject js/Promise
-                                      (js/Error.
-                                        (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)")))))))))))
-        (.then (fn [blob]
-                 (let [dl-url (.createObjectURL js/URL blob)
-                       a      (.createElement js/document "a")
-                       name   (str org "-" slug ".pdf")]
-                   (set! (.-href a) dl-url)
-                   (set! (.-download a) name)
-                   (.appendChild (.-body js/document) a)
-                   (.click a)
-                   (.remove a)
-                   (js/setTimeout #(.revokeObjectURL js/URL dl-url) 1200)
-                   (ui/show-toast! (str "Downloaded: " name) 2200))))
-        (.catch #(ui/show-toast! "PDF export failed. Restart server and try again." 5000)))
-    (ui/show-toast! "No active course" 2200)))
+(defn download-pdf!
+  ([] (download-pdf! nil))
+  ([pages]
+   (if-let [{:keys [org slug]} (:meta @state/current-course)]
+     (let [url (str "/api/export-pdf?org=" (js/encodeURIComponent org)
+                    "&slug=" (js/encodeURIComponent slug)
+                    (when pages (str "&pages=" (js/encodeURIComponent pages))))]
+       (-> (js/fetch url)
+           (.then (fn [resp]
+                    (if-not (.-ok resp)
+                      (.reject js/Promise (js/Error. (str "HTTP " (.-status resp))))
+                      (let [ctype (or (.get (.-headers resp) "content-type") "")]
+                        (-> (.blob resp)
+                            (.then (fn [blob]
+                                     (if (and (.includes (.toLowerCase ctype) "application/pdf")
+                                              (> (.-size blob) 1000))
+                                       blob
+                                       (.reject js/Promise
+                                         (js/Error.
+                                           (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)")))))))))))
+           (.then (fn [blob]
+                    (let [dl-url (.createObjectURL js/URL blob)
+                          a      (.createElement js/document "a")
+                          name   (str org "-" slug (when pages (str "-p" pages)) ".pdf")]
+                      (set! (.-href a) dl-url)
+                      (set! (.-download a) name)
+                      (.appendChild (.-body js/document) a)
+                      (.click a)
+                      (.remove a)
+                      (js/setTimeout #(.revokeObjectURL js/URL dl-url) 1200)
+                      (ui/show-toast! (str "Downloaded: " name) 2200))))
+           (.catch #(ui/show-toast! "PDF export failed. Restart server and try again." 5000))))
+     (ui/show-toast! "No active course" 2200))))
 
 ;; ── Command entries ─────────────────────────────────────────
 
@@ -96,7 +100,8 @@
    {:id "zoom"   :label "zoom <n>"    :desc "Set zoom level"        :type :command}
    {:id "pages"  :label "pages"       :desc "Show page count"       :type :command}
    {:id "print-dialog" :label "print-dialog" :desc "Open browser print dialog" :type :command}
-   {:id "pdf-download" :label "pdf-download" :desc "Open print dialog for Save as PDF" :type :command}
+   {:id "pdf-download" :label "pdf-download" :desc "Export full PDF"                    :type :command}
+   {:id "pdf-pages"    :label "pdf-pages <range>" :desc "Export specific pages (e.g. 1, 1-3, 2,5)" :type :command}
    {:id "edit"   :label "edit <prompt>" :desc "Edit page (open editor, or with LLM prompt)" :type :command}
    {:id "vim"    :label "vim"         :desc "Enable Vim keybindings in editor"  :type :command}
    {:id "novim"  :label "novim"       :desc "Disable Vim keybindings in editor" :type :command}
@@ -166,6 +171,13 @@
       (do (ui/show-toast! "Exporting PDF..." 1800)
           (download-pdf!)
           true)
+
+      :let [pdf-pages-match (re-matches #"(?i)\(pdf-pages\s+(.+)\)" s)]
+      pdf-pages-match
+      (let [range-str (str (nth pdf-pages-match 1))]
+        (ui/show-toast! (str "Exporting pages " range-str "...") 1800)
+        (download-pdf! range-str)
+        true)
 
       (re-matches #"\(edit\)" s)   (do (editor/edit!) true)
 
@@ -284,6 +296,13 @@
       (do (ui/show-toast! "Exporting PDF..." 1800)
           (download-pdf!)
           true)
+
+      :let [pdf-pg-match (re-matches #"(?i)pdf-pages\s+(.+)" s)]
+      pdf-pg-match
+      (let [range-str (str (nth pdf-pg-match 1))]
+        (ui/show-toast! (str "Exporting pages " range-str "...") 1800)
+        (download-pdf! range-str)
+        true)
 
       (re-matches #"(?i)zoom\s+([\d.]+)" s)
       (let [[_ n] (re-matches #"(?i)zoom\s+([\d.]+)" s)]

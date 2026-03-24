@@ -15,12 +15,13 @@
   (.replaceState js/history nil "" (str "#" hash)))
 
 (defn build-navigator [spreads spread-ids dots indicator prev-btn next-btn initial-idx
-                       & {:keys [total-pages mobile?]}]
+                       & {:keys [total-pages mobile? spread-first-pages]}]
   (let [n     (count spreads)
         tp    (or total-pages n)
         mob?  (boolean mobile?)
         pg-label (fn [spread-idx]
-                   (let [first-pg (inc (if mob? spread-idx (* spread-idx 2)))]
+                   (let [first-pg (or (nth spread-first-pages spread-idx nil)
+                                      (inc (if mob? spread-idx (* spread-idx 2))))]
                      (str first-pg " / " tp)))
         state (atom (max 0 (min (dec n) (or initial-idx 0))))
         go!   (fn [i dir]

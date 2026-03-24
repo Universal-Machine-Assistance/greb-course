@@ -10,6 +10,7 @@
             [greb-course.templates.risk          :as risk]
             [greb-course.templates.glossary      :as glossary]
             [greb-course.templates.credits       :as credits]
+            [greb-course.templates.legal         :as legal]
             [greb-course.templates.full-image    :as full-image]
             [greb-course.templates.gn-page       :as gn-page]
             [greb-course.templates.gn-cover      :as gn-cover]
@@ -28,6 +29,7 @@
    :glossary-index glossary/render-index
    :glossary-detail glossary/render-detail
    :credits        credits/render
+   :legal          legal/render
    :full-image     full-image/render
    ;; Greb-nue templates
    :gn-page        gn-page/render
@@ -40,12 +42,12 @@
 (defn render-page
   "Look up template by keyword, call (render data page-num theme).
    If data contains :section-tag, a vertical sidebar tab is prepended.
-   Even pages get left tab, odd pages get right tab (book spread layout)."
+   Even pages (left in spread) get left tab, odd pages (right) get right tab."
   [template-key data page-num theme]
   (if-let [render-fn (get templates template-key)]
     (let [el (render-fn data page-num theme)]
       (when-let [{:keys [label color]} (:section-tag data)]
-        (let [side (if (even? page-num) "right" "left")]
+        (let [side (if (even? page-num) "left" "right")]
           (.add (.-classList el) "page--has-section-tab" (str "section-tab-side--" side))
           (.prepend el
             (d/el :div {:class (str "section-tab section-tab--" (or color "default")

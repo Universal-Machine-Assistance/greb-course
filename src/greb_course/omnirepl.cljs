@@ -88,18 +88,18 @@
                            :commands (render-rows! results-el @filtered @selected commit-cmd! command-row)
                            (render-rows! results-el @filtered @selected commit-page! page-row)))
         commit!        (fn []
-                         (let [val (.-value input-el)]
+                        (let [val (str/trim (.-value input-el))]
                            (cond
                              (and (= @mode :courses) (pos? (count @filtered)))
                              (if (= @selected 0)
                                (do (sfx/play! :pop) (cmds/go-home!) (dismiss!))
                                (commit-course! (dec @selected)))
-                             (= @mode :commands)
-                             (when-let [entry (nth @filtered @selected nil)]
-                               (set! (.-value input-el) (str (:id entry) " "))
-                               (.focus input-el) (@update!*))
                              (and (> (count val) 0) (cmds/eval-command val))
                              (do (sfx/play! :pop) (dismiss!))
+                            (= @mode :commands)
+                            (when-let [entry (nth @filtered @selected nil)]
+                              (set! (.-value input-el) (str (:id entry) " "))
+                              (.focus input-el) (@update!*))
                              :else (commit-page! @selected))))
         update!        (fn []
                          (let [q (.-value input-el)
@@ -192,11 +192,11 @@
                                (if (= @selected 0)
                                  (do (sfx/play! :pop) (cmds/go-home!) (ui/show-toast! "Catálogo" 1200))
                                  (commit-course! (dec @selected)))
+                               (and (pos? (count val)) (try-eval-command! val))
+                               (do (sfx/play! :pop) (set! (.-value input-el) "") (@update!*))
                                (= @mode :commands)
                                (when-let [entry (nth @filtered @selected nil)]
                                  (set! (.-value input-el) (str (:id entry) " ")) (@update!*))
-                               (and (pos? (count val)) (try-eval-command! val))
-                               (do (sfx/play! :pop) (set! (.-value input-el) "") (@update!*))
                                :else (commit-page! @selected))))
           update!        (fn []
                            (let [q (.-value input-el)

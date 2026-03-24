@@ -2,13 +2,12 @@
 
 /* ── Reader shell (full-viewport, one spread at a time) ─────── */
 .reader {
-  position: fixed; inset: 56px 0 0 0; /* below toolbar */
+  position: fixed; inset: 0; /* always full viewport, toolbar floats over */
   --reader-scale: 1;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   background: var(--paper);
   overflow: hidden;
-  transition: top 0.28s ease;
 }
 .reader.text-scaled {
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
@@ -19,9 +18,7 @@ html.doc-chrome-idle:not(.presenting) .toolbar {
   opacity: 0;
   pointer-events: none;
 }
-html.doc-chrome-idle:not(.presenting) .reader {
-  top: 0 !important;
-}
+/* reader always at top:0, no shift needed */
 html.doc-chrome-idle:not(.presenting) .nav-btn {
   opacity: 0;
   pointer-events: none;
@@ -456,70 +453,52 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   position: absolute; inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(255,255,255,.92) 0%,
-    rgba(255,255,255,.7) 40%,
-    rgba(255,255,255,.15) 70%,
+    rgba(255,255,255,.55) 0%,
+    rgba(255,255,255,.3) 35%,
+    rgba(255,255,255,.05) 65%,
     transparent 100%
   );
 }
 .portada-body {
   position: relative; z-index: 1;
-  display: flex; flex-direction: column; justify-content: flex-start;
-  padding: .6in .6in .4in;
+  display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;
+  gap: .22rem;
+  padding: .22in .52in .34in;
   height: 100%;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
 }
-.portada-logos {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  width: 296px;
-  height: 183px;
-  max-width: calc(100% - 1.2rem);
-  margin: 0 auto .85rem;
-  padding: .65rem 1.35rem;
-  border-radius: 999px;
-  background: rgba(78, 111, 131, 1);
-  border: 1px solid rgba(10, 3, 0, 0.65);
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
+.portada-copy {
+  width: fit-content;
+  max-width: 62%;
+  padding: 17px .34rem;
+  margin: 26px 5px;
+  border-radius: .24rem;
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
-/* Wordmark: centered; contraste alto cuando el PNG es claro (ej. *BLANCO* manuales) */
-.portada-logo {
-  width: 289px;
-  height: 165px;
-  max-width: min(520px, 92%);
-  object-fit: contain;
-  display: block;
-  border: none;
-  border-image: none;
-  background: unset;
-  background-color: unset;
-  background-clip: unset;
-  -webkit-background-clip: unset;
-  color: rgba(28, 28, 30, 1);
-  box-shadow: none;
-  border-radius: 3px;
-}
-.portada-logo-secondary { height: 36px; width: auto; object-fit: contain; }
 .portada-title {
-  font-size: 1.9rem;
-  color: var(--brand-primary, var(--ink));
+  font-size: 2rem;
+  color: color-mix(in srgb, var(--brand-primary, var(--ink)) 92%, #3f1f12);
   line-height: 1.1;
-  max-width: 65%;
+  max-width: 100%;
+  text-shadow: 0 1px 0 rgba(255,255,255,.55);
 }
 .portada-sub {
   font-family: var(--font-head); font-size: .8rem; font-weight: 500;
-  color: var(--ink-2);
+  color: color-mix(in srgb, var(--ink-2) 92%, #000);
   margin-top: .5rem; letter-spacing: .03em;
-  max-width: 55%;
+  max-width: 100%;
+  text-shadow: 0 1px 0 rgba(255,255,255,.45);
 }
 .portada-bullets {
   list-style: none;
   margin: .6rem 0 0;
   padding: 0;
   display: flex; flex-direction: column; gap: .35rem;
-  max-width: 55%;
+  max-width: 100%;
 }
 .portada-bullet {
   font-family: var(--font-head); font-size: .8rem; font-weight: 500;
@@ -4922,9 +4901,7 @@ html.ui-hidden * { cursor: none !important; }
 html.ui-hidden .toolbar {
   opacity: 0 !important; pointer-events: none !important;
 }
-html.ui-hidden .reader {
-  top: 0 !important;
-}
+/* reader always at top:0, no shift needed */
 html.ui-hidden .nav-btn,
 html.ui-hidden .spread-dots,
 html.ui-hidden .spread-indicator {
@@ -7152,6 +7129,68 @@ html.ui-hidden .ui-status-badge { display: none; }
   text-align: center;
 }
 
+/* ── Legal page ────────────────────────────────────────────────── */
+.legal-page {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+.legal-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .42rem;
+  padding: .58in .65in .36in;
+}
+.legal-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.12;
+  color: var(--ink-1);
+}
+.legal-subtitle {
+  margin: 0;
+  font-size: .67rem;
+  color: var(--ink-2);
+}
+.legal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  padding: .35rem .42rem;
+  border: 1px solid rgba(0,0,0,.11);
+  border-radius: .2rem;
+  background: rgba(0,0,0,.02);
+}
+.legal-meta-line {
+  margin: 0;
+  font-size: .62rem;
+  line-height: 1.36;
+  color: var(--ink-2);
+}
+.legal-version {
+  color: var(--brand-primary, var(--val-orange));
+  font-weight: 700;
+}
+.legal-note {
+  margin: .12rem 0 0;
+  font-size: .61rem;
+  line-height: 1.36;
+  color: var(--ink-1);
+}
+.legal-list {
+  margin: .08rem 0 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .14rem;
+}
+.legal-list li {
+  font-size: .59rem;
+  line-height: 1.34;
+  color: var(--ink-2);
+}
+
 /* Left-column illustration */
 .gd-left-illus {
   display: flex;
@@ -7430,8 +7469,8 @@ html.ui-hidden .ui-status-badge { display: none; }
   }
 
   /* ⑫b Solid backgrounds — avoid dark/grey boxes from gradients in PDF */
-  .portada-page { background: #fff !important; }
-  .portada-body { background: #fff !important; }
+  .portada-page { background: transparent !important; }
+  .portada-body { background: transparent !important; }
   #portada .portada-hero,
   #portada .portada-hero-img {
     display: block !important;
@@ -7440,7 +7479,7 @@ html.ui-hidden .ui-status-badge { display: none; }
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  .portada-overlay { background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,.8) 85%, #fff 100%) !important; }
+  .portada-overlay { background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,.3) 80%, rgba(255,255,255,.5) 100%) !important; }
   .hygiene-page,
   #agrastrip-historia,
   #agrastrip,
@@ -7450,6 +7489,60 @@ html.ui-hidden .ui-status-badge { display: none; }
   .hygiene-hero,
   .handwash-head {
     background: var(--section-color, var(--brand-primary, #00529b)) !important;
+  }
+  /* Header color parity in PDF */
+  .intro-header,
+  .hygiene-hero,
+  .handwash-head,
+  .limpieza-header,
+  .section-bar.mission-bar {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .intro-header {
+    background: var(--section-tab-bg, var(--brand-primary, #c44b1a)) !important;
+    color: #fff !important;
+  }
+  .limpieza-header {
+    background: var(--section-tab-bg, var(--brand-primary, #c44b1a)) !important;
+  }
+  .intro-header-title,
+  .intro-eyebrow,
+  .intro-header .stat-num,
+  .intro-header .stat-label {
+    color: #fff !important;
+  }
+  .hygiene-hero,
+  .handwash-head,
+  .limpieza-header {
+    color: #fff !important;
+  }
+  /* Propagate section tab colors to headers in print */
+  .section-tab--presentacion  ~ .page-body .intro-header,
+  .section-tab--presentacion  ~ .page-body .limpieza-header { --section-tab-bg: #e4602c !important; }
+  .section-tab--higiene       ~ .page-body .intro-header,
+  .section-tab--higiene       ~ .page-body .limpieza-header { --section-tab-bg: #2e86ab !important; }
+  .section-tab--recepcion     ~ .page-body .intro-header,
+  .section-tab--recepcion     ~ .page-body .limpieza-header { --section-tab-bg: #7b2d8e !important; }
+  .section-tab--limpieza      ~ .page-body .intro-header,
+  .section-tab--limpieza      ~ .page-body .limpieza-header { --section-tab-bg: #8a9a2a !important; }
+  .section-tab--mantenimiento ~ .page-body .intro-header,
+  .section-tab--mantenimiento ~ .page-body .limpieza-header { --section-tab-bg: #0097a7 !important; }
+  .section-tab--servicio      ~ .page-body .intro-header,
+  .section-tab--servicio      ~ .page-body .limpieza-header { --section-tab-bg: #ed9e45 !important; }
+  .section-tab--riesgos       ~ .page-body .intro-header,
+  .section-tab--riesgos       ~ .page-body .limpieza-header { --section-tab-bg: #c62828 !important; }
+  .section-tab--glosario      ~ .page-body .intro-header,
+  .section-tab--glosario      ~ .page-body .limpieza-header { --section-tab-bg: #546e7a !important; }
+  .section-tab--creditos      ~ .page-body .intro-header,
+  .section-tab--creditos      ~ .page-body .limpieza-header { --section-tab-bg: #5d4037 !important; }
+  .mission-bar h2,
+  .section-bar.mission-bar h2 {
+    color: var(--section-color, var(--brand-primary, #00529b)) !important;
+  }
+  .mission-bar > .icon,
+  .section-bar.mission-bar > .icon {
+    color: var(--section-color, var(--brand-primary, #00529b)) !important;
   }
   .hygiene-hero::after,
   .handwash-head::after {
@@ -7488,6 +7581,20 @@ html.ui-hidden .ui-status-badge { display: none; }
   .toc-card { background: #fef8ed !important; }
   .toc-card:nth-child(2n) { background: #f0f3e5 !important; }
   .toc-card:nth-child(3) { background: #fce8d8 !important; }
+  /* TOC image cards: linearize layout for PDF (no absolute positioning) */
+  .toc-card--img { overflow: visible !important; }
+  .toc-card-media { overflow: visible !important; }
+  .toc-card--img .toc-card-img-wrap {
+    position: relative !important;
+    inset: auto !important;
+    height: 5rem !important;
+    overflow: hidden !important;
+  }
+  .toc-card-copy {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255,255,255,.92) !important;
+  }
   .index-entry:hover { background: none !important; }
   .toc-section-link:hover { background: none !important; }
   .product-timeline { background: #fff !important; }
@@ -7501,11 +7608,7 @@ html.ui-hidden .ui-status-badge { display: none; }
   }
   .full-image-page { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .full-image-overlay { background: linear-gradient(0deg, rgba(0,0,0,.7), rgba(0,0,0,.3) 60%, transparent) !important; }
-  .limpieza-header { background: rgba(0,0,0,.03) !important; }
   .image-card-overlay { background: linear-gradient(0deg, rgba(0,0,0,.65), transparent) !important; }
-  .intro-header {
-    background: var(--brand-primary, #c44b1a) !important;
-  }
   .intro-header::before,
   .intro-header::after { display: none !important; }
   .intro-header-stat { background: #f0e6e0 !important; }
@@ -7578,13 +7681,13 @@ html.ui-hidden .ui-status-badge { display: none; }
   .page-body { padding: .4in .5in .2in !important; gap: .4rem !important; }
   .hygiene-page .page-body { padding: .42in .5in .22in !important; gap: .75rem !important; }
   /* PDF artifact fix: avoid grey rectangles from shadow rasterization */
-  .page :is(.hygiene-block, .duo-panel, .info-card, .visitor-zone, .wash-step, .stat-card, .mission-card, .product-card, .product-showcase-feat, .toc-card, .image-card, .highlight-bar, .risk-cause, .gd-card, .gd-feat-img-wrap, .gd-hero-diagram) {
+  .page :is(.hygiene-block, .duo-panel, .info-card, .visitor-zone, .wash-step, .stat-card, .mission-card, .product-card, .product-showcase-feat, .toc-card, .image-card, .highlight-bar, .risk-cause, .gd-card, .gd-feat-img-wrap, .gd-hero-diagram, .risk-fam-bola-card) {
     box-shadow: none !important;
   }
   .hygiene-block,
   .duo-panel {
-    background: rgba(255,255,255,.82) !important;
-    border: 1px solid rgba(0,0,0,.05) !important;
+    background: #fff !important;
+    border: none !important;
     box-shadow: none !important;
   }
   .info-card,
@@ -7598,6 +7701,17 @@ html.ui-hidden .ui-status-badge { display: none; }
   .highlight-bar {
     background: rgba(243, 156, 18, .1) !important;
     border: 1px solid rgba(243, 156, 18, .25) !important;
+  }
+  .risk-fam-bola-card {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .toc-card-copy {
+    background: rgba(255,255,255,.95) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
   }
   .page-bg-photo { opacity: .3 !important; }
 
@@ -8025,26 +8139,57 @@ html.ui-hidden .ui-status-badge { display: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: .5in .6in;
+  padding: .25in .5in 1.15in;
   box-sizing: border-box;
 }
 #limpieza-panos-colores .full-image-photo {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;
+  object-position: center center;
   border-radius: .3rem;
   box-shadow: 0 4px 20px rgba(0,0,0,.08);
 }
 #limpieza-panos-colores .full-image-caption {
   position: absolute;
-  bottom: .35in;
-  left: 0; right: 0;
+  bottom: .28in;
+  left: .55in;
+  right: .55in;
   text-align: center;
   font-size: .58rem;
-  color: var(--ink-2);
-  font-style: italic;
-  padding: 0 .6in;
+  line-height: 1.3;
+  color: #1f2937;
+  font-style: normal;
+  font-weight: 600;
+  background: rgba(255,255,255,.86);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: .22rem;
+  padding: .14rem .22rem;
+}
+#limpieza-panos-colores .full-image-overlay {
+  padding: .28in .55in .22in;
+  background: transparent;
+}
+#limpieza-panos-colores .full-image-title {
+  font-size: 1rem;
+  line-height: 1.1;
+  color: #f97316;
+  text-shadow: 0 1px 6px rgba(0,0,0,.35);
+}
+#limpieza-panos-colores .full-image-subtitle {
+  max-width: 85%;
+  font-size: .6rem;
+  line-height: 1.3;
+  opacity: .98;
+  color: #000;
+}
+#limpieza-panos-colores .page-footer {
+  background: #fff;
+  color: inherit;
+  border-top: 1px solid rgba(0,0,0,.07);
+}
+#limpieza-panos-colores .page-footer-brand {
+  color: var(--ink-3);
 }
 
 /* ── Page 35: Postres — photo moved to p.36 (Banana Split) ─── */
@@ -8301,6 +8446,15 @@ html.ui-hidden .ui-status-badge { display: none; }
   line-height: 1.28;
   margin-top: .1rem;
 }
+/* Move caption above the bottom image */
+#limpieza-vitrina .hygiene-body > div:has(> .image-block) > .image-block:last-child {
+  display: flex;
+  flex-direction: column-reverse;
+}
+#limpieza-vitrina .hygiene-body > div:has(> .image-block) > .image-block:last-child .image-block-caption {
+  margin-top: 0;
+  margin-bottom: .08rem;
+}
 #limpieza-vitrina .hygiene-block { padding: .22rem .32rem; }
 #limpieza-vitrina .mission-bar {
   margin: 0 0 .08rem;
@@ -8536,25 +8690,27 @@ html.ui-hidden .ui-status-badge { display: none; }
 #limpieza-basurero .mission-bar { margin-bottom: .1rem; }
 
 /* ── Page 32: Servicio Preparación — compact ───────────────── */
-#servicio-cliente .page-body { padding: .45in .48in .22in; gap: .6rem; }
-#servicio-cliente .info-card-title { font-size: .6rem; }
-#servicio-cliente .info-card-text { font-size: .52rem; line-height: 1.3; }
-#servicio-cliente .mini-info-grid { gap: .18rem; }
-#servicio-cliente .info-card { padding: .2rem .25rem; }
-#servicio-cliente .mission-bar { margin-bottom: .06rem; }
-#servicio-cliente .mission-bar h2 { font-size: .75rem; }
-#servicio-cliente .hygiene-block { padding: .2rem .3rem; }
-#servicio-cliente .intro-prose-p { font-size: .58rem; line-height: 1.35; }
+#servicio-cliente .page-body { padding: .35in .45in .18in; gap: .35rem; }
+#servicio-cliente .info-card-title { font-size: .56rem; }
+#servicio-cliente .info-card-text { font-size: .48rem; line-height: 1.25; }
+#servicio-cliente .mini-info-grid { gap: .14rem; }
+#servicio-cliente .info-card { padding: .15rem .22rem; }
+#servicio-cliente .mission-bar { margin-bottom: .04rem; }
+#servicio-cliente .mission-bar h2 { font-size: .7rem; }
+#servicio-cliente .hygiene-block { padding: .15rem .25rem; }
+#servicio-cliente .intro-prose-p { font-size: .52rem; line-height: 1.28; margin-bottom: .1rem; }
 #servicio-cliente .image-card {
-  aspect-ratio: 16/10;
-  min-height: 220px;
-  width: 723px;
-  margin-top: 14px;
-  margin-bottom: 14px;
+  aspect-ratio: 16/9;
+  min-height: 180px;
+  width: 100%;
+  margin-top: .1rem;
+  margin-bottom: 0;
 }
 #servicio-cliente .image-grid { width: 100%; border-radius: .35rem; overflow: hidden; }
-#servicio-cliente .image-card-overlay { border-radius: .35rem; width: 743px; }
-#servicio-cliente .image-card-title { font-size: .7rem; }
+#servicio-cliente .image-card-overlay { border-radius: .35rem; width: 100%; }
+#servicio-cliente .image-card-title { font-size: .65rem; }
+#servicio-cliente .block-header { padding: .12rem .2rem; }
+#servicio-cliente .block-header h2 { font-size: .68rem; }
 
 #servicio-preparacion .page-body { padding: .45in .48in .2in; gap: .6rem; }
 #servicio-preparacion .hygiene-block {

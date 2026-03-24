@@ -56,7 +56,7 @@
 
 ;; ── Uniform checklist ─────────────────────────────────────────
 
-(defn- ck-cell [v row-id i]
+(defn- ck-cell [row-id i v]
   (cond
     (= v :prohibido)
     (d/el :span {:class "uniform-ck-cell uniform-ck-cell--prohibido"} "PROHIBIDO")
@@ -68,16 +68,17 @@
     :else
     (d/el :span {:class "uniform-ck-cell uniform-ck-cell--na"} "—")))
 
-(defn- ck-row [has-qty? tpl zones {:keys [item note] :as row}]
-  (let [row-id (str "uck-" (hash item))
-        cells  (into [(d/el :span {:class "uniform-ck-item"}
-                            (when-let [ic (:icon row)] (d/ic ic "uniform-ck-item-icon"))
-                            item)]
-                     (concat
-                      (when has-qty?
-                        [(d/el :span {:class "uniform-ck-cell uniform-ck-cell--qty"}
-                               (or (:qty row) "—"))])
-                      (map-indexed (partial ck-cell row-id) zones)))
+(defn- ck-row [has-qty? tpl zones row-idx {:keys [item note] :as row}]
+  (let [row-id    (str "uck-" row-idx)
+        row-zones (or (:zones row) (vec (repeat (count zones) true)))
+        cells     (into [(d/el :span {:class "uniform-ck-item"}
+                               (when-let [ic (:icon row)] (d/ic ic "uniform-ck-item-icon"))
+                               item)]
+                        (concat
+                         (when has-qty?
+                           [(d/el :span {:class "uniform-ck-cell uniform-ck-cell--qty"}
+                                  (or (:qty row) "—"))])
+                         (map-indexed (partial ck-cell row-id) row-zones)))
         row-el (apply d/el :div {:class "uniform-ck-row"
                                  :style (str "grid-template-columns:" tpl)}
                       cells)]
@@ -98,7 +99,7 @@
                         (when has-qty? [(d/el :span {:class "uniform-ck-hdr-cell"} "Cant.")])
                         (mapv #(d/el :span {:class "uniform-ck-hdr-cell"} %) zones))))
           (apply d/el :div {:class "uniform-ck-body"}
-                 (mapv (partial ck-row has-qty? tpl zones) rows)))))
+                 (map-indexed (fn [i row] (ck-row has-qty? tpl zones i row)) rows)))))
 
 ;; ── Section bar / Omnibar ─────────────────────────────────────
 

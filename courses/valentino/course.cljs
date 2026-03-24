@@ -2,6 +2,17 @@
   "Full course definition map for Valentino food hygiene manual."
   (:require [valentino.content :as c]))
 
+(defn- shift-page-after-cover
+  "Shift static index page numbers by +1 for pages after cover."
+  [entry]
+  (update entry :page #(if (> % 1) (inc %) %)))
+
+(def ^:private index-entries*
+  (mapv shift-page-after-cover c/index-entries))
+
+(def ^:private page-by-id*
+  (into {} (map (juxt :id :page) index-entries*)))
+
 (def course
   {:meta  {:id          "valentino"
            :org         "valentino"
@@ -10,6 +21,7 @@
            :description "Manual de higiene y seguridad alimentaria para las tiendas de Helados Valentino."
            :category    "Seguridad Alimentaria"
            :tags        ["higiene" "helados" "HACCP"]
+           :version     "000.001"
            :lang        :es
            :i18n-overrides {}}
 
@@ -27,65 +39,80 @@
                     :body    "DM Sans"}}
 
    :toc [{:label "Presentación"
-          :entries (subvec c/index-entries 0 5)}
+          :entries (subvec index-entries* 0 5)}
          {:label "Higiene del Personal"
-          :entries (subvec c/index-entries 5 10)}
+          :entries (subvec index-entries* 5 10)}
          {:label "Recepción y Almacenamiento"
-          :entries (subvec c/index-entries 10 14)}
+          :entries (subvec index-entries* 10 14)}
          {:label "Limpieza y Desinfección"
-          :entries (subvec c/index-entries 14 28)}
+          :entries (subvec index-entries* 14 28)}
          {:label "Mantenimiento"
-          :entries (subvec c/index-entries 28 30)}
+          :entries (subvec index-entries* 28 30)}
          {:label "Servicio al Cliente"
-          :entries (subvec c/index-entries 30 35)}
+          :entries (subvec index-entries* 30 35)}
          {:label "Riesgos"
-          :entries (subvec c/index-entries 35 41)}
+          :entries (subvec index-entries* 35 41)}
          {:label "Glosario"
-          :entries (into [(nth c/index-entries 41)]
-                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 42 i)})
+          :entries (into [(nth index-entries* 41)]
+                         (map-indexed (fn [i t] {:id (:id t) :label (:term t) :page (+ 43 i)})
                                       c/glosario-terms))}
          {:label "Créditos"
-          :entries [(nth c/index-entries 42)]}]
+          :entries [(nth index-entries* 42)]}]
 
    :pages
    [;; 1. Cover
     {:template :cover
-     :data {:hero-img "cover-higiene-abstract.png"
+     :data {:hero-img "cover-valentino-tienda.jpg"
             :logo     "LOGO-VALENTINOTIPOBLANCOSMANUEVO.png"
             :title    "Guía de Higiene Alimentaria"
             :subtitle "para Tiendas de Helados Valentino"}}
 
-    ;; 2. Table of Contents
+    ;; 2. Legal information
+    {:template :legal
+     :data {:id "legal"
+            :title "Información Legal y Datos de Edición"
+            :subtitle "Guía interna de higiene para tiendas de Helados Valentino."
+            :owner "Helados Valentino"
+            :rights "Uso interno. No autorizada su reproducción total o parcial sin permiso escrito."
+            :edition-date "Primera edición — marzo 2026"
+            :location "Santo Domingo, República Dominicana"
+            :version "000.001"
+            :update-note "Esta versión de la guía se actualizará cuando se genere una versión mayor o menor de procedimiento TEO."
+            :legal-lines ["Documento de capacitación y operación interna."
+                          "Las medidas aquí descritas deben cumplir normativa sanitaria vigente."
+                          "Ante cambios regulatorios o de proceso, prevalece siempre la versión más reciente."]}}
+
+    ;; 3. Table of Contents
     {:template :toc-card-grid
      :data {:title         c/contenido-title
             :subtitle      c/contenido-subtitle
             :sections      c/contenido-sections
             :article-class "valentino-contenido"}}
 
-    ;; 3. Index — page 1 (sin «Riesgos Alimentarios» — va a p.4 para equilibrar)
+    ;; 4. Index — page 1 (sin «Riesgos Alimentarios» — va a p.4 para equilibrar)
     {:template :index
      :data {:title   c/index-title
-            :entries c/index-entries
+            :entries index-entries*
             :sections c/contenido-sections
             :groups [{:label "Presentación"
-                      :items (take 5 c/index-entries)
+                      :items (take 5 index-entries*)
                       :icon-default "file-text"}
                      {:label "Contenido"
                       :type :sections
                       :items (take 5 c/contenido-sections)}]}}
 
-    ;; 4. Index — page 2
+    ;; 5. Index — page 2
     {:template :index
      :data {:id           "indice-2"
             :hide-title?  true
-            :entries      c/index-entries
+            :entries      index-entries*
             :sections     c/contenido-sections
             :groups       [{:label "Contenido"
                             :type :sections
                             :items [(nth c/contenido-sections 5)]}
                            {:label "Riesgos"
                             :icon-default "file-text"
-                            :items (let [pg #(get (into {} (map (juxt :id :page) c/index-entries)) %)]
+                            :items (let [pg #(get page-by-id* %)]
                                      (concat [{:id "riesgos-divider" :label "Familias de riesgo (portada)" :icon "image" :page (pg "riesgos-divider")}
                                               {:id "riesgos-familias-intro" :label "Las cuatro familias explicadas" :icon "layout-grid" :page (pg "riesgos-familias-intro")}]
                                              (mapv (fn [{:keys [id icon title]}]
@@ -93,10 +120,14 @@
                                                    c/risk-families)))}
                            {:label "Referencia"
                             :items [{:id "glosario" :label "Glosario de Términos" :icon "book-open"
-                                     :page (get (into {} (map (juxt :id :page) c/index-entries)) "glosario")}]}
+                                     :page (get page-by-id* "glosario")}]}
                            {:label "Créditos"
                             :items [{:id "creditos" :label "Créditos" :icon "copyright"
-                                     :page (get (into {} (map (juxt :id :page) c/index-entries)) "creditos")}]}]}}
+                                     :page (get page-by-id* "creditos")}]}]}}
+
+    ;; Blank page (for spread alignment)
+    {:template :blocks
+     :data {:id "blank-pre-intro" :blocks []}}
 
     ;; 4. Introduction
     {:template :intro
@@ -362,10 +393,13 @@
 
     ;; Código de colores de paños — página completa
     {:template :full-image
-     :data {:id "limpieza-panos-colores"
+     :data {:section-tag {:label "Limpieza" :color "limpieza"}
+            :id "limpieza-panos-colores"
             :img "ref-panos-colores.png"
             :alt "Código de colores de paños"
-            :caption "Cada área tiene su paño de color asignado para evitar contaminación cruzada."}}
+            :title "Código de Colores de Paños"
+            :subtitle "Usa cada paño solo en su área asignada para evitar contaminación cruzada."
+            :caption "Guía rápida: azul para superficies de contacto, rojo para baño, verde para áreas limpias y amarillo para zonas de apoyo."}}
 
     ;; Cleaning operations overview + schedule
     {:template :blocks
@@ -401,7 +435,7 @@
                       :default-mode "diario"
                       :meta c/limpieza-registro-meta
                       :branches c/limpieza-registro-sucursales
-                      :default-branch "suc-centro"
+                     :default-branch "suc-colonial"
                       :items c/limpieza-registro-ejemplo}
                      {:type :store-map :icon "map-pin" :title "Nuestras sucursales"
                       :items c/valentino-sucursales}]}}

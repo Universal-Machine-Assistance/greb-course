@@ -29,10 +29,13 @@
       (-> (response/response (pr-str {:ok false :error "Missing org or slug"}))
           (response/status 400)
           (response/content-type "application/edn"))
-      (let [target-url (str (build-base-url req) "/" org "/" slug "/")
+      (let [pages    (or (get-in req [:params "pages"]) (get-in req [:params :pages]))
+            target-url (str (build-base-url req) "/" org "/" slug "/")
             out-file   (File/createTempFile (str "greb-export-" org-safe "-" slug-safe "-") ".pdf")
-            filename   (str org-safe "-" slug-safe ".pdf")
-            result     (sh/sh "node" "scripts/export_pdf.js" target-url (.getAbsolutePath out-file))]
+            filename   (str org-safe "-" slug-safe (when pages (str "-p" pages)) ".pdf")
+            args       (cond-> ["node" "scripts/export_pdf.js" target-url (.getAbsolutePath out-file)]
+                         pages (conj pages))
+            result     (apply sh/sh args)]
         (if (zero? (:exit result))
           (-> (response/file-response (.getAbsolutePath out-file))
               (response/header "Content-Type" "application/pdf")
