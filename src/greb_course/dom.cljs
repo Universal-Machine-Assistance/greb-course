@@ -40,5 +40,6 @@
 
 (defn page-footer [n]
   (el :footer {:class "page-footer"}
-      (el :span {:class "page-footer-brand"} @current-brand-name)
+      (el :span {:class "page-footer-branding"}
+          (src-img "logo-greb.png" "GREB" "page-footer-logo"))
       (el :span {:class "page-num"} (str n))))

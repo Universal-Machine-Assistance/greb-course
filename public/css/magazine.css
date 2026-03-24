@@ -123,6 +123,11 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   width: var(--pw);
   height: 1056px; /* 11in @ 96dpi */
   background: var(--page);
+}
+.page--landscape {
+  --pw: 1056px;
+  width: var(--pw);
+  height: 816px;
   box-shadow: 0 12px 50px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.08);
   border-radius: 2px; overflow: hidden;
   display: flex; flex-direction: column; position: relative;
@@ -170,13 +175,32 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 .page-footer {
   padding: .18in .65in;
   border-top: 1px solid rgba(0,0,0,.07);
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex; justify-content: center; align-items: center;
+  position: relative;
+}
+.page-footer-branding {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+}
+.page-footer-logo {
+  height: .8rem;
+  width: auto;
+  object-fit: contain;
 }
 .page-footer-brand {
   font-family: var(--font-head); font-size: .6rem; font-weight: 700;
   letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  text-align: center;
 }
-.page-num { font-family: var(--font-head); font-size: .75rem; font-weight: 700; color: var(--val-orange); }
+.page-num {
+  font-family: var(--font-head); font-size: .75rem; font-weight: 700; color: var(--val-orange);
+  position: absolute; top: 50%; transform: translateY(-50%);
+  right: .65in;
+}
+/* Left page: page number on left (outside edge) */
+.spread > .page:first-child .page-num { right: auto; left: .65in; }
 
 /* ── Navigation buttons ──────────────────────────────────────── */
 .nav-btn {
@@ -467,6 +491,32 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   height: 100%;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
 }
+.portada-logos {
+  position: absolute;
+  left: 50%;
+  bottom: .28in;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .36rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  width: fit-content;
+  margin: 0;
+}
+.portada-logo {
+  height: 1.45rem;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.28));
+}
 .portada-copy {
   width: fit-content;
   max-width: 62%;
@@ -716,7 +766,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 .hygiene-section:nth-child(4)  { background: rgba(139,127,255,.08); }
 
 .hygiene-section-head { display: flex; align-items: center; gap: .4rem; padding-bottom: .2rem; border-bottom: 2px solid rgba(0,0,0,.07); }
-.hygiene-section-icon { width: 1.1rem; height: 1.1rem; color: var(--val-orange); flex-shrink: 0; }
+.hygiene-section-icon { width: 1.1rem; height: 1.1rem; color: var(--section-color, var(--brand-primary, var(--val-orange))); flex-shrink: 0; }
 .hygiene-section-icon svg { width: 100%; height: 100%; }
 .hygiene-section-title { font-family: var(--font-head); font-size: .8rem; font-weight: 700; line-height: 1.2; }
 
@@ -899,6 +949,11 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 .section-tab--riesgos       { --section-tab-bg: #c62828; }
 .section-tab--glosario      { --section-tab-bg: #546e7a; }
 .section-tab--creditos      { --section-tab-bg: #5d4037; }
+/* Propuesta web color variants */
+.section-tab--propuesta     { --section-tab-bg: #0f172a; }
+.section-tab--ejecucion     { --section-tab-bg: #3b82f6; }
+.section-tab--inversion     { --section-tab-bg: #10b981; }
+.section-tab--contacto      { --section-tab-bg: #64748b; }
 
 /* hygiene-body inherits .page-body overflow-y:auto; just tune spacing */
 .hygiene-body { gap: .85rem; min-height: 0; overflow-wrap: break-word; }
@@ -922,6 +977,10 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 /* Intro / Problem — blue (brand primary) */
 #introduccion, #problema, #tecnologias, #indice {
   --section-color: #00529b; --section-color-alt: #4a90d9;
+}
+/* Hygiene pages — same hue as section bar */
+#higiene-personal, #higiene-disciplina, #lavado-tecnica {
+  --section-color: #2e86ab; --section-color-alt: #56b4d8;
 }
 /* Layout: #introduccion (page 5) — compact; cuatro familias arriba, luego columnas */
 #introduccion .page-body { padding: .32in .48in .18in; gap: .55rem; }
@@ -950,7 +1009,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 #agrastrip, #agrastrip-historia, #agrastrip-producto {
   --section-color: #7ab648; --section-color-alt: #a5d67a;
 }
-#agrastrip .hygiene-hero, #agrastrip .handwash-head { background: #5a9a30; }
+#agrastrip .hygiene-hero, #agrastrip .handwash-head { background: var(--section-color); }
 #agrastrip-historia.hygiene-page {
   background:
     radial-gradient(ellipse 120% 80% at 70% 20%, rgba(122, 182, 72, .25), transparent 50%),
@@ -961,7 +1020,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 #agraquant, #agraquant-historia, #agraquant-producto {
   --section-color: #f39c12; --section-color-alt: #f7c948;
 }
-#agraquant .hygiene-hero, #agraquant .handwash-head { background: #d4850a; }
+#agraquant .hygiene-hero, #agraquant .handwash-head { background: var(--section-color); }
 /* Layout: #agraquant — compact hero page */
 #agraquant .page-body { padding: .35in .45in .18in; gap: .45rem; }
 #agraquant .hygiene-hero { padding: .6rem .8rem; }
@@ -982,7 +1041,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 #agravision, #agravision-historia, #agravision-specs, #agravision-producto {
   --section-color: #0097a7; --section-color-alt: #4dd0e1;
 }
-#agravision .hygiene-hero, #agravision .handwash-head { background: #00838f; }
+#agravision .hygiene-hero, #agravision .handwash-head { background: var(--section-color); }
 /* Layout: #agravision-producto — compact */
 #agravision-producto .page-body { padding: .38in .48in .18in; gap: .55rem; }
 #agravision-producto .hygiene-block { padding: .5rem .6rem; }
@@ -996,7 +1055,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 #elisa, #elisa-siglas, #elisa-historia, #elisa-producto, #elisa-aplicaciones, #analitos {
   --section-color: #6a1b9a; --section-color-alt: #ab47bc;
 }
-#elisa .hygiene-hero, #elisa .handwash-head { background: #5c1590; }
+#elisa .hygiene-hero, #elisa .handwash-head { background: var(--section-color); }
 /* Layout: #elisa (ELISA fundamentals page) — compact */
 #elisa .page-body { padding: .35in .45in .18in; gap: .45rem; }
 #elisa .hygiene-hero { padding: .6rem .8rem; }
@@ -1018,7 +1077,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 #por-que-abt, #abt-servicios, #contacto, #cierre, #flujo-analisis {
   --section-color: #1a3a5c; --section-color-alt: #2e6da4;
 }
-#por-que-abt .hygiene-hero, #por-que-abt .handwash-head { background: #1a3a5c; }
+#por-que-abt .hygiene-hero, #por-que-abt .handwash-head { background: var(--section-color); }
 
 /* Section color applied to hero */
 .hygiene-hero, .handwash-head {
@@ -1038,7 +1097,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   padding: .75rem .85rem;
   border-radius: var(--r);
   overflow: hidden;
-  background: linear-gradient(135deg, var(--section-color, var(--brand-primary)), var(--section-color-alt, var(--brand-accent)));
+  background: var(--section-color, var(--brand-primary, #00529b));
   color: #fff;
 }
 .hygiene-hero::after,
@@ -1290,12 +1349,12 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 50%;
-  background: rgba(0, 82, 155, .12);
+  background: color-mix(in srgb, var(--section-color, var(--brand-primary)) 12%, transparent);
 }
 .info-card-icon {
   width: .85rem;
   height: .85rem;
-  color: var(--brand-primary, var(--val-orange));
+  color: var(--section-color, var(--brand-primary, var(--val-orange)));
 }
 
 /* Rich inline: **bold** *italic* `shortcut` — pill colors via --pill-* on any ancestor */
@@ -3714,7 +3773,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   text-shadow: 0 1px 3px rgba(0,0,0,.28);
 }
 .risk-stat-lbl {
-  font-size: .38rem;
+  font-size: .46rem;
   color: rgba(255,255,255,.95);
   text-align: center;
   line-height: 1.2;
@@ -3741,7 +3800,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
 }
 .risk-enhanced .risk-stat-lbl {
   color: #252528;
-  font-size: .44rem;
+  font-size: .5rem;
   font-weight: 700;
   line-height: 1.28;
   margin-top: .1rem;
@@ -3792,7 +3851,7 @@ html.doc-chrome-idle:not(.presenting) .nav-btn {
   margin-bottom: .04rem;
 }
 #riesgo-microbiologico.risk-enhanced .risk-stat-lbl {
-  font-size: .38rem !important;
+  font-size: .46rem !important;
   line-height: 1.3 !important;
   max-width: 6.5rem;
   margin-left: auto !important;
@@ -5138,8 +5197,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 }
 .prev-icon { width: .7rem; height: .7rem; color: #2e7d32; }
 .prev-icon svg { width: 100%; height: 100%; }
-.prev-title { font-family: var(--font-head); font-size: .46rem; font-weight: 700; color: #2e7d32; }
-.prev-text { font-size: .4rem; color: var(--ink-2); line-height: 1.3; }
+.prev-title { font-family: var(--font-head); font-size: .54rem; font-weight: 700; color: #2e7d32; }
+.prev-text { font-size: .48rem; color: var(--ink-2); line-height: 1.3; }
 
 /* Extra visual modules for microbiological page */
 .micro-flow {
@@ -5162,8 +5221,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 .micro-flow-head { display: flex; align-items: center; gap: .18rem; }
 .micro-flow-icon { width: .56rem; height: .56rem; color: #b45309; flex-shrink: 0; }
 .micro-flow-icon svg { width: 100%; height: 100%; }
-.micro-flow-title { font-family: var(--font-head); font-size: .43rem; color: #8a4b08; }
-.micro-flow-text { font-size: .39rem; color: var(--ink-2); line-height: 1.35; }
+.micro-flow-title { font-family: var(--font-head); font-size: .5rem; color: #8a4b08; }
+.micro-flow-text { font-size: .46rem; color: var(--ink-2); line-height: 1.35; }
 .micro-flow-arrow {
   position: absolute;
   right: .12rem;
@@ -5186,14 +5245,14 @@ html.ui-hidden .ui-status-badge { display: none; }
 .micro-alert-icon { width: .6rem; height: .6rem; color: #c62828; }
 .micro-alert-icon svg { width: 100%; height: 100%; }
 .micro-alert-title {
-  font-size: .39rem;
+  font-size: .46rem;
   text-transform: uppercase;
   letter-spacing: .05em;
   color: var(--ink-3);
 }
 .micro-alert-value {
   font-family: var(--font-head);
-  font-size: .46rem;
+  font-size: .52rem;
   color: #8b1f1f;
   line-height: 1.25;
 }
@@ -5242,8 +5301,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 .micro-legend-icon svg { width: 100%; height: 100%; }
 .micro-legend-safe .micro-legend-icon { color: #2e7d32; }
 .micro-legend-danger .micro-legend-icon { color: #c62828; }
-.micro-legend-title { font-size: .43rem; color: var(--ink); line-height: 1.15; }
-.micro-legend-temp { font-size: .4rem; font-weight: 700; color: var(--ink-2); }
+.micro-legend-title { font-size: .5rem; color: var(--ink); line-height: 1.15; }
+.micro-legend-temp { font-size: .46rem; font-weight: 700; color: var(--ink-2); }
 
 .micro-actions-grid {
   display: grid;
@@ -5261,8 +5320,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 }
 .micro-action-icon { width: .62rem; height: .62rem; color: var(--val-orange); }
 .micro-action-icon svg { width: 100%; height: 100%; }
-.micro-action-title { font-family: var(--font-head); font-size: .44rem; color: #9f4f0f; }
-.micro-action-text { margin: 0; font-size: .4rem; line-height: 1.35; color: var(--ink-2); }
+.micro-action-title { font-family: var(--font-head); font-size: .5rem; color: #9f4f0f; }
+.micro-action-text { margin: 0; font-size: .46rem; line-height: 1.35; color: var(--ink-2); }
 
 /* ── Physical risk — contaminant table & sources ─────────────── */
 .contam-grid {
@@ -5330,8 +5389,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 .src-icon { width: .56rem; height: .56rem; color: #388e3c; flex-shrink: 0; margin-top: .02rem; }
 .src-icon svg { width: 100%; height: 100%; }
 .src-copy { display: flex; flex-direction: column; gap: .02rem; }
-.src-area { font-family: var(--font-head); font-size: .4rem; color: #2e7d32; }
-.src-detail { font-size: .36rem; color: var(--ink-2); line-height: 1.3; }
+.src-area { font-family: var(--font-head); font-size: .48rem; color: #2e7d32; }
+.src-detail { font-size: .44rem; color: var(--ink-2); line-height: 1.3; }
 
 /* ── Allergen risk — allergen table & cross-contam flow ──────── */
 .allerg-grid {
@@ -5519,8 +5578,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 }
 .physical-check-icon { width: .6rem; height: .6rem; color: #4f8a3f; }
 .physical-check-icon svg { width: 100%; height: 100%; }
-.physical-check-title { font-family: var(--font-head); font-size: .4rem; color: #2f5a24; }
-.physical-check-text { margin: 0; font-size: .36rem; line-height: 1.32; color: var(--ink-2); }
+.physical-check-title { font-family: var(--font-head); font-size: .48rem; color: #2f5a24; }
+.physical-check-text { margin: 0; font-size: .44rem; line-height: 1.32; color: var(--ink-2); }
 
 /* ── Chemical risk — enhanced blocks ─────────────────────────── */
 .chem-src-grid {
@@ -5543,8 +5602,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 .chem-src-high .chem-src-icon { color: #b71c1c; }
 .chem-src-icon svg { width: 100%; height: 100%; }
 .chem-src-copy { display: flex; flex-direction: column; gap: .02rem; }
-.chem-src-title { font-family: var(--font-head); font-size: .4rem; color: #3b3357; line-height: 1.2; }
-.chem-src-detail { font-size: .35rem; color: var(--ink-2); line-height: 1.28; }
+.chem-src-title { font-family: var(--font-head); font-size: .48rem; color: #3b3357; line-height: 1.2; }
+.chem-src-detail { font-size: .44rem; color: var(--ink-2); line-height: 1.28; }
 
 .chem-ex-grid {
   display: grid;
@@ -5563,8 +5622,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 }
 .chem-ex-icon { width: .58rem; height: .58rem; color: #7a44c5; }
 .chem-ex-icon svg { width: 100%; height: 100%; }
-.chem-ex-title { font-family: var(--font-head); font-size: .39rem; color: #4f2e7a; }
-.chem-ex-text { margin: 0; font-size: .35rem; line-height: 1.32; color: var(--ink-2); }
+.chem-ex-title { font-family: var(--font-head); font-size: .48rem; color: #4f2e7a; }
+.chem-ex-text { margin: 0; font-size: .44rem; line-height: 1.32; color: var(--ink-2); }
 
 .chemical-guide {
   margin-top: .2rem;
@@ -5603,8 +5662,8 @@ html.ui-hidden .ui-status-badge { display: none; }
 }
 .chemical-step-icon { width: .56rem; height: .56rem; color: #6b58a8; }
 .chemical-step-icon svg { width: 100%; height: 100%; }
-.chemical-step-title { font-family: var(--font-head); font-size: .39rem; color: #4f3d85; }
-.chemical-step-text { margin: 0; font-size: .35rem; line-height: 1.3; color: var(--ink-2); }
+.chemical-step-title { font-family: var(--font-head); font-size: .48rem; color: #4f3d85; }
+.chemical-step-text { margin: 0; font-size: .44rem; line-height: 1.3; color: var(--ink-2); }
 
 /* ── Risk químico (composed with element assets) ──────────────── */
 .rq-page {
@@ -6485,72 +6544,110 @@ html.ui-hidden .ui-status-badge { display: none; }
 /* Mini Gantt diagram for cleaning cycles */
 .clean-gantt {
   margin-top: .16rem;
-  padding: .18rem .22rem;
+  padding: .2rem .24rem .16rem;
   border-radius: var(--r-sm);
   border: 1px solid rgba(0,0,0,.08);
-  background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(180,188,69,.08));
+  background: linear-gradient(135deg, rgba(255,255,255,.92), var(--paper, rgba(180,188,69,.06)));
 }
-.clean-gantt-title-row { display: flex; align-items: center; gap: .16rem; margin-bottom: .12rem; }
-.clean-gantt-title-icon { width: .62rem; height: .62rem; color: var(--val-orange); }
+.clean-gantt-title-row { display: flex; align-items: center; gap: .16rem; margin-bottom: .16rem; }
+.clean-gantt-title-icon { width: .56rem; height: .56rem; color: var(--primary, var(--val-orange)); }
 .clean-gantt-title-icon svg { width: 100%; height: 100%; }
 .clean-gantt-title {
   font-family: var(--font-head);
-  font-size: .5rem;
+  font-size: .44rem;
   font-weight: 800;
   color: var(--ink);
   text-transform: uppercase;
   letter-spacing: .05em;
 }
+/* Week header row */
+.clean-gantt-week-grid {
+  display: grid;
+  gap: .06rem;
+}
+.clean-gantt-week-hdr {
+  text-align: center;
+  font-family: var(--font-head);
+  font-size: .34rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primary, var(--val-orange));
+  border-radius: .06rem;
+  padding: .04rem 0;
+  letter-spacing: .03em;
+}
 .clean-gantt-days,
 .clean-gantt-row {
   display: grid;
-  grid-template-columns: 1.8rem 1fr 2.2rem;
+  grid-template-columns: 1.8rem 1fr 1rem;
   align-items: center;
-  gap: .16rem;
+  gap: .14rem;
 }
-.clean-gantt-days { margin-bottom: .08rem; }
+.clean-gantt-days { margin-bottom: .06rem; }
 .clean-gantt-day-grid,
 .clean-gantt-bar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: .06rem;
+  gap: .04rem;
 }
 .clean-gantt-day {
   text-align: center;
   font-family: var(--font-head);
-  font-size: .36rem;
-  font-weight: 700;
+  font-size: .28rem;
+  font-weight: 600;
   color: var(--ink-3);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  line-height: 1;
+  padding: .02rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: .7rem;
+}
+.clean-gantt-day--week-sep {
+  border-left: 1.5px solid var(--primary, var(--val-orange));
+  padding-left: .04rem;
 }
 .clean-gantt-spacer { display: block; }
-.clean-gantt-rows { display: flex; flex-direction: column; gap: .08rem; }
-.clean-gantt-label { display: inline-flex; align-items: center; gap: .12rem; }
-.clean-gantt-label-icon { width: .52rem; height: .52rem; color: var(--val-orange); }
+.clean-gantt-rows { display: flex; flex-direction: column; gap: .06rem; }
+.clean-gantt-label { display: inline-flex; align-items: center; gap: .08rem; min-width: 0; }
+.clean-gantt-label-icon { width: .44rem; height: .44rem; color: var(--primary, var(--val-orange)); flex-shrink: 0; }
 .clean-gantt-label-icon svg { width: 100%; height: 100%; }
 .clean-gantt-label-text {
   font-family: var(--font-head);
-  font-size: .42rem;
+  font-size: .36rem;
   font-weight: 700;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .clean-gantt-cell {
-  height: .42rem;
-  border-radius: .08rem;
-  border: 1px solid rgba(0,0,0,.08);
-  background: rgba(0,0,0,.03);
+  height: .36rem;
+  border-radius: .06rem;
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(0,0,0,.025);
+  transition: background .2s;
+}
+.clean-gantt-cell--week-sep {
+  border-left: 1.5px solid var(--primary, var(--val-orange));
 }
 .clean-gantt-cell.active {
-  border-color: rgba(228,96,44,.35);
-  background: linear-gradient(180deg, rgba(228,96,44,.3), rgba(237,158,69,.28));
+  border-color: color-mix(in srgb, var(--secondary, var(--val-orange)) 50%, transparent);
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--secondary, var(--val-orange)) 35%, transparent),
+    color-mix(in srgb, var(--secondary, var(--val-orange)) 22%, transparent));
 }
 .clean-gantt-row-note {
-  font-size: .38rem;
-  color: var(--ink-2);
+  font-size: .3rem;
+  color: var(--ink-3);
   text-align: right;
+  font-weight: 600;
 }
 .clean-gantt-note {
   margin: .1rem 0 0;
-  font-size: .38rem;
+  font-size: .34rem;
   color: var(--ink-3);
   font-style: italic;
 }
@@ -7756,6 +7853,29 @@ html.ui-hidden .ui-status-badge { display: none; }
   #introduccion .stat-card-label { font-size: .6rem !important; line-height: 1.25 !important; }
   #introduccion .stat-card-value { font-size: .76rem !important; }
   #introduccion .highlight-bar-list { font-size: .72rem !important; line-height: 1.35 !important; }
+
+  /* Page 30 (limpieza-registro): solid backgrounds, opaque post-it with shadow */
+  #limpieza-registro .registro-sheet {
+    background: #fff !important;
+    border: 1px solid rgba(0, 80, 120, .12) !important;
+    box-shadow: none !important;
+  }
+  #limpieza-registro .highlight-bar {
+    background: #fff9c4 !important;
+    border: none !important;
+    box-shadow: 2px 4px 12px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.10) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #limpieza-registro .hygiene-block {
+    background: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  #limpieza-registro .store-map {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
 
 @media screen and (max-width: 840px) {
@@ -8697,17 +8817,32 @@ html.ui-hidden .ui-status-badge { display: none; }
 #servicio-cliente .info-card { padding: .15rem .22rem; }
 #servicio-cliente .mission-bar { margin-bottom: .04rem; }
 #servicio-cliente .mission-bar h2 { font-size: .7rem; }
-#servicio-cliente .hygiene-block { padding: .15rem .25rem; }
+#servicio-cliente .hygiene-block { padding: .15rem .25rem; height: 301px; }
 #servicio-cliente .intro-prose-p { font-size: .52rem; line-height: 1.28; margin-bottom: .1rem; }
 #servicio-cliente .image-card {
-  aspect-ratio: 16/9;
-  min-height: 180px;
-  width: 100%;
+  aspect-ratio: 16/8;
+  min-height: 220px;
+  width: 696px;
+  height: 460px;
   margin-top: .1rem;
   margin-bottom: 0;
 }
-#servicio-cliente .image-grid { width: 100%; border-radius: .35rem; overflow: hidden; }
-#servicio-cliente .image-card-overlay { border-radius: .35rem; width: 100%; }
+#servicio-cliente .image-grid { width: 1336px; height: 503px; border-radius: .35rem; overflow: hidden; flex: 1; }
+#servicio-cliente .hygiene-body { display: flex; flex-direction: column; flex: 1; }
+#servicio-cliente .hygiene-body > div:last-child { flex: 1; display: flex; flex-direction: column; }
+#servicio-cliente .hygiene-body > div:last-child .image-grid { flex: 1; }
+#servicio-cliente .image-card { flex: 1; }
+#servicio-cliente .image-card-overlay {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  min-height: 54%;
+  width: 100%;
+  border-radius: .35rem;
+  padding: .5rem .55rem;
+  background: linear-gradient(0deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.52) 45%, rgba(0,0,0,0) 100%);
+}
 #servicio-cliente .image-card-title { font-size: .65rem; }
 #servicio-cliente .block-header { padding: .12rem .2rem; }
 #servicio-cliente .block-header h2 { font-size: .68rem; }
@@ -8893,7 +9028,7 @@ html.ui-hidden .ui-status-badge { display: none; }
   aspect-ratio: unset;
   min-height: 0;
   overflow: visible;
-  transform: rotate(8deg);
+  transform: rotate(7deg);
 }
 /* P.33: solo malteada (helados en p.34) — larger card, centered in grid */
 #servicio-postres .image-grid:has(> .image-card:only-child) {
@@ -8901,38 +9036,40 @@ html.ui-hidden .ui-status-badge { display: none; }
   justify-content: center;
   align-items: center;
   height: auto;
-  min-height: 320px;
-  padding: .35rem 0;
+  min-height: 260px;
+  padding: .2rem 0;
+  overflow: hidden;
 }
 #servicio-postres .image-card:only-child {
   position: relative;
   top: auto;
   left: auto;
-  width: 400px;
-  height: 314px;
-  aspect-ratio: unset;
-  min-height: 0;
-  overflow: visible;
-  transform: rotate(8deg);
+  width: 620px;
+  height: 407px;
+  aspect-ratio: 3/2;
+  min-height: 240px;
+  overflow: hidden;
+  transform: none;
   flex-shrink: 0;
-  margin: 20px auto;
+  margin: 0 auto;
+  border-radius: .35rem;
 }
 #servicio-postres .image-card:only-child .image-card-photo {
-  width: 387px;
-  height: 277px;
-  max-width: none;
-  margin-top: 40px;
-  border: 1px solid #000;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  margin-top: 0;
+  border: none;
   object-fit: cover;
   object-position: center center;
 }
 #servicio-postres .image-card:only-child .image-card-overlay {
-  width: 389px;
+  width: 100%;
   height: auto;
   inset: auto;
   bottom: 0;
   left: 0;
-  right: auto;
+  right: 0;
   top: auto;
 }
 #servicio-postres .image-card { aspect-ratio: 16/9; min-height: 180px; }
@@ -8955,6 +9092,7 @@ html.ui-hidden .ui-status-badge { display: none; }
 
 @page { size: letter; margin: 0; }
 @page { size: 8.5in 11in; margin: 0; }
+@page landscape-page { size: 11in 8.5in; margin: 0; }
 
 /* Final print parity guardrails:
    keep PDF page geometry identical to reader pages */
@@ -8973,6 +9111,12 @@ html.ui-hidden .ui-status-badge { display: none; }
     min-height: 11in !important;
     max-height: 11in !important;
     overflow: hidden !important;
+  }
+  .page--landscape {
+    width: 11in !important;
+    height: 8.5in !important;
+    min-height: 8.5in !important;
+    max-height: 8.5in !important;
   }
   .spread:last-of-type .page:last-of-type {
     page-break-after: auto !important;
