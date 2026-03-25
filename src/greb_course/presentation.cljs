@@ -325,10 +325,7 @@
         ;; Register SpaceMouse callbacks
         (reset! state/sm-on-prev #(pres-show-page! (dec (or (:current @state/pres-state) 0)) :back))
         (reset! state/sm-on-next #(pres-show-page! (inc (or (:current @state/pres-state) 0)) nil))
-        (reset! state/sm-on-reset #(do (set-zoom! 1.0)
-                                       (set-text-scale! 1.0)
-                                       (swap! state/pres-state assoc :pan-x 0 :pan-y 0)
-                                       (pres-apply-view!)))
+        (reset! state/sm-on-reset #(exit-presentation!))
         (reset! state/sm-ensure-raf! ensure-raf!)
         (when sm-btn (sm/update-indicator!))
         ;; Sync zoom & text-scale UI with restored values

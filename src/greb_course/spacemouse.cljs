@@ -45,9 +45,13 @@
         yaw   (sm-dead (sm-parse-int16-le data 4))]
     (reset! state/sm-rotate {:pitch pitch :roll roll :yaw yaw})))
 
+(defonce ^:private btn-debounce (atom 0))
+
 (defn- handle-buttons [^js data]
-  (let [mask (aget (js/Uint8Array. (.-buffer data)) 0)]
-    (when (pos? mask)
+  (let [mask (aget (js/Uint8Array. (.-buffer data)) 0)
+        now  (.now js/Date)]
+    (when (and (pos? mask) (> (- now @btn-debounce) 250))
+      (reset! btn-debounce now)
       (cond
         (== mask 3) (when-let [f @state/sm-on-reset] (f))
         (== mask 1) (when-let [f @state/sm-on-prev] (f))
@@ -173,9 +177,11 @@
 
 (defn- dedupe-devices
   "Remove duplicate entries for the same physical device (same productId).
-   Prefer entries that advertise input reports in their collections."
+   Prefer entries that advertise input reports in their collections.
+   Excludes the 3DxWare virtual mouse which would fight the OS cursor."
   [devices]
-  (let [grouped (group-by #(.-productId ^js %) devices)]
+  (let [physical (remove virtual-mouse? devices)
+        grouped  (group-by #(.-productId ^js %) physical)]
     (map (fn [[_ devs]]
            (or (first (filter has-input-reports? devs))
                (first devs)))
@@ -282,12 +288,10 @@
                                      :usagePage 0x01 :usage 0x08}
                                 #js {:vendorId sm-vendor-id}]})
           (.then (fn [devices]
-            (let [devs (array-seq devices)]
+            (let [devs (remove virtual-mouse? (array-seq devices))]
               (when (seq devs)
-                ;; Deduplicate, put physical devices first
-                (let [unique  (dedupe-devices devs)
-                      sorted  (sort-by #(if (virtual-mouse? %) 1 0) unique)]
-                  (try-open-any! sorted))))))
+                (let [unique (dedupe-devices devs)]
+                  (try-open-any! unique))))))
           (.catch (fn [err]
             (js/console.warn "SpaceMouse:" (.-message err))))))))
 
@@ -302,6 +306,12 @@
     (reset! state/sm-rotate {:pitch 0 :roll 0 :yaw 0})
     (update-indicator!)))
 
+(defn restart!
+  "Disconnect and immediately reconnect the SpaceMouse."
+  []
+  (disconnect!)
+  (js/setTimeout connect! 300))
+
 ;; Note: we intentionally do NOT close the device on beforeunload.
 ;; The browser releases the HID handle automatically, and keeping the
 ;; authorization allows try-reconnect! to re-open it after refresh.
@@ -315,11 +325,11 @@
     (-> (.getDevices (.-hid js/navigator))
         (.then (fn [devices]
           (let [devs (->> (array-seq devices)
-                          (filter #(== (.-vendorId ^js %) sm-vendor-id)))]
+                          (filter #(== (.-vendorId ^js %) sm-vendor-id))
+                          (remove virtual-mouse?))]
             (when (seq devs)
-              (let [unique (dedupe-devices devs)
-                    sorted (sort-by #(if (virtual-mouse? %) 1 0) unique)]
-                (js/console.log "SM: auto-reconnecting to" (count sorted) "previously authorized device(s)")
-                (try-open-any! sorted true))))))
+              (let [unique (dedupe-devices devs)]
+                (js/console.log "SM: auto-reconnecting to" (count unique) "previously authorized device(s)")
+                (try-open-any! unique true))))))
         (.catch (fn [err]
           (js/console.warn "SM auto-reconnect:" (.-message err)))))))

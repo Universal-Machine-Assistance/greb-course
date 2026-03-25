@@ -1,9 +1,10 @@
 (ns greb-course.omnirepl-commands
   "OmniREPL: data builders, navigation helpers, command evaluation."
-  (:require [greb-course.state  :as state]
-            [greb-course.ui     :as ui]
-            [greb-course.editor :as editor]
-            [clojure.string     :as str]))
+  (:require [greb-course.state      :as state]
+            [greb-course.ui         :as ui]
+            [greb-course.editor     :as editor]
+            [greb-course.spacemouse :as sm]
+            [clojure.string         :as str]))
 
 ;; ── Searchable entries ──────────────────────────────────────
 
@@ -125,7 +126,9 @@
    {:id "page"   :label "page <n|id>"   :desc "Switch editor to page N or page id" :type :command}
    {:id "imagine" :label "imagine <prompt>" :desc "Generate image with Kie AI"       :type :command}
    {:id "save"   :label "save"         :desc "Save current editor changes to disk" :type :command}
-   {:id "ask"    :label "ask <msg>"   :desc "Quick question to LLM (toast)"     :type :command}])
+   {:id "ask"    :label "ask <msg>"   :desc "Quick question to LLM (toast)"     :type :command}
+   {:id "sm"     :label "sm"          :desc "Toggle SpaceMouse connection"       :type :command}
+   {:id "sm-restart" :label "sm-restart" :desc "Restart SpaceMouse connection"   :type :command}])
 
 (defn match-commands [query]
   (if (empty? query) []
@@ -325,5 +328,13 @@
       (let [[_ n] (re-matches #"(?i)zoom\s+([\d.]+)" s)]
         (swap! state/doc-view assoc :zoom (js/parseFloat n))
         (ui/show-toast! (str "Zoom " n)) true)
+
+      (re-matches #"(?i)sm-restart" s)
+      (do (sm/restart!)
+          (ui/show-toast! "SpaceMouse restarting..." 2000) true)
+
+      (re-matches #"(?i)sm" s)
+      (do (sm/connect!)
+          true)
 
       :else false)))

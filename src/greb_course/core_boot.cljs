@@ -226,13 +226,7 @@
         (reset! state/sm-on-next
           #(when-let [{:keys [go! nav-state]} @state/current-nav] (go! (inc @nav-state) nil)))
         (reset! state/sm-on-reset
-          #(do (reset! state/doc-view {:zoom 1.0 :text-scale 1.0 :pan-x 0 :pan-y 0})
-               (reset! pan-speed 150)
-               (set! (.-vx phy) 0) (set! (.-vy phy) 0) (set! (.-zv phy) 0)
-               (set! (.-wx phy) 0) (set! (.-wy phy) 0)
-               (set! (.-spx phy) 0) (set! (.-spy phy) 0) (set! (.-spz phy) 0)
-               (set! (.-svx phy) 0) (set! (.-svy phy) 0) (set! (.-szv phy) 0)
-               (doc-apply-view!)))
+          #(when-let [f @state/on-enter-presentation] (f)))
         ;; Keyboard
         (.addEventListener js/document "keydown"
           (fn [e]
@@ -242,7 +236,19 @@
               (if (and (= (.-key e) "e") (or (.-ctrlKey e) (.-metaKey e)))
                 (do (.preventDefault e) (editor/edit!))
               (when (not (.closest (.-target e) "input, textarea, select"))
-                (let [k (.-key e)]
+                (let [k (.-key e)
+                      toc-open? (when-let [tw (.querySelector js/document ".toc-wrapper")]
+                                  (.contains (.-classList tw) "open"))]
+                  ;; Shift+J/K scrolls left TOC column, Ctrl+J/K scrolls right TOC column
+                  (if (and toc-open?
+                           (or (.-shiftKey e) (.-ctrlKey e))
+                           (#{"j" "k" "J" "K" "ArrowDown" "ArrowUp"} k))
+                    (let [col (if (.-ctrlKey e)
+                                (.querySelector js/document ".toc-col-right .toc-entries-scroll")
+                                (.querySelector js/document ".toc-col-left"))
+                          dir (if (#{"j" "J" "ArrowDown"} k) 80 -80)]
+                      (.preventDefault e)
+                      (when col (.scrollBy col #js {:top dir :behavior "smooth"})))
                   (if (and @state/hint-state (re-matches #"[a-zA-Z]" k))
                     (do (.preventDefault e) (when-not (hints/hint-type-char! k) (hints/dismiss-hints!)))
                   (if (#{"h" "j" "k" "l" "d" "f"} k)
@@ -329,7 +335,18 @@
                         "u" (do (.preventDefault e) (pres/toggle-view!))
                         "o" (do (.preventDefault e) (pres/toggle-fullscreen!))
                         "?" (do (.preventDefault e) (ui/toggle-shortcuts! ui/doc-shortcuts))
-                        nil)))))))))))
+                        "Escape" (do (.preventDefault e)
+                                   ;; Close TOC if open, otherwise reset view
+                                   (let [tw (.querySelector js/document ".toc-wrapper")
+                                         toc? (and tw (.contains (.-classList tw) "open"))]
+                                     (if toc?
+                                       (when-let [tog (:toggle-toc! @state/current-nav)] (tog))
+                                       (do (reset! state/canvas-zoom 1.0) (reset! state/canvas-zoom-active? false)
+                                           (reset! pan-speed 150)
+                                           (anim/animate-view-to! state/doc-view
+                                             {:zoom 1.0 :text-scale (or (:text-scale @state/doc-view) 1.0) :pan-x 0 :pan-y 0}
+                                             doc-apply-view! :phy phy :duration 400)))))
+                        nil))))))))))))
         (.addEventListener js/document "keyup"
           (fn [e] (when-not @state/pres-state
                     (when (#{"h" "j" "k" "l" "d" "f"} (.-key e)) (swap! doc-held disj (.-key e))))))
