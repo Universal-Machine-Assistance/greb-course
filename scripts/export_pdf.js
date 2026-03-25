@@ -29,6 +29,13 @@ async function lockExportState(page) {
         zoom: 1 !important;
         transform: none !important;
       }
+      html.pdf-exporting .page--landscape {
+        width: 11in !important;
+        height: 8.5in !important;
+        min-height: 8.5in !important;
+        max-height: 8.5in !important;
+        page: landscape-page;
+      }
     `,
   });
 

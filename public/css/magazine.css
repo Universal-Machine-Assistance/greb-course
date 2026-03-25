@@ -6049,13 +6049,6 @@ html.ui-hidden .ui-status-badge { display: none; }
 .section-tab--presentacion  ~ .page-body .limpieza-header { --section-tab-bg: #e4602c; }
 .section-tab--ejecucion     ~ .page-body .limpieza-header { --section-tab-bg: #3b82f6; }
 .section-tab--inversion     ~ .page-body .limpieza-header { --section-tab-bg: #10b981; }
-
-/* Inversion page: keep section tab out of content area */
-#inversion-dop.section-tab-side--left .page-body { padding-left: .15in; }
-#inversion.section-tab-side--right .page-body { padding-right: .15in; }
-/* Move inversion tabs outside page bounds (exterior edge) */
-#inversion-dop.section-tab-side--left .section-tab--left { left: -29px; }
-#inversion.section-tab-side--right .section-tab--right { right: -29px; }
 /* Match header fill exactly with section tab */
 #inversion-dop .limpieza-header,
 #inversion .limpieza-header { background: var(--section-tab-bg, #10b981); }
@@ -7544,6 +7537,13 @@ html.ui-hidden .ui-status-badge { display: none; }
     flex-direction: column !important;
     page-break-after: always;
     break-after: page;
+  }
+  .page--landscape {
+    --pw: 11in;
+    width: 11in !important;
+    min-height: 8.5in !important;
+    height: 8.5in !important;
+    max-height: 8.5in !important;
   }
 
   /* ⑥ Match screen layout; unclip page body */
@@ -9211,6 +9211,7 @@ html.ui-hidden .ui-status-badge { display: none; }
 @page { size: letter; margin: 0; }
 @page { size: 8.5in 11in; margin: 0; }
 @page landscape-page { size: 11in 8.5in; margin: 0; }
+.page--landscape { page: landscape-page; }
 
 /* Final print parity guardrails:
    keep PDF page geometry identical to reader pages */
