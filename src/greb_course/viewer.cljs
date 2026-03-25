@@ -11,6 +11,9 @@
             [greb-course.templates.registry :as reg]
             [greb-course.sounds             :as sfx]))
 
+(defn- landscape? [el]
+  (= "landscape" (.getAttribute el "data-orientation")))
+
 ;; ── Toolbar ──────────────────────────────────────────────────────
 (defn- trigger-print! []
   (omni/dismiss!)
@@ -124,8 +127,18 @@
         groups     (if mobile?
                      (mapv vector all-pages)
                      (if (seq all-pages)
-                       (vec (concat [[(first all-pages)]]
-                                    (partition 2 2 nil (rest all-pages))))
+                       (loop [remaining (rest all-pages)
+                              acc [[(first all-pages)]]]  ;; cover always solo
+                         (if-not (seq remaining)
+                           (vec acc)
+                           (let [p (first remaining)]
+                             (if (landscape? p)
+                               (recur (rest remaining) (conj acc [p]))
+                               ;; portrait: pair with next if it's also portrait
+                               (let [nxt (second remaining)]
+                                 (if (and nxt (not (landscape? nxt)))
+                                   (recur (drop 2 remaining) (conj acc [p nxt]))
+                                   (recur (rest remaining) (conj acc [p]))))))))
                        []))
         spread-first-pages
         (loop [gs groups
@@ -245,6 +258,7 @@
                                         :toc-groups toc-groups
                                         :toggle-toc! toggle!
                                         :spread->pages spread->pages
+                                        :spread-first-pages spread-first-pages
                                         :clear-dot-preview! clear-dot-preview!})]
     (doseq [s spreads] (.remove (.-classList s) "active"))
     (.add (.-classList (nth spreads init-idx)) "active")

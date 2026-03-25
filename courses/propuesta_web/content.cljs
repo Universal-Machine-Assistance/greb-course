@@ -4,35 +4,38 @@
 ;; ── Index ───────────────────────────────────────────────────────
 (def index-entries
   [{:id "portada"        :label "Portada"                     :page 1}
-   {:id "contenido"      :label "Contenido"                   :page 2}
-   {:id "resumen"        :label "Resumen Ejecutivo"           :page 3}
-   {:id "alcance"        :label "Alcance del Proyecto"        :page 4}
-   {:id "squarespace"    :label "Plataforma Squarespace"      :page 5}
-   {:id "plan-core"      :label "Plan Squarespace Core"       :page 6}
-   {:id "proceso"        :label "Proceso de Trabajo"          :page 7}
-   {:id "entregables"    :label "Entregables"                 :page 8}
-   {:id "cronograma"     :label "Cronograma"                  :page 9}
-   {:id "inversion"      :label "Cotización"                   :page 10}
-   {:id "condiciones"    :label "Condiciones"                 :page 11}
-   {:id "transferencia"  :label "Información de Transferencia" :page 12}
-   {:id "creditos"       :label "Contacto"                    :page 13}])
+   {:id "indice"         :label "Índice"                      :page 2}
+   {:id "contenido"      :label "Contenido"                   :page 3}
+   {:id "resumen"        :label "Resumen Ejecutivo"           :page 4}
+   {:id "alcance"        :label "Alcance del Proyecto"        :page 5}
+   {:id "squarespace"    :label "Plataforma Squarespace"      :page 6}
+   {:id "plan-core"      :label "Plan Squarespace Core"       :page 7}
+   {:id "proceso"        :label "Proceso de Trabajo"          :page 8}
+   {:id "entregables"    :label "Entregables"                 :page 9}
+   {:id "cronograma"     :label "Cronograma"                  :page 10}
+   {:id "inversion"      :label "Cotización (USD)"            :page 11}
+   {:id "inversion-dop"  :label "Cotización (DOP)"            :page 12}
+   {:id "condiciones"    :label "Condiciones"                 :page 13}
+   {:id "transferencia"  :label "Información de Transferencia" :page 14}
+   {:id "creditos"       :label "Contacto"                    :page 15}])
 
 ;; ── TOC ─────────────────────────────────────────────────────────
-(def contenido-title "Propuesta — Sitio Web via Plantilla")
+(def contenido-title "Propuesta — Let's Drunch RD")
 (def contenido-subtitle "Índice")
 
 (def contenido-sections
-  [{:id "resumen" :title "Propuesta"
+  [{:id "resumen" :title "Propuesta" :icon "sparkles"
     :items [{:label "Resumen Ejecutivo"      :ok true}
             {:label "Alcance del Proyecto"   :ok true}
             {:label "Plataforma"             :ok true}
             {:label "Plan Squarespace"       :ok true}]}
-   {:id "proceso" :title "Ejecución"
+   {:id "proceso" :title "Ejecución" :icon "rocket"
     :items [{:label "Proceso de Trabajo"     :ok true}
             {:label "Entregables"            :ok true}
             {:label "Cronograma"             :ok true}]}
-   {:id "inversion" :title "Inversión"
-    :items [{:label "Desglose de costos"     :ok true}
+   {:id "inversion" :title "Inversión" :icon "receipt"
+    :items [{:label "Cotización en USD"      :ok true}
+            {:label "Cotización en DOP"      :ok true}
             {:label "Condiciones comerciales":ok true}
             {:label "Información de transferencia" :ok true}]}])
 
@@ -175,11 +178,11 @@
     :text "**~USD $12-20/año** — Registro de dominio .com, .net o .org. Puede registrarse directamente en Squarespace (incluido gratis el primer año con plan anual) o en Namecheap/GoDaddy."}])
 
 (def inversion-text
-  "**Inversión total primer año:** USD $1,200 (diseño GREB) + $324 (Squarespace anual) + $0 (dominio incluido) = **USD $1,524**. A partir del segundo año solo paga la suscripción de Squarespace ($324/año) y renovación de dominio (~$20/año).")
+  "**Inversión total primer año:** USD $1,200 + ITBIS 18% ($216) = **USD $1,416** (diseño GREB) + $324 (Squarespace anual) + $0 (dominio incluido) = **USD $1,740**. A partir del segundo año solo paga la suscripción de Squarespace ($324/año) y renovación de dominio (~$20/año).")
 
 (def inversion-formas-pago
   [{:title "Forma de Pago"    :icon "wallet"
-    :text "**50% al aprobar** la propuesta (USD $600) + **50% al lanzar** el sitio (USD $600). Transferencia bancaria, Zelle o PayPal. La suscripción de Squarespace se paga con tarjeta de crédito del cliente."}
+    :text "**50% al aprobar** la propuesta (USD $708) + **50% al lanzar** el sitio (USD $708). Transferencia bancaria, Zelle o PayPal. La suscripción de Squarespace se paga con tarjeta de crédito del cliente."}
    {:title "Garantía"         :icon "shield-check"
     :text "**30 días de soporte gratuito** después del lanzamiento para resolver dudas y hacer ajustes menores. Después del período de garantía, soporte disponible a $50/hora."}])
 
@@ -225,7 +228,7 @@
 
 (def transferencia-instrucciones
   [{:title "Monto"          :icon "receipt"
-    :text "50% anticipo (**USD $600**) al aprobar la propuesta. 50% restante (**USD $600**) al entregar el sitio en producción. Use la tasa de cambio del día de la transferencia."}
+    :text "50% anticipo (**USD $708** / RD$43,513.68) al aprobar la propuesta. 50% restante (**USD $708** / RD$43,513.68) al entregar el sitio en producción. Tasa de referencia: USD $1 = RD$61.46 (24/mar/2026)."}
    {:title "Referencia"     :icon "file-text"
     :text "Incluir en el concepto: **\"GREB — Sitio Web — LETS DRUNCH RD\"** y el número de cotización **2026-001**."}
    {:title "Confirmación"   :icon "check-circle"

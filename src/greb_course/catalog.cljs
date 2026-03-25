@@ -184,43 +184,43 @@
           ;; Category nav
           cat-nav (d/el :nav {:class "cat-sidebar-nav"})
           _ (.appendChild cat-nav (d/el :h3 {:class "cat-sidebar-heading"} "Categorías"))
-          all-btn (doto (d/el :button {:class "cat-nav-item cat-nav-item--active"}
-                              (d/ic "layout-grid" "cat-nav-icon") "Todos")
-                    (.addEventListener "click"
-                      (fn [] (reset! active-cat nil)
-                        (doseq [b (array-seq (.querySelectorAll cat-nav ".cat-nav-item"))]
-                          (.remove (.-classList b) "cat-nav-item--active"))
-                        (.add (.-classList all-btn) "cat-nav-item--active")
-                        (@render!))))
+          all-btn (d/el :button {:class "cat-nav-item cat-nav-item--active"}
+                       (d/ic "layout-grid" "cat-nav-icon") "Todos")
+          _ (.addEventListener all-btn "click"
+              (fn [] (reset! active-cat nil)
+                (doseq [b (array-seq (.querySelectorAll cat-nav ".cat-nav-item"))]
+                  (.remove (.-classList b) "cat-nav-item--active"))
+                (.add (.-classList all-btn) "cat-nav-item--active")
+                (@render!)))
           _ (.appendChild cat-nav all-btn)
           _ (doseq [cat cats]
               (let [cnt (count (get grouped cat []))
-                    btn (doto (d/el :button {:class "cat-nav-item"}
-                                    (d/ic (get cat-icons cat "folder") "cat-nav-icon")
-                                    (str cat " (" cnt ")"))
-                          (.addEventListener "click"
-                            (fn []
-                              (reset! active-cat cat)
-                              (doseq [b (array-seq (.querySelectorAll cat-nav ".cat-nav-item"))]
-                                (.remove (.-classList b) "cat-nav-item--active"))
-                              (.add (.-classList btn) "cat-nav-item--active")
-                              (@render!))))]
+                    btn (d/el :button {:class "cat-nav-item"}
+                              (d/ic (get cat-icons cat "folder") "cat-nav-icon")
+                              (str cat " (" cnt ")"))]
+                (.addEventListener btn "click"
+                  (fn []
+                    (reset! active-cat cat)
+                    (doseq [b (array-seq (.querySelectorAll cat-nav ".cat-nav-item"))]
+                      (.remove (.-classList b) "cat-nav-item--active"))
+                    (.add (.-classList btn) "cat-nav-item--active")
+                    (@render!)))
                 (.appendChild cat-nav btn)))
           ;; Tags
           tag-section (d/el :div {:class "cat-sidebar-tags"})
           _ (.appendChild tag-section (d/el :h3 {:class "cat-sidebar-heading"} "Tags"))
           _ (doseq [tag all-tags]
-              (let [btn (doto (d/el :button {:class "cat-tag-btn"} tag)
-                          (.addEventListener "click"
-                            (fn []
-                              (if (= @active-tag tag)
-                                (do (reset! active-tag nil)
-                                    (.remove (.-classList btn) "cat-tag-btn--active"))
-                                (do (reset! active-tag tag)
-                                    (doseq [b (array-seq (.querySelectorAll tag-section ".cat-tag-btn"))]
-                                      (.remove (.-classList b) "cat-tag-btn--active"))
-                                    (.add (.-classList btn) "cat-tag-btn--active")))
-                              (@render!))))]
+              (let [btn (d/el :button {:class "cat-tag-btn"} tag)]
+                (.addEventListener btn "click"
+                  (fn []
+                    (if (= @active-tag tag)
+                      (do (reset! active-tag nil)
+                          (.remove (.-classList btn) "cat-tag-btn--active"))
+                      (do (reset! active-tag tag)
+                          (doseq [b (array-seq (.querySelectorAll tag-section ".cat-tag-btn"))]
+                            (.remove (.-classList b) "cat-tag-btn--active"))
+                          (.add (.-classList btn) "cat-tag-btn--active")))
+                    (@render!)))
                 (.appendChild tag-section btn)))]
       (.appendChild sidebar stats)
       (.appendChild sidebar cat-nav)

@@ -2,34 +2,67 @@
   "Gantt + interactive cleaning calendar widgets."
   (:require [greb-course.dom :as d]))
 
-(defn cleaning-gantt [{:keys [title days rows note]}]
-  (d/el :div {:class "clean-gantt animate"}
-        (when title
-          (d/el :div {:class "clean-gantt-title-row"}
-                (d/ic "calendar-clock" "clean-gantt-title-icon")
-                (d/el :strong {:class "clean-gantt-title"} title)))
-        (d/el :div {:class "clean-gantt-table"}
-              (d/el :div {:class "clean-gantt-days"}
-                    (d/el :span {:class "clean-gantt-spacer"} "")
-                    (apply d/el :div {:class "clean-gantt-day-grid"}
-                           (mapv (fn [d] (d/el :span {:class "clean-gantt-day"} d)) days)))
-              (apply d/el :div {:class "clean-gantt-rows"}
-                     (mapv (fn [{:keys [label icon active note]}]
-                             (d/el :div {:class "clean-gantt-row"}
-                                   (d/el :div {:class "clean-gantt-label"}
-                                         (when icon (d/ic icon "clean-gantt-label-icon"))
-                                         (d/el :span {:class "clean-gantt-label-text"} label))
-                                   (apply d/el :div {:class "clean-gantt-bar-grid"}
-                                          (map-indexed
-                                           (fn [idx _]
-                                             (d/el :span {:class (str "clean-gantt-cell "
-                                                                      (if (contains? (set active) idx)
-                                                                        "active" "idle"))}))
-                                           days))
-                                   (d/el :span {:class "clean-gantt-row-note"} note)))
-                           rows)))
-        (when note
-          (d/el :p {:class "clean-gantt-note"} note))))
+(defn cleaning-gantt [{:keys [title days rows note week-labels]}]
+  (let [n-cols (count days)
+        col-css (str "repeat(" n-cols ", 1fr)")
+        table (d/el :div {:class "clean-gantt-table"})]
+    ;; Set dynamic column count via inline style on grids
+    (let [day-grid (apply d/el :div {:class "clean-gantt-day-grid"}
+                          (map-indexed
+                           (fn [idx d-label]
+                             (d/el :span {:class (str "clean-gantt-day"
+                                                      (when (and (pos? idx) (zero? (mod idx 5)))
+                                                        " clean-gantt-day--week-sep"))}
+                                   d-label))
+                           days))
+          _ (.setProperty (.-style day-grid) "grid-template-columns" col-css)
+          days-row (d/el :div {:class "clean-gantt-days"}
+                         (d/el :span {:class "clean-gantt-spacer"} "")
+                         day-grid)]
+      ;; Week headers above days
+      (when (seq week-labels)
+        (let [wk-grid (apply d/el :div {:class "clean-gantt-week-grid"}
+                             (map-indexed
+                              (fn [idx {:keys [label span]}]
+                                (d/el :span {:class (str "clean-gantt-week-hdr clean-gantt-week-hdr--" (inc idx))
+                                             :style (str "grid-column: span " (or span 5))}
+                                      label))
+                              week-labels))
+              wk-row (d/el :div {:class "clean-gantt-days"}
+                           (d/el :span {:class "clean-gantt-spacer"} "")
+                           wk-grid)]
+          (.setProperty (.-style wk-grid) "grid-template-columns" col-css)
+          (.appendChild table wk-row)))
+      (.appendChild table days-row)
+      ;; Task rows
+      (let [rows-el (apply d/el :div {:class "clean-gantt-rows"}
+                           (mapv (fn [{:keys [label icon active note]}]
+                                   (let [active-set (set active)
+                                         bar (apply d/el :div {:class "clean-gantt-bar-grid"}
+                                                    (map-indexed
+                                                     (fn [idx _]
+                                                       (d/el :span {:class (str "clean-gantt-cell"
+                                                                                (when (contains? active-set idx) " active")
+                                                                                (when (and (pos? idx) (zero? (mod idx 5)))
+                                                                                  " clean-gantt-cell--week-sep"))}))
+                                                     days))]
+                                     (.setProperty (.-style bar) "grid-template-columns" col-css)
+                                     (d/el :div {:class "clean-gantt-row"}
+                                           (d/el :div {:class "clean-gantt-label"}
+                                                 (when icon (d/ic icon "clean-gantt-label-icon"))
+                                                 (d/el :span {:class "clean-gantt-label-text"} label))
+                                           bar
+                                           (when note (d/el :span {:class "clean-gantt-row-note"} note)))))
+                                 rows))]
+        (.appendChild table rows-el)))
+    (d/el :div {:class "clean-gantt animate"}
+          (when title
+            (d/el :div {:class "clean-gantt-title-row"}
+                  (d/ic "calendar-clock" "clean-gantt-title-icon")
+                  (d/el :strong {:class "clean-gantt-title"} title)))
+          table
+          (when note
+            (d/el :p {:class "clean-gantt-note"} note)))))
 
 (defn cleaning-calendar [{:keys [title modes days activities note default-mode default-day month-label date-cells month year]}]
   (let [mode*      (atom (or default-mode (some-> modes first :id) "diario"))

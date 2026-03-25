@@ -47,11 +47,17 @@
   (if-let [render-fn (get templates template-key)]
     (let [el (render-fn data page-num theme)]
       (when-let [{:keys [label color]} (:section-tag data)]
-        (let [side (if (even? page-num) "left" "right")]
+        (let [side (if (= "cronograma" (:id data))
+                     "left"
+                     (if (even? page-num) "left" "right"))]
           (.add (.-classList el) "page--has-section-tab" (str "section-tab-side--" side))
           (.prepend el
             (d/el :div {:class (str "section-tab section-tab--" (or color "default")
                                     " section-tab--" side)}
                   (d/el :span {:class "section-tab-label"} label)))))
+      (when (= :landscape (:orientation data))
+        (.add (.-classList el) "page--landscape")
+        (.setProperty (.-style el) "page" "landscape-page")
+        (.setAttribute el "data-orientation" "landscape"))
       el)
     (js/console.error "Unknown template:" (name template-key))))

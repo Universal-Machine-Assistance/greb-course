@@ -6,8 +6,8 @@
   {:meta  {:id          "propuesta-web"
            :org         "propuesta_web"
            :slug        "propuesta_sitio_web"
-           :title       "Propuesta — Sitio Web via Plantilla"
-           :description "Propuesta comercial para diseño y desarrollo de sitio web en Squarespace. Incluye diseño, SEO, capacitación y soporte."
+           :title       "Propuesta — Let's Drunch RD"
+           :description "Propuesta comercial de sitio web en Squarespace para LETS DRUNCH RD, SRL. Incluye diseño, SEO, capacitación y soporte."
            :category    "Propuestas"
            :tags        ["Squarespace" "diseño web" "propuesta comercial"]
            :style       {:illustration "oil painting Norman Rockwell style, warm golden lighting, professional business setting, rich detailed brushwork, editorial quality"}
@@ -28,28 +28,42 @@
                     :body    "DM Sans"}}
 
    :toc [{:label "Propuesta"
-          :entries (subvec c/index-entries 0 6)}
+          :entries (subvec c/index-entries 0 7)}
          {:label "Ejecución"
-          :entries (subvec c/index-entries 6 9)}
+          :entries (subvec c/index-entries 7 10)}
          {:label "Inversión"
-          :entries (subvec c/index-entries 9 13)}]
+          :entries (subvec c/index-entries 10 15)}]
 
    :pages
    [;; 1. Portada
     {:template :cover
      :data {:hero-img "cover.png"
             :title    "Propuesta"
-            :subtitle "Sitio Web via Plantilla · Squarespace"}}
+            :subtitle "Sitio Web · Let's Drunch RD"
+            :logos [{:src "logo-greb.png" :alt "GREB"}
+                    {:src "logo-abt.png" :alt "ABT Internacional"}]}}
 
-    ;; 2. Contenido
+    ;; 2. Índice
+    {:template :index
+     :data {:title "Índice"
+            :entries c/index-entries
+            :groups [{:label "Propuesta" :icon-default "sparkles"
+                      :items (subvec c/index-entries 3 7)}
+                     {:label "Ejecución" :icon-default "rocket"
+                      :items (subvec c/index-entries 7 10)}
+                     {:label "Inversión" :icon-default "receipt"
+                      :items (subvec c/index-entries 10 15)}]}}
+
+    ;; 3. Contenido visual
     {:template :toc-card-grid
      :data {:title    c/contenido-title
             :subtitle c/contenido-subtitle
             :sections c/contenido-sections}}
 
-    ;; 3. Resumen Ejecutivo
+    ;; 4. Resumen Ejecutivo
     {:template :hero-section
      :data {:id "resumen"
+            :section-tag {:label "Propuesta" :color "propuesta"}
             :hero {:kicker "Propuesta Comercial"
                    :title  c/resumen-title
                    :subtitle c/resumen-subtitle}
@@ -57,9 +71,10 @@
                      {:type :info-grid :icon "sparkles" :title "Beneficios Clave"
                       :items c/resumen-items}]}}
 
-    ;; 4. Alcance — feature list + callout
+    ;; 5. Alcance — feature list + callout
     {:template :blocks
      :data {:id "alcance"
+            :section-tag {:label "Propuesta" :color "propuesta"}
             :header {:icon "target"
                      :kicker "Proyecto"
                      :title  c/alcance-title}
@@ -80,9 +95,10 @@
                       :title "Fuera de alcance"
                       :text "No incluye: registro de dominio (~$12/año), suscripción Squarespace (pago directo del cliente), fotografía profesional, redacción de contenido, tienda e-commerce con +10 productos, sistemas de membresía o reservas."}]}}
 
-    ;; 5. Squarespace — two-col + highlight
+    ;; 6. Squarespace — two-col + highlight
     {:template :hero-section
      :data {:id "squarespace"
+            :section-tag {:label "Propuesta" :color "propuesta"}
             :hero {:kicker "Plataforma"
                    :title  c/squarespace-title
                    :subtitle c/squarespace-subtitle
@@ -96,9 +112,10 @@
                               "Copias de seguridad automáticas"
                               "Actualizaciones de seguridad automáticas"]}]}}
 
-    ;; 6. Plan Core — pricing table
+    ;; 7. Plan Core — pricing table
     {:template :blocks
      :data {:id "plan-core"
+            :section-tag {:label "Propuesta" :color "propuesta"}
             :header {:icon "credit-card"
                      :kicker "Squarespace"
                      :title  c/plan-core-title}
@@ -117,9 +134,10 @@
                       :title "Recomendación"
                       :text "El plan **Core anual** ($27/mes) es la mejor opción: ahorra 18%, incluye dominio gratis el primer año, y tiene todas las funcionalidades necesarias. El cliente paga directamente a Squarespace con su tarjeta."}]}}
 
-    ;; 7. Proceso — steps layout
+    ;; 8. Proceso — steps layout
     {:template :hero-section
      :data {:id "proceso"
+            :section-tag {:label "Ejecución" :color "ejecucion"}
             :hero {:kicker "Metodología"
                    :title  c/proceso-title
                    :subtitle c/proceso-subtitle
@@ -135,9 +153,10 @@
                               {:num "4" :title "Lanzamiento" :icon "rocket"
                                :text "**Semana 3 (Días 16-21)** — Revisión final, ajustes, conexión de dominio, capacitación de 1 hora. Entregable: **sitio en producción + manual**."}]}]}}
 
-    ;; 8. Entregables — feature list + stat grid
+    ;; 9. Entregables — feature list + stat grid
     {:template :blocks
      :data {:id "entregables"
+            :section-tag {:label "Ejecución" :color "ejecucion"}
             :header {:icon "package"
                      :kicker "Resultado"
                      :title  c/entregables-title}
@@ -149,24 +168,36 @@
                      {:type :info-grid :icon "check-square" :title "Detalle de Entregables"
                       :items c/entregables-items}]}}
 
-    ;; 9. Cronograma — timeline
+    ;; 10. Cronograma — Gantt chart
     {:template :blocks
      :data {:id "cronograma"
+            :orientation :landscape
+            :section-tag {:label "Ejecución" :color "ejecucion"}
             :header {:icon "calendar"
                      :kicker "Tiempos"
                      :title  c/cronograma-title}
-            :blocks [{:type :timeline
-                      :items [{:year "S1" :title "Briefing + Diseño"
-                               :text "Días 1-5: reunión, mapa del sitio, selección de plantilla, primer borrador visual."}
-                              {:year "S2" :title "Desarrollo"
-                               :text "Días 6-12: construcción de páginas, carga de contenido, configuración técnica."}
-                              {:year "S3" :title "Lanzamiento"
-                               :text "Días 13-21: revisión final, ajustes, dominio, capacitación, sitio en vivo."}]}
+            :blocks [{:type :sched-grid
+                      :gantt {:title "Cronograma del Proyecto"
+                              :week-labels [{:label "Semana 1 — Mar 30 al Abr 3" :span 5}
+                                            {:label "Semana 2 — Abr 7 al 11" :span 5}
+                                            {:label "Semana 3 — Abr 14 al 18" :span 5}]
+                              :days ["Lun" "Mar" "Mié" "Jue" "Vie" "Lun" "Mar" "Mié" "Jue" "Vie" "Lun" "Mar" "Mié" "Jue" "Vie"]
+                              :rows [{:label "Briefing"    :icon "clipboard"  :active [0 1 2]           :note ""}
+                                     {:label "Diseño"      :icon "palette"    :active [2 3 4 5 6]       :note ""}
+                                     {:label "Desarrollo"  :icon "code"       :active [5 6 7 8 9 10 11] :note ""}
+                                     {:label "Revisión"    :icon "check"      :active [11 12 13]        :note ""}
+                                     {:label "Lanzamiento" :icon "rocket"     :active [13 14]           :note ""}]
+                              :note "Días hábiles (lunes a viernes). Inicio: lunes 30 de marzo, 2026. El cronograma asume entrega de material en los primeros 3 días."}}
+                     {:type :qr-link
+                      :title "Sube tus archivos aquí"
+                      :hint "Escanea el QR o haz clic en el enlace para cargar el material del proyecto."
+                      :url "http://tiny.cc/letsdrunch"}
                      {:type :text-block :content c/cronograma-text}]}}
 
-    ;; 10. Inversión — cotización formal
+    ;; 11. Cotización USD
     {:template :blocks
      :data {:id "inversion"
+            :section-tag {:label "Inversión" :color "inversion"}
             :header {:icon "receipt"
                      :kicker "Cotización"
                      :title  "Cotización de Servicios"}
@@ -194,15 +225,51 @@
                                       :detail "30 días de soporte gratuito para dudas y ajustes menores después del lanzamiento."}
                                :qty "30 días" :unit-price "Incluido" :amount "—"}]
                       :subtotal "$1,200.00"
-                      :discount {:label "Descuento" :amount "$0.00"}
-                      :tax {:label "ITBIS (0%)" :amount "$0.00"}
-                      :total "$1,200.00"
+                      :tax {:label "ITBIS (18%)" :amount "$216.00"}
+                      :total "$1,416.00"
                       :notes "Precios en USD. No incluye suscripción de Squarespace ($27/mes anual) ni registro de dominio. El cliente paga estos servicios directamente a Squarespace."
-                      :terms "**50% anticipo** al aprobar ($600) + **50% al lanzar** ($600). Pago por **transferencia bancaria** (ver página siguiente). También Zelle o PayPal. Propuesta válida por 30 días."}]}}
+                      :terms "**50% anticipo** al aprobar ($708) + **50% al lanzar** ($708). Pago por **transferencia bancaria** (ver página siguiente). También Zelle o PayPal. Propuesta válida por 30 días."}]}}
 
-    ;; 11. Condiciones — callouts + info grid
+    ;; 12. Cotización en Pesos Dominicanos
+    {:template :blocks
+     :data {:id "inversion-dop"
+            :section-tag {:label "Inversión" :color "inversion"}
+            :header {:icon "coins"
+                     :kicker "Cotización"
+                     :title  "Cotización en Pesos Dominicanos"}
+            :blocks [{:type :quote-table
+                      :title "Cotización en Pesos Dominicanos (DOP)"
+                      :number "2026-001-DOP"
+                      :date "24 de marzo, 2026"
+                      :client "LETS DRUNCH RD, SRL"
+                      :client-rnc "RNC: 132453093"
+                      :client-email "info@letsdrunch.com · events@letsdrunch.com"
+                      :logos [{:src "logo-greb.png" :alt "GREB"} {:src "logo-abt.png" :alt "ABT Internacional"}]
+                      :items [{:desc {:title "Diseño y Desarrollo Web"
+                                      :detail "Diseño personalizado sobre Squarespace. Hasta 7 páginas: Inicio, Nosotros, Servicios, Galería, Blog, Contacto + 1 adicional."}
+                               :qty "1" :unit-price "RD$73,752.00" :amount "RD$73,752.00" :highlight? true}
+                              {:desc {:title "Configuración SEO"
+                                      :detail "Meta tags, URLs limpias, sitemap XML, Google Search Console, Open Graph para redes sociales."}
+                               :qty "1" :unit-price "Incluido" :amount "—"}
+                              {:desc {:title "Capacitación (videollamada grabada)"
+                                      :detail "Sesión de 1 hora para aprender a gestionar el sitio: editar textos, subir fotos, crear páginas."}
+                               :qty "1 hr" :unit-price "Incluido" :amount "—"}
+                              {:desc {:title "Manual de Uso (PDF)"
+                                      :detail "Instrucciones paso a paso con capturas de pantalla para las tareas más comunes."}
+                               :qty "1" :unit-price "Incluido" :amount "—"}
+                              {:desc {:title "Soporte Post-Lanzamiento"
+                                      :detail "30 días de soporte gratuito para dudas y ajustes menores después del lanzamiento."}
+                               :qty "30 días" :unit-price "Incluido" :amount "—"}]
+                      :subtotal "RD$73,752.00"
+                      :tax {:label "ITBIS (18%)" :amount "RD$13,275.36"}
+                      :total "RD$87,027.36"
+                      :notes "Tasa de cambio: **USD $1.00 = RD$61.46** (24 de marzo, 2026). Equivalente a **USD $1,416.00**. No incluye suscripción de Squarespace ni registro de dominio."
+                      :terms "**50% anticipo** al aprobar (RD$43,513.68) + **50% al lanzar** (RD$43,513.68). Pago por **transferencia bancaria** (ver página siguiente). Propuesta válida por 30 días."}]}}
+
+    ;; 13. Condiciones
     {:template :blocks
      :data {:id "condiciones"
+            :section-tag {:label "Inversión" :color "inversion"}
             :header {:icon "file-text"
                      :kicker "Legal"
                      :title  c/condiciones-title}
@@ -213,9 +280,10 @@
                      {:type :info-grid :icon "scale" :title "Términos Adicionales"
                       :items c/condiciones-items}]}}
 
-    ;; 12. Información de Transferencia
+    ;; 14. Información de Transferencia
     {:template :blocks
      :data {:id "transferencia"
+            :section-tag {:label "Inversión" :color "inversion"}
             :header {:icon "landmark"
                      :kicker "Pago"
                      :title  c/transferencia-title}
@@ -231,7 +299,7 @@
                      {:type :info-grid :icon "send" :title "Instrucciones de Pago"
                       :items c/transferencia-instrucciones}]}}
 
-    ;; 13. Contacto / Créditos
+    ;; 15. Contacto / Créditos
     {:template :credits
      :data {:title nil
             :by    c/credits-by

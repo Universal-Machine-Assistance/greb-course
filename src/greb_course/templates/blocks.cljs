@@ -4,7 +4,7 @@
             [greb-course.rich-text :as rich]
             [greb-course.templates.components :as comp]))
 
-(defn- render-block-content [{:keys [type icon title items] :as block}]
+(defn- render-block-content [{:keys [type items] :as block}]
   (case type
     :mission-grid
     (apply d/el :div {:class "mission-grid"}
@@ -146,6 +146,19 @@
             (when caption
               (d/el :p {:class "image-block-caption"} caption))))
 
+    :qr-link
+    (let [{:keys [url image-src title hint]} block
+          qr-src (or image-src
+                     (str "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="
+                          (js/encodeURIComponent (or url ""))))]
+      (d/el :section {:class "qr-upload-cta animate"}
+            (d/el :div {:class "qr-upload-copy"}
+                  (d/el :p {:class "qr-upload-title"} (or title "Sube tus archivos aquí"))
+                  (d/el :p {:class "qr-upload-hint"} (or hint "Escanea el código QR o abre el enlace para cargar el material.")))
+            (d/el :a {:href url :class "qr-upload-link" :target "_blank" :rel "noopener noreferrer"}
+                  (d/el :img {:src qr-src :alt "QR para subir archivos" :class "qr-upload-img"})
+                  (d/el :span {:class "qr-upload-url"} url))))
+
     :risk-familias-bolas
     (comp/risk-familias-bolas-grid items {:hide-visuals? (:hide-visuals? block)})
 
@@ -154,7 +167,7 @@
            (mapv comp/info-card items))))
 
 (defn render-block [block]
-  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :bank-card :wash-carousel :image-block :ref-table} (:type block))
+  (if (#{:highlight :product-showcase :product-timeline :image-grid :omni-embed :code-block :text :text-block :pricing-table :steps :two-col :callout :feature-list :quote-table :bank-card :wash-carousel :image-block :ref-table :qr-link} (:type block))
     (render-block-content block)
     (d/el :section {:class "hygiene-block"}
           (comp/section-bar (:icon block) (:title block))

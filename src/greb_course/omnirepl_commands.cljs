@@ -46,9 +46,14 @@
       (go! idx nil))))
 
 (defn navigate-to-page-number! [n]
-  (when-let [entries (build-entries)]
-    (when-let [entry (first (filter #(= (:page %) n) entries))]
-      (navigate-to-spread! (:spread-idx entry)))))
+  (when-let [{:keys [go! spread-first-pages]} @state/current-nav]
+    (let [sfp (vec spread-first-pages)
+          idx (loop [i (dec (count sfp))]
+                (cond
+                  (neg? i) nil
+                  (<= (nth sfp i) n) i
+                  :else (recur (dec i))))]
+      (when idx (go! idx nil)))))
 
 (defn open-course! [{:keys [org slug]}]
   (set! (.-location js/window) (str "/" org "/" slug "/")))
@@ -62,20 +67,30 @@
    (if-let [{:keys [org slug]} (:meta @state/current-course)]
      (let [url (str "/api/export-pdf?org=" (js/encodeURIComponent org)
                     "&slug=" (js/encodeURIComponent slug)
-                    (when pages (str "&pages=" (js/encodeURIComponent pages))))]
+                    (when pages (str "&pages=" (js/encodeURIComponent pages))))
+           ;; Show persistent toast with elapsed time
+           start-ms (.now js/Date)
+           tick     (atom nil)
+           update!  (fn [prefix]
+                      (let [secs (js/Math.round (/ (- (.now js/Date) start-ms) 1000))]
+                        (ui/show-toast! (str prefix " (" secs "s)") 120000)))]
+       (update! "Generating PDF…")
+       (reset! tick (js/setInterval #(update! "Generating PDF…") 1000))
        (-> (js/fetch url)
            (.then (fn [resp]
+                    (js/clearInterval @tick)
                     (if-not (.-ok resp)
                       (.reject js/Promise (js/Error. (str "HTTP " (.-status resp))))
-                      (let [ctype (or (.get (.-headers resp) "content-type") "")]
-                        (-> (.blob resp)
-                            (.then (fn [blob]
-                                     (if (and (.includes (.toLowerCase ctype) "application/pdf")
-                                              (> (.-size blob) 1000))
-                                       blob
-                                       (.reject js/Promise
-                                         (js/Error.
-                                           (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)")))))))))))
+                      (do (update! "Downloading PDF…")
+                          (let [ctype (or (.get (.-headers resp) "content-type") "")]
+                            (-> (.blob resp)
+                                (.then (fn [blob]
+                                         (if (and (.includes (.toLowerCase ctype) "application/pdf")
+                                                  (> (.-size blob) 1000))
+                                           blob
+                                           (.reject js/Promise
+                                             (js/Error.
+                                               (str "Invalid PDF response (" ctype ", " (.-size blob) " bytes)"))))))))))))
            (.then (fn [blob]
                     (let [dl-url (.createObjectURL js/URL blob)
                           a      (.createElement js/document "a")
@@ -86,8 +101,10 @@
                       (.click a)
                       (.remove a)
                       (js/setTimeout #(.revokeObjectURL js/URL dl-url) 1200)
-                      (ui/show-toast! (str "Downloaded: " name) 2200))))
-           (.catch #(ui/show-toast! "PDF export failed. Restart server and try again." 5000))))
+                      (ui/show-toast! (str "Downloaded: " name) 3000))))
+           (.catch (fn [e]
+                     (js/clearInterval @tick)
+                     (ui/show-toast! (str "PDF export failed: " (.-message e)) 5000)))))
      (ui/show-toast! "No active course" 2200))))
 
 ;; ── Command entries ─────────────────────────────────────────

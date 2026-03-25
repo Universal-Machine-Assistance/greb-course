@@ -304,7 +304,7 @@
                                                             ex (+ (.-left er) (/ (.-width er) 2))
                                                             ey (+ (.-top er) (/ (.-height er) 2))
                                                             vw (.-innerWidth js/window) vh (.-innerHeight js/window)
-                                                            nz (min 4.0 (max 1.2 (* 0.65 (min (/ vw (max 1 (.-width er))) (/ vh (max 1 (.-height er)))))))]
+                                                            nz (min 3.0 (max 1.2 (* 0.5 (min (/ vw (max 1 (.-width er))) (/ vh (max 1 (.-height er)))))))]
                                                         (anim/animate-view-to! state/doc-view
                                                           {:zoom nz :text-scale ts :pan-x (- (* (- ex (/ vw 2)) nz)) :pan-y (- (* (- ey (/ vh 2)) nz))}
                                                           doc-apply-view! :phy phy))))))]
@@ -352,6 +352,13 @@
 
 (defn boot-catalog [courses reload!]
   (set! (.-title js/document) "greb-course")
+  ;; Disable spacemouse panning on catalog page
+  (reset! state/sm-ensure-raf! nil)
+  (reset! state/sm-doc-ensure-raf! nil)
+  (reset! state/sm-on-prev nil)
+  (reset! state/sm-on-next nil)
+  (reset! state/sm-on-reset nil)
+  (reset! state/sm-translate {:x 0 :y 0 :z 0})
   (let [app (.getElementById js/document "app")]
     (.appendChild app (catalog/build-catalog courses #(reload! @state/current-courses)))
     (when (and js/lucide (.-createIcons js/lucide)) (.createIcons js/lucide))
