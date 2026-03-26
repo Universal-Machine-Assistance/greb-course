@@ -10,7 +10,8 @@
             [compojure.route :as route]
             [greb-course.server-proxy :as proxy]
             [greb-course.server-pdf :as pdf]
-            [greb-course.server-images :as images])
+            [greb-course.server-images :as images]
+            [greb-course.auth :as auth])
   (:import [java.io File]))
 
 ;; ---------------------------------------------------------------------------
@@ -162,6 +163,20 @@
          (-> (edn-response {:error "provide ?filename=..."})
              (response/status 400))))
 
+  ;; Auth routes
+  (GET "/login" [] (auth/login-page))
+  (POST "/login" [username password]
+    (if (auth/check-credentials username password)
+      (auth/set-session-cookie
+        {:status 302 :headers {"Location" "/"} :body ""}
+        (auth/new-session!))
+      (auth/login-page "Usuario o contraseña incorrectos")))
+  (GET "/logout" req
+    (let [token (auth/get-session-token req)]
+      (when token (auth/invalidate-session! token))
+      (auth/clear-session-cookie
+        {:status 302 :headers {"Location" "/login"} :body ""})))
+
   ;; Embed viewer — frameable, no X-Frame-Options
   (GET "/embed/:org/:slug/" [org slug]
        (-> (index-response)
@@ -216,6 +231,7 @@
           (file-handler req))))))
 
 (def handler (-> app
+                 auth/wrap-auth
                  wrap-params
                  wrap-multipart-params
                  (wrap-file-safe "public")
