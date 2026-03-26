@@ -41,7 +41,7 @@
     ;; ── 2. Contraportada ───────────────────────────────────
     {:template :gn-backcover
      :data {:id "backcover"
-            :bg-img "greb_main_site.png"
+            :bg-img "contraportada-desk.png"
             :logo "greb-logo.png"
             :badge "La solución\na todos los problemas"
             :card-color :blue

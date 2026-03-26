@@ -47,9 +47,7 @@
   (if-let [render-fn (get templates template-key)]
     (let [el (render-fn data page-num theme)]
       (when-let [{:keys [label color]} (:section-tag data)]
-        (let [side (if (= "cronograma" (:id data))
-                     "left"
-                     (if (even? page-num) "left" "right"))]
+        (let [side (if (even? page-num) "left" "right")]
           (.add (.-classList el) "page--has-section-tab" (str "section-tab-side--" side))
           (.prepend el
             (d/el :div {:class (str "section-tab section-tab--" (or color "default")

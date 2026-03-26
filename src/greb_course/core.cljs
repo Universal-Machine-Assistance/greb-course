@@ -25,8 +25,12 @@
 
 ;; ── Routing helpers ──────────────────────────────────────────
 
+(defn- embed-path? []
+  (.startsWith (.-pathname js/location) "/embed/"))
+
 (defn- base-path []
-  (let [path (.-pathname js/location)]
+  (let [path (.-pathname js/location)
+        path (if (.startsWith path "/embed/") (subs path 6) path)]
     (if (.endsWith path "/") path (str path "/"))))
 
 (defn- course-path [course]
@@ -119,6 +123,7 @@
 ;; ── Boot & reload ────────────────────────────────────────────
 
 (defn- do-boot [courses]
+  (reset! state/embed-mode? (embed-path?))
   (boot/boot courses match-course (boot-opts)))
 
 (defn init! [courses]

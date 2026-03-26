@@ -1288,3 +1288,52 @@ html.presenting .toc-hjkl-dock { z-index: 10007; }
   border-radius: 8px; margin-top: .5rem;
   border: 1px solid rgba(0,0,0,.08);
 }
+
+/* ── Embed mode ──────────────────────────────────────────── */
+html.embed-mode { overflow: hidden; }
+html.embed-mode body { background: transparent; }
+html.embed-mode .toolbar,
+html.embed-mode .toc-wrapper,
+html.embed-mode .toc-overlay,
+html.embed-mode .spread-dots { display: none !important; }
+
+.embed-wrapper { width: 100%; height: 100vh; overflow: hidden; }
+
+.reader--embed {
+  --toolbar-h: 0px;
+  top: 0 !important;
+  height: 100vh !important;
+}
+
+/* ── Embed modal (in normal viewer) ─────────────────────── */
+.embed-modal-scrim {
+  position: fixed; inset: 0; z-index: 99990;
+  background: rgba(0,0,0,.55);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.embed-modal-panel {
+  background: var(--page, #fff); color: var(--ink);
+  border-radius: var(--r, 12px);
+  padding: 1.5rem 1.8rem; width: min(520px, 92vw);
+  box-shadow: var(--shadow-page);
+}
+.embed-modal-title {
+  font-family: var(--font-head); font-weight: 700; font-size: 1.1rem;
+  margin-bottom: .4rem;
+}
+.embed-modal-desc {
+  font-size: .82rem; color: var(--ink-3); margin-bottom: .8rem; line-height: 1.5;
+}
+.embed-modal-code {
+  width: 100%; min-height: 80px; padding: .6rem .7rem;
+  font-family: "JetBrains Mono", monospace; font-size: .72rem;
+  border: 1px solid rgba(0,0,0,.12); border-radius: 8px;
+  background: rgba(0,0,0,.03); color: var(--ink);
+  resize: vertical; line-height: 1.5;
+}
+.embed-modal-actions {
+  display: flex; gap: .5rem; margin-top: .8rem; justify-content: flex-end;
+}
+.embed-modal-copy { gap: .3rem; }
+.embed-modal-open { text-decoration: none; gap: .3rem; }

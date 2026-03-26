@@ -57,15 +57,17 @@
 
 (def cover-data
   {:logo "greb-logo.png"
-   :isbn "978-9945-80-029-6 001.000"
+   :isbn "978-9945-80-029-6"
    :copyright "Greb: Sistemas para personas inteligentes\n© Guillermo Molina Mueses 2025"
-   :credits ["Este libro está licenciado bajo una Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)."
-             "y de manera completamente gratuita en www.greb.app"
+   :credits ["Este libro está licenciado bajo una Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)"
+             "con el espíritu de ser compartido y se puede leer de manera gratuita en www.greb.app/101"
+             "Version: 001.004"
              "Dirección y Diseño: Guillermo Molina Mueses"
-             "Jefe de Diagramación: Giuseppe Di Vanna – OneArt Book Design"
-             "Jefe de Edición: Ricardo Domínguez"
+             "Jefe de diagramación: Giuseppe Di Vanna – OneArt Book Design"
+             "Jefe de edición: Ricardo Domínguez"
              "Diagramador: Bryan Mogena"
-             "Equipo de corrección: Carolina Mueses, Luis Emilio Molina y Georgina Corporán"]})
+             "Equipo de corrección: Carolina Mueses, Luis Emilio Molina,"
+             "Georgina Corporán, Arnold Martínez, José Carlos Nazario, Ruth Ruiz."]})
 
 ;; ── Contraportada data ──────────────────────────────────────
 

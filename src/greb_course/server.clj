@@ -162,6 +162,23 @@
          (-> (edn-response {:error "provide ?filename=..."})
              (response/status 400))))
 
+  ;; Embed viewer — frameable, no X-Frame-Options
+  (GET "/embed/:org/:slug/" [org slug]
+       (-> (index-response)
+           (response/header "X-Frame-Options" "ALLOWALL")
+           (response/header "Content-Security-Policy" "frame-ancestors *")))
+  (GET "/embed/:org/:slug" [org slug]
+       (response/redirect (str "/embed/" org "/" slug "/")))
+
+  ;; Embed images (reuse same image serving as normal course)
+  (GET "/embed/:org/:slug/images/*" [org slug :as req]
+       (let [uri  (:uri req)
+             pfx  (str "/embed/" org "/" slug "/images/")
+             path (when (.startsWith uri pfx) (subs uri (count pfx)))]
+         (if (and path (not= path ""))
+           (images/serve-image org slug path)
+           (response/not-found "Not found"))))
+
   ;; Course viewer — serve same index.html, JS handles routing
   (GET "/:org/:slug/" [org slug] (index-response))
   (GET "/:org/:slug" [org slug]
@@ -193,7 +210,8 @@
       (let [uri (:uri req)]
         (if (or (= uri "/")
                 (and (re-matches #"/[^/]+/[^/]+/?" uri)
-                     (not (re-matches #"^/(js|css|fonts|favicon)(/.*)?$" uri))))
+                     (not (re-matches #"^/(js|css|fonts|favicon)(/.*)?$" uri)))
+                (re-matches #"/embed/[^/]+/[^/]+/?" uri))
           (handler req)
           (file-handler req))))))
 

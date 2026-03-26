@@ -244,8 +244,8 @@
                            (or (.-shiftKey e) (.-ctrlKey e))
                            (#{"j" "k" "J" "K" "ArrowDown" "ArrowUp"} k))
                     (let [col (if (.-ctrlKey e)
-                                (.querySelector js/document ".toc-col-right .toc-entries-scroll")
-                                (.querySelector js/document ".toc-col-left"))
+                                (.querySelector js/document ".toc-col-left")
+                                (.querySelector js/document ".toc-entries-scroll"))
                           dir (if (#{"j" "J" "ArrowDown"} k) 80 -80)]
                       (.preventDefault e)
                       (when col (.scrollBy col #js {:top dir :behavior "smooth"})))

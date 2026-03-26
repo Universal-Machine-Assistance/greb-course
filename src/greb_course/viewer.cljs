@@ -14,6 +14,17 @@
 (defn- landscape? [el]
   (= "landscape" (.getAttribute el "data-orientation")))
 
+(defn- set-section-tab-side! [page-el side]
+  (when page-el
+    (let [page-cl (.-classList page-el)
+          tab-el (.querySelector page-el ".section-tab")
+          tab-cl (some-> tab-el .-classList)]
+      (.remove page-cl "section-tab-side--left" "section-tab-side--right")
+      (.add page-cl (str "section-tab-side--" side))
+      (when tab-cl
+        (.remove tab-cl "section-tab--left" "section-tab--right")
+        (.add tab-cl (str "section-tab--" side))))))
+
 ;; ── Toolbar ──────────────────────────────────────────────────────
 (defn- trigger-print! []
   (omni/dismiss!)
@@ -72,6 +83,40 @@
       (let [ro (js/ResizeObserver. (fn [_] (apply-h!)))]
         (.observe ro toolbar-el)))))
 
+(defn- show-embed-modal! [org slug]
+  (let [base-url (str (.-protocol js/location) "//" (.-host js/location))
+        embed-url (str base-url "/embed/" org "/" slug "/")
+        iframe-code (str "<iframe src=\"" embed-url "\" width=\"100%\" height=\"600\" frameborder=\"0\" allowfullscreen></iframe>")
+        scrim (d/el :div {:class "embed-modal-scrim"})
+        textarea (d/el :textarea {:class "embed-modal-code" :readonly "true"} iframe-code)
+        copy-btn (d/el :button {:class "toolbar-btn embed-modal-copy"} (d/ic "copy" "") "Copy")
+        open-btn (doto (d/el :a {:href embed-url :target "_blank" :class "toolbar-ghost-btn embed-modal-open"}
+                             (d/ic "external-link" "") "Preview")
+                   (.addEventListener "mouseenter" sfx/row-enter-handler))
+        panel (d/el :div {:class "embed-modal-panel"}
+                    (d/el :div {:class "embed-modal-title"} "Embed Code")
+                    (d/el :p {:class "embed-modal-desc"} "Copy this HTML to embed the document on any website:")
+                    textarea
+                    (d/el :div {:class "embed-modal-actions"} copy-btn open-btn))
+        close! (fn []
+                 (when (.-parentNode scrim) (.remove scrim)))]
+    (.addEventListener copy-btn "click"
+      (fn []
+        (.select textarea)
+        (-> (.writeText js/navigator.clipboard iframe-code)
+            (.then (fn [] (set! (.-textContent copy-btn) "Copied!")
+                          (js/setTimeout #(do (set! (.-innerHTML copy-btn) "")
+                                              (.appendChild copy-btn (d/ic "copy" ""))
+                                              (.appendChild copy-btn (.createTextNode js/document "Copy"))) 2000)))
+            (.catch (fn [] (.execCommand js/document "copy"))))))
+    (.addEventListener scrim "click"
+      (fn [e] (when (= (.-target e) scrim) (close!))))
+    (.addEventListener panel "keydown"
+      (fn [e] (when (= (.-key e) "Escape") (close!))))
+    (.appendChild scrim panel)
+    (.appendChild (.-body js/document) scrim)
+    (.select textarea)))
+
 (defn toolbar [indicator toggle-toc! theme]
   (let [logo      (get theme :logo)
         brand     (get theme :brand-name "")
@@ -99,6 +144,14 @@
                               (d/ic "play" "") (when-not mobile? (i18n/t :present)))
                         (.addEventListener "mouseenter" sfx/row-enter-handler)
                         (.addEventListener "click" #(when-let [f @state/on-enter-presentation] (f))))
+        embed-btn (doto (d/el :button {:class (str "toolbar-ghost-btn" (when mobile? " toolbar-desktop-only"))
+                                       :title "Embed"}
+                              (d/ic "code" "") (when-not mobile? "Embed"))
+                        (.addEventListener "mouseenter" sfx/row-enter-handler)
+                        (.addEventListener "click"
+                          (fn []
+                            (when-let [{:keys [org slug]} (:meta @state/current-course)]
+                              (show-embed-modal! org slug)))))
         sm-btn    (when (sm/available?)
                     (doto (d/el :button {:class "toolbar-ghost-btn sm-indicator toolbar-icon-only"
                                          :title "SpaceMouse"
@@ -111,7 +164,7 @@
             [(doto (d/el :a {:href "#portada" :class "toolbar-logo"}
                     (when logo (d/src-img logo brand nil)))
                (.addEventListener "mouseenter" sfx/row-enter-handler))
-             indicator idx-btn pres-btn sm-btn pdf-btn print-btn back-btn]))))
+             indicator idx-btn pres-btn sm-btn embed-btn pdf-btn print-btn back-btn]))))
 
 ;; ── Build course viewer ──────────────────────────────────────────
 (defn build-viewer [course]
@@ -140,6 +193,14 @@
                                    (recur (drop 2 remaining) (conj acc [p nxt]))
                                    (recur (rest remaining) (conj acc [p]))))))))
                        []))
+        _          (doseq [group groups]
+                     (let [pages (vec (keep identity group))]
+                       (case (count pages)
+                         2 (do
+                             (set-section-tab-side! (nth pages 0) "left")
+                             (set-section-tab-side! (nth pages 1) "right"))
+                         1 (set-section-tab-side! (first pages) "left")
+                         nil)))
         spread-first-pages
         (loop [gs groups
                next-page 1
@@ -276,56 +337,71 @@
           (go! idx nil))))
     ;; 'i' key handled by core_boot.cljs keydown handler via state/current-nav :toggle-toc!
     ;; Highlight cursor for doc mode (same as pres mode spotlight)
-    (let [doc-hl (d/el :div {:class "pres-highlight-cursor doc-highlight-cursor"})
-          _      (.addEventListener js/document "mousemove"
-                   (fn [e]
-                     (.setProperty (.-style doc-hl) "--hl-x" (str (.-clientX e) "px"))
-                     (.setProperty (.-style doc-hl) "--hl-y" (str (.-clientY e) "px"))))
-          ;; Hide top bar + prev/next after mouse stops (desktop reader only)
-          _      (when-not mobile?
-                   (let [root    (.-documentElement js/document)
-                         idle-ms 2800
-                         tref    (atom nil)
-                         toc-open? (fn []
-                                     (when-let [tw (.querySelector js/document ".toc-wrapper")]
-                                       (.contains (.-classList tw) "open")))
-                         typing? (fn []
-                                   (let [t (.-activeElement js/document)]
-                                     (when t
-                                       (or (#{"INPUT" "TEXTAREA" "SELECT"} (.-tagName t))
-                                           (let [ce (.getAttribute t "contenteditable")]
-                                             (and ce (not= ce "false")))))))
-                         hide-chrome!
-                         (fn []
-                           (when (and (not @state/pres-state)
-                                      (not (.contains (.-classList root) "ui-hidden"))
-                                      (not (toc-open?))
-                                      (not (typing?)))
-                             (.add (.-classList root) "doc-chrome-idle")))
-                         bump-chrome!
-                         (fn []
-                           (when-let [id @tref] (js/clearTimeout id))
-                           (when-not (.contains (.-classList root) "ui-hidden")
-                             (.remove (.-classList root) "doc-chrome-idle")
-                             (reset! tref (js/setTimeout hide-chrome! idle-ms))))]
-                     (.addEventListener js/window "mousemove" bump-chrome!)
-                     (.addEventListener js/window "mousedown" bump-chrome!)
-                     (bump-chrome!)))
-          ;; Intercept in-page anchor clicks (e.g. index page links) so they navigate via go!
-          reader-el (apply d/el :div {:class (str "reader" (when mobile? " reader--mobile"))}
-                          (concat spreads [prev-btn next-btn]))]
-      (.addEventListener reader-el "click"
-        (fn [e]
-          (when-let [a (.closest (.-target e) "a[href^='#']")]
-            (let [target-id (subs (.getAttribute a "href") 1)]
-              (when-let [idx (get id->spread target-id)]
-                (.preventDefault e)
-                (nav/set-hash! target-id)
-                (go! idx nil))))))
-      (let [tb (toolbar indicator toggle! theme)]
-        (sync-toolbar-offset! tb)
-        (d/el :div {}
-              overlay panel
-              tb
-              reader-el
-              doc-hl)))))
+    (if @state/embed-mode?
+      ;; ── Embed mode: minimal UI, no toolbar ──
+      (let [reader-el (apply d/el :div {:class (str "reader reader--embed" (when mobile? " reader--mobile"))}
+                            (concat spreads [prev-btn next-btn]))]
+        (.addEventListener reader-el "click"
+          (fn [e]
+            (when-let [a (.closest (.-target e) "a[href^='#']")]
+              (let [target-id (subs (.getAttribute a "href") 1)]
+                (when-let [idx (get id->spread target-id)]
+                  (.preventDefault e)
+                  (nav/set-hash! target-id)
+                  (go! idx nil))))))
+        (.add (.-classList (.-documentElement js/document)) "embed-mode")
+        (d/el :div {:class "embed-wrapper"} reader-el))
+      ;; ── Normal mode ──
+      (let [doc-hl (d/el :div {:class "pres-highlight-cursor doc-highlight-cursor"})
+            _      (.addEventListener js/document "mousemove"
+                     (fn [e]
+                       (.setProperty (.-style doc-hl) "--hl-x" (str (.-clientX e) "px"))
+                       (.setProperty (.-style doc-hl) "--hl-y" (str (.-clientY e) "px"))))
+            ;; Hide top bar + prev/next after mouse stops (desktop reader only)
+            _      (when-not mobile?
+                     (let [root    (.-documentElement js/document)
+                           idle-ms 2800
+                           tref    (atom nil)
+                           toc-open? (fn []
+                                       (when-let [tw (.querySelector js/document ".toc-wrapper")]
+                                         (.contains (.-classList tw) "open")))
+                           typing? (fn []
+                                     (let [t (.-activeElement js/document)]
+                                       (when t
+                                         (or (#{"INPUT" "TEXTAREA" "SELECT"} (.-tagName t))
+                                             (let [ce (.getAttribute t "contenteditable")]
+                                               (and ce (not= ce "false")))))))
+                           hide-chrome!
+                           (fn []
+                             (when (and (not @state/pres-state)
+                                        (not (.contains (.-classList root) "ui-hidden"))
+                                        (not (toc-open?))
+                                        (not (typing?)))
+                               (.add (.-classList root) "doc-chrome-idle")))
+                           bump-chrome!
+                           (fn []
+                             (when-let [id @tref] (js/clearTimeout id))
+                             (when-not (.contains (.-classList root) "ui-hidden")
+                               (.remove (.-classList root) "doc-chrome-idle")
+                               (reset! tref (js/setTimeout hide-chrome! idle-ms))))]
+                       (.addEventListener js/window "mousemove" bump-chrome!)
+                       (.addEventListener js/window "mousedown" bump-chrome!)
+                       (bump-chrome!)))
+            ;; Intercept in-page anchor clicks (e.g. index page links) so they navigate via go!
+            reader-el (apply d/el :div {:class (str "reader" (when mobile? " reader--mobile"))}
+                            (concat spreads [prev-btn next-btn]))]
+        (.addEventListener reader-el "click"
+          (fn [e]
+            (when-let [a (.closest (.-target e) "a[href^='#']")]
+              (let [target-id (subs (.getAttribute a "href") 1)]
+                (when-let [idx (get id->spread target-id)]
+                  (.preventDefault e)
+                  (nav/set-hash! target-id)
+                  (go! idx nil))))))
+        (let [tb (toolbar indicator toggle! theme)]
+          (sync-toolbar-offset! tb)
+          (d/el :div {}
+                overlay panel
+                tb
+                reader-el
+                doc-hl))))))

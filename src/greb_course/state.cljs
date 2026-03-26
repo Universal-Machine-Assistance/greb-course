@@ -51,5 +51,8 @@
 ;; Saved illustration style for current course (editable in doc detail modal)
 (defonce illustration-style (atom nil))
 
+;; Embed mode — true when loaded via /embed/:org/:slug/
+(defonce embed-mode? (atom false))
+
 (defn scale-resize-bound? [] @scale-resize-bound?*)
 (defn set-scale-resize-bound! [] (reset! scale-resize-bound?* true))
