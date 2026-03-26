@@ -3,12 +3,16 @@
 
 (defonce ^:private current-images-base (atom "/images/"))
 (defonce ^:private current-brand-name (atom ""))
+(defonce ^:private current-footer-logo (atom "logo-greb.png"))
 
 (defn set-images-base! [base]
   (reset! current-images-base base))
 
 (defn set-brand-name! [name]
   (reset! current-brand-name name))
+
+(defn set-footer-logo! [filename]
+  (reset! current-footer-logo filename))
 
 (defn el [tag attrs & children]
   (let [node (.createElement js/document (name tag))]
@@ -41,5 +45,5 @@
 (defn page-footer [n]
   (el :footer {:class "page-footer"}
       (el :span {:class "page-footer-branding"}
-          (src-img "logo-greb.png" "GREB" "page-footer-logo"))
+          (src-img @current-footer-logo "" "page-footer-logo"))
       (el :span {:class "page-num"} (str n))))

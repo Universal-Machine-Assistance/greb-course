@@ -16,6 +16,7 @@
 
    :theme {:brand-name  "Rivia LIMS"
            :logo        nil
+           :footer-logo "logo-abt.png"
            :images-base nil
            :colors {:primary   "#0c4a6e"
                     :secondary "#0891b2"

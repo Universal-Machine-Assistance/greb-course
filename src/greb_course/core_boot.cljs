@@ -105,6 +105,7 @@
     (i18n/init! lang overrides)
     (d/set-brand-name! (or (:brand-name theme) ""))
     (d/set-images-base! img-base)
+    (d/set-footer-logo! (or (:footer-logo theme) "logo-greb.png"))
     (theme/apply-theme! theme)
     (when-let [title (:title meta-data)] (set! (.-title js/document) title))
     (.setAttribute (.-documentElement js/document) "lang" (name lang))
